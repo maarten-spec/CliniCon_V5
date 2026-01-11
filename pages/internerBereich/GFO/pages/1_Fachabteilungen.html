@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinicon - Fachabteilungen</title>
+  <style>
+    .page-wrap{
+      padding:28px;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+    .hero{
+      background:linear-gradient(120deg, rgba(28,107,255,0.14), rgba(23,195,178,0.18));
+      border:1px solid rgba(28,107,255,0.2);
+      border-radius:var(--radius-lg);
+      padding:24px;
+      display:grid;
+      grid-template-columns:2fr 1fr;
+      gap:20px;
+      box-shadow:var(--shadow);
+    }
+    .hero h2{
+      margin:0 0 10px;
+      font-size:1.6rem;
+      font-family:var(--font-display);
+    }
+    .hero p{margin:0; color:#1f2a44; max-width:560px;}
+    .hero-cards{display:grid; gap:12px;}
+    .hero-card{
+      background:rgba(255,255,255,0.8);
+      border:1px solid rgba(28,107,255,0.18);
+      border-radius:var(--radius-md);
+      padding:12px 14px;
+    }
+    .hero-card strong{
+      display:block;
+      font-size:1.25rem;
+      font-family:var(--font-display);
+    }
+    .hero-card span{color:var(--muted); font-size:.85rem;}
+    .pill-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:.86rem;
+      background:var(--surface-3);
+      border:1px solid rgba(246,189,96,0.35);
+      color:#9a5b1f;
+      font-weight:600;
+    }
+    .pill.alt{
+      background:var(--surface-2);
+      border-color:var(--line);
+      color:var(--ink);
+    }
+    .kpi-grid{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:14px;}
+    .kpi-card{
+      background:var(--surface);
+      border-radius:var(--radius-md);
+      padding:16px;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow-soft);
+      position:relative;
+      overflow:hidden;
+    }
+    .kpi-card::after{
+      content:"";
+      position:absolute;
+      inset:auto -40% -50% auto;
+      width:140px;
+      height:140px;
+      border-radius:50%;
+      opacity:.12;
+      background:var(--accent);
+    }
+    .kpi-card h4{margin:0; font-size:.9rem; color:var(--muted); font-weight:600; letter-spacing:.02em;}
+    .kpi-value{font-size:1.8rem; font-family:var(--font-display); margin-top:6px;}
+    .kpi-sub{margin-top:6px; font-size:.85rem; color:var(--muted);}
+    .grid-two{display:grid; grid-template-columns:2fr 1fr; gap:14px;}
+    .grid-three{display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:14px;}
+    .card{
+      background:var(--surface);
+      border-radius:var(--radius-md);
+      padding:18px;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow-soft);
+    }
+    .card h3{margin:0 0 12px; font-family:var(--font-display); font-size:1.1rem;}
+    .card-header{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .card-sub{font-size:.82rem; color:var(--muted);}
+    .list{display:grid; gap:8px; margin:0; padding:0; list-style:none; color:var(--muted);}
+    .status-list{display:grid; gap:8px; margin-top:10px;}
+    .status-item{display:flex; align-items:center; justify-content:space-between; font-size:.9rem; color:var(--muted);}
+    .status-pill{padding:4px 10px; border-radius:999px; font-weight:700; font-size:.75rem;}
+    .status-ok{background:rgba(47,191,113,0.15); color:#168a4a;}
+    .status-warn{background:rgba(255,159,28,0.2); color:#b45309;}
+    .status-bad{background:rgba(239,71,111,0.2); color:#b91c1c;}
+    table{width:100%; border-collapse:collapse; font-size:.88rem;}
+    thead th{
+      text-align:left;
+      padding:10px 8px;
+      background:var(--surface-2);
+      border-bottom:1px solid var(--line);
+      color:#1d2a46;
+    }
+    tbody td{padding:10px 8px; border-bottom:1px solid var(--line);}
+    tbody tr:hover{background:#f6f8ff;}
+    .form-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px;}
+    label{display:flex; flex-direction:column; gap:6px; font-weight:600; color:var(--ink);}
+    input,select,textarea{
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      font:inherit;
+      background:#fff;
+      color:var(--ink);
+    }
+    textarea{min-height:120px; resize:vertical;}
+    .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;}
+    .btn{
+      border:none;
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      font-family:var(--font-base);
+    }
+    .btn.primary{background:linear-gradient(135deg, var(--accent-2), var(--accent-5)); color:#fff; box-shadow:0 12px 24px rgba(255,107,53,0.35);}
+    .btn.secondary{background:#fff; border:1px solid var(--line); color:var(--ink);}
+    @media (max-width: 1200px){
+      .kpi-grid{grid-template-columns:repeat(2, minmax(0,1fr));}
+      .grid-two{grid-template-columns:1fr;}
+      .grid-three{grid-template-columns:1fr;}
+      .hero{grid-template-columns:1fr;}
+    }
+    @media (max-width: 600px){
+      .page-wrap{padding:20px;}
+      .kpi-grid{grid-template-columns:1fr;}
+    }
+      /* Unified navigation + header */
+    .nav{
+      width:100%;
+      align-items:stretch;
+      flex-direction:column;
+      gap:10px;
+      margin-top:8px;
+    }
+    .nav a{
+      width:100%;
+      border-radius:18px;
+      padding:12px 16px;
+      border:1px solid rgba(15,23,42,0.08);
+      background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246,249,255,0.96));
+      box-shadow:0 10px 20px rgba(15,23,42,0.06);
+      transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .nav a:hover{
+      transform:translateY(-1px);
+      border-color:rgba(28,107,255,0.28);
+      box-shadow:0 16px 30px rgba(28,107,255,0.18);
+    }
+    .nav a.active{
+      background:linear-gradient(135deg, var(--accent), #458cff);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 18px 34px rgba(28,107,255,0.28);
+    }
+    .nav a span{font-weight:600; letter-spacing:.01em;}
+    .nav a svg{
+      width:28px;
+      height:28px;
+      padding:6px;
+      border-radius:12px;
+      background:rgba(28,107,255,0.12);
+      color:#1f4b82;
+      flex-shrink:0;
+      box-shadow:inset 0 0 0 1px rgba(28,107,255,0.12);
+    }
+    .nav a.active svg{
+      background:rgba(255,255,255,0.25);
+      color:#fff;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,0.35);
+    }
+    .nav-group{
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding:4px 0 0;
+    }
+    .nav-group-title{
+      padding-left:8px;
+      font-size:0.72rem;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      color:var(--muted);
+    }
+    .nav-sub{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin:0;
+      padding-left:0;
+    }
+    .nav-sub a{
+      border-radius:16px;
+      padding:10px 14px;
+    }
+    .nav-sub a svg{
+      width:24px;
+      height:24px;
+      padding:5px;
+      border-radius:10px;
+    }
+    header{
+      border-radius:24px;
+      margin:16px 20px 0;
+      width:calc(100% - 40px);
+      border:1px solid var(--line);
+      box-shadow:0 16px 32px rgba(15,23,42,0.1);
+    }
+    @media (max-width: 900px){
+      header{
+        margin:12px 14px 0;
+        width:calc(100% - 28px);
+      }
+      .nav{flex-direction:column;}
+      .nav-sub{flex-direction:column;}
+    }
+
+</style>
+  <link rel="stylesheet" href="/pages/internerBereich/app/app-shell.css" />
+</head>
+<body data-app-page="fachabteilungen" data-app-title="Fachabteilungen" data-app-subtitle="Struktur und Profile">
+  <div class="shell">
+<aside class="side">
+  <a class="brand" href="1_Unterstartseite.html">
+    <img src="../assets/Bilder/GFOLogo.jpg" alt="GFO Logo" />
+  </a>
+  <nav class="nav">
+    <a href="1_Unterstartseite.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"/></svg>
+      <span>Start</span>
+    </a>
+    <a href="1_Klinikverbund_ErfassungDA03.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3h6v4H9z"/></svg>
+      <span>Erfassung</span>
+    </a>
+    <a href="clinicon-assistent.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-2"/><path d="M12 4a4 4 0 0 1 4 4c0 2-2 3-2 4H10c0-1-2-2-2-4a4 4 0 0 1 4-4z"/></svg>
+      <span>Clinicon Assistent</span>
+    </a>
+    <a href="stellenplan.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"/></svg>
+      <span>Stellenplan</span>
+    </a>
+    <a href="stellenplan-gesamt.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Stellenplan Gesamt</span>
+    </a>
+    <a href="stellenplan-insights.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10"/><path d="M7 12h10"/></svg>
+      <span>Stellenplan Insights</span>
+    </a>
+    <div class="nav-group">
+      <div class="nav-group-title">Dienstarten</div>
+      <div class="nav-sub">
+        <a href="stellenplan-dienstart-01.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/></svg>
+          <span>DA01</span>
+        </a>
+        <a href="stellenplan-dienstart-02.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/></svg>
+          <span>DA02</span>
+        </a>
+        <a href="stellenplan-dienstart-03.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/></svg>
+          <span>DA03</span>
+        </a>
+      </div>
+    </div>
+    <a href="maptool.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg>
+      <span>Map-Tool</span>
+    </a>
+  </nav>
+  <div class="side-footer">app.clinicon &middot; GFO Standort</div>
+</aside>
+    <div>
+      <header>
+        <div class="topbar-left">
+          <h1>Fachabteilungen</h1>
+          <p>Struktur und Profile</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="timestamp-pill" data-app-timestamp></span>
+        </div>
+      </header>
+
+      <main class="page-wrap">
+    <section class="hero">
+      <div>
+        <h2>Fachabteilungen im Verbund</h2>
+        <p>Uebersicht der klinischen Schwerpunkte inklusive Kernleistung, Leitung und Kapazitaet. Das Layout folgt exakt dem Clinicon-Insights Stil.</p>
+        <div class="pill-row">
+          <span class="pill">Standort: GFO</span>
+          <span class="pill alt">Aktualisiert: Heute</span>
+        </div>
+      </div>
+      <div class="hero-cards">
+        <div class="hero-card">
+          <strong>18</strong>
+          <span>Fachabteilungen</span>
+        </div>
+        <div class="hero-card">
+          <strong>6</strong>
+          <span>Standorte</span>
+        </div>
+        <div class="hero-card">
+          <strong>4</strong>
+          <span>Schwerpunkte pro Haus</span>
+        </div>
+      </div>
+    </section>
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <h4>Akutbereiche</h4>
+        <div class="kpi-value">7</div>
+        <div class="kpi-sub">Aktive Einheiten</div>
+      </div>
+      <div class="kpi-card">
+        <h4>Intensiv</h4>
+        <div class="kpi-value">3</div>
+        <div class="kpi-sub">Schwerpunkte</div>
+      </div>
+      <div class="kpi-card">
+        <h4>Funktionsdienste</h4>
+        <div class="kpi-value">5</div>
+        <div class="kpi-sub">Module</div>
+      </div>
+      <div class="kpi-card">
+        <h4>Versorgungsstufe</h4>
+        <div class="kpi-value">II-III</div>
+        <div class="kpi-sub">Verbundprofil</div>
+      </div>
+    </section>
+    <section class="grid-three">
+      <div class="card">
+        <div class="card-header">
+          <h3>Akutversorgung</h3>
+          <span class="card-sub">Stationen</span>
+        </div>
+        <ul class="list">
+          <li>Chirurgie</li>
+          <li>Innere Medizin</li>
+          <li>Kardiologie</li>
+          <li>Neurologie</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Intensivbereiche</h3>
+          <span class="card-sub">Schwerpunkte</span>
+        </div>
+        <ul class="list">
+          <li>ITS</li>
+          <li>IMC</li>
+          <li>Stroke Unit</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Funktionsdienste</h3>
+          <span class="card-sub">Module</span>
+        </div>
+        <ul class="list">
+          <li>OP</li>
+          <li>Endoskopie</li>
+          <li>Radiologie</li>
+          <li>Ambulanz</li>
+        </ul>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-header">
+        <h3>Abteilungsprofil</h3>
+        <span class="card-sub">Demo-Layout</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Abteilung</th>
+              <th>Leitung</th>
+              <th>Betten</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Kardiologie</td><td>Dr. M. Example</td><td>42</td><td>Aktiv</td></tr>
+            <tr><td>Chirurgie</td><td>Dr. T. Example</td><td>38</td><td>Aktiv</td></tr>
+            <tr><td>Geriatrie</td><td>Dr. S. Example</td><td>24</td><td>Aufbau</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+    </div>
+  </div>
+  
+
+  <script>
+  (() => {
+    const stamp = document.querySelector('[data-app-timestamp]');
+    const updateTimestamp = () => {
+      if (!stamp) return;
+      const now = new Date();
+      const label = now.toLocaleString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      stamp.textContent = `Stand: ${label}`;
+    };
+    updateTimestamp();
+    setInterval(updateTimestamp, 60000);
+  })();
+</script>
+</body>
+</html>

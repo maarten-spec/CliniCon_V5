@@ -1,0 +1,975 @@
+﻿<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinicon - Stellenplan Dienstart 02 - MTD (medizinisch-technischer Dienst)</title>
+  <style id="page-style">
+:root{
+      --header:var(--surface-2);
+      --row:#f7f9ff;
+      --hover:rgba(28,107,255,0.08);
+    }
+main{padding:20px; display:flex; flex-direction:column; gap:16px; width:100%; max-width:100%; margin:0 auto;}
+    .card{box-shadow:var(--shadow-soft); border:1px solid var(--line); background:var(--surface);}
+    .top{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      padding:18px;
+      background:linear-gradient(120deg, rgba(28,107,255,0.14), rgba(23,195,178,0.18));
+      border:1px solid rgba(28,107,255,0.18);
+    }
+    .header-row{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap; padding-bottom:8px; border-bottom:1px solid var(--line);}
+    .hero-title{display:flex; flex-direction:column; gap:6px;}
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      padding:7px 12px;
+      border-radius:12px;
+      background:linear-gradient(135deg, var(--accent), #458cff);
+      color:#fff;
+      font-weight:700;
+      box-shadow:0 12px 24px rgba(28,107,255,0.25);
+    }
+    h1{margin:0;}
+    .controls{display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; margin-top:6px; padding-top:6px;}
+    .controls label{display:flex; flex-direction:column; gap:4px; font-weight:700; color:#0f172a;}
+    .controls select,.controls input{padding:9px 11px; border:1px solid var(--line); border-radius:12px; font:inherit; background:#fff; box-shadow:0 7px 18px rgba(15,23,42,0.05);}
+    .controls button{
+      border:1px solid transparent;
+      background:linear-gradient(135deg, var(--accent-3), #6ee7d4);
+      padding:9px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      color:#0f172a;
+      transition:.15s ease all;
+      box-shadow:0 9px 20px rgba(18,53,92,.16);
+      margin-top:6px;
+    }
+    .controls button.primary{background:linear-gradient(135deg, var(--accent), #458cff); color:#fff;}
+    .controls .btn-save{background:linear-gradient(135deg, var(--accent-2), var(--accent-5)); color:#fff; box-shadow:0 9px 20px rgba(255,107,53,.25);}
+    .controls button:hover{box-shadow:0 12px 28px rgba(18,53,92,.2); transform:translateY(-1px);} .controls button:active{transform:translateY(0);}
+    .summary{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px;}
+    .tile{
+      padding:14px 16px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:var(--surface);
+      box-shadow:var(--shadow-soft);
+      display:grid;
+      gap:6px;
+      position:relative;
+      overflow:hidden;
+    }
+    .tile::after{
+      content:"";
+      position:absolute;
+      inset:auto -35% -55% auto;
+      width:140px;
+      height:140px;
+      border-radius:50%;
+      opacity:.12;
+      background:var(--accent);
+    }
+    .tile span{color:var(--muted);} .tile strong{font-size:1.3rem;}
+    .table-wrap{overflow:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface); box-shadow:var(--shadow-soft); scrollbar-width:none;} .table-wrap::-webkit-scrollbar{display:none;} table{width:100%; border-collapse:collapse; font-size:0.94rem;} th,td{padding:10px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:middle;} th{background:var(--header); color:var(--ink); position:sticky; top:0; z-index:2; font-size:0.9rem; border-right:1px solid rgba(13,20,51,0.08); font-weight:800;} th:last-child{border-right:none;} th:first-child, td:first-child{position:sticky; left:0; background:var(--surface); z-index:3; border-right:1px solid rgba(13,20,51,0.08);} tr:nth-child(even) td{background:#f9fbff;} tr:hover td{background:var(--hover);} .sort-indicator{font-size:0.8rem; color:var(--muted); margin-left:6px;}
+    .name-input,.vk-input{width:100%; padding:8px 8px; border:1px solid var(--line); border-radius:8px; font:inherit; text-align:center; background:#fff; transition:.15s ease all;} .name-input{text-align:left;} .name-input:focus,.vk-input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(28,107,255,.2);} .vk-input::-webkit-outer-spin-button,.vk-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;} .vk-input{-moz-appearance:textfield;} td.actions-cell, th.actions-col{vertical-align:middle; text-align:center; padding:6px 8px; min-width:140px;} .actions-cell .action-buttons{display:flex; gap:8px; justify-content:center; align-items:center;} .icon-btn{width:38px; height:38px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; box-shadow:0 4px 10px rgba(15,23,42,0.08); display:flex; align-items:center; justify-content:center;} .icon-btn:hover{background:#f1f5f9;} th.actions-col, td.actions-cell{text-align:center;} .totals-row td{font-weight:700; background:var(--surface-2);} .spacer-row td{background:#f1f5f9;} .hint{color:var(--muted); margin:4px 0 0;} .pnr-cell input{background:#eef2ff; border-color:#c7d2fe;}
+    .row-muted td{background:linear-gradient(90deg,#e2e8f0,#f8fafc); color:#334155; box-shadow:inset 4px 0 0 #cbd5e1;}
+    .row-muted td:first-child{background:linear-gradient(90deg,#cbd5e1,#e2e8f0); box-shadow:inset 6px 0 0 #94a3b8; position:sticky; left:0;}
+    .row-muted td:first-child::before{content:'Ausgeblendet'; position:absolute; top:6px; right:8px; background:#94a3b8; color:#0f172a; padding:2px 8px; border-radius:10px; font-size:0.75rem; font-weight:700;}
+    .row-muted input,.row-muted .qual-badge{background:#e2e8f0; border-color:#cbd5e1; color:#334155;}
+    .row-muted .qual-badge span:last-child{color:#1f2937;}
+    .row-muted td:first-child input{padding-top:18px;}
+    .action-menu{position:absolute; background:#fff; border:1px solid var(--line); box-shadow:0 12px 30px rgba(15,23,42,0.18); border-radius:10px; padding:6px 0; display:none; z-index:120;} .action-menu button{display:block; width:100%; padding:8px 14px; background:none; border:none; text-align:left; cursor:pointer; font:inherit;} .action-menu button:hover{background:#f1f5f9;}
+    th.month-col, td.month-col{min-width:68px; width:68px;}
+    .save-status{display:inline-block; padding:6px 10px; border-radius:10px; background:rgba(23,195,178,0.16); color:#0f172a; border:1px solid rgba(23,195,178,0.4); font-weight:600;} .save-status.error{background:#fef2f2; border-color:#fecdd3; color:#991b1b;}
+    .qual-badge{width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:10px; background:#f8fafc; cursor:pointer; text-align:left; font-size:0.88rem; display:flex; justify-content:space-between; align-items:center;}
+    .qual-popover{position:absolute; background:#fff; border:1px solid var(--line); box-shadow:0 12px 30px rgba(15,23,42,0.16); border-radius:12px; padding:10px; display:none; z-index:99; width:240px; max-height:260px; overflow:auto;}
+    .qual-popover label{display:flex; align-items:center; gap:8px; font-size:0.88rem; padding:4px 2px;}
+    @media (max-width: 900px){
+
+th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min-width:100px;}}
+@media (max-width: 900px){
+
+}
+    @media (max-width: 600px){
+}
+@media (max-width: 900px){
+}
+  </style>
+</head>
+<body>
+  <template id="page-content">
+<section class="card top">
+      <div class="header-row">
+        <div class="hero-title">
+<h1>Planung &amp; Kontrolle</h1>
+          <p style="margin:0; color:var(--muted);">Mitarbeiter:innen und Zusatzgruppen pflegen, VK-Werte pro Monat sichern.</p>
+        </div>
+        <span id="saveStatus" class="save-status" aria-live="polite" style="display:none;"></span>
+      </div>
+      <div class="controls">
+        <label style="display:flex; flex-direction:column; gap:4px; min-width:200px;">Abteilung
+          <select id="deptSelect"></select>
+        </label>
+        <label style="display:flex; flex-direction:column; gap:4px; min-width:120px;">Jahr
+          <input id="yearInput" type="number" min="2020" max="2100" />
+        </label>
+        <button id="btnAddRow" class="primary" type="button">+ Mitarbeiter:in</button>
+        <button id="btnAddExtra" type="button">+ Zusatzzeile</button>
+        <button id="btnSaveDb" class="btn-save" type="button">Speichern (DB)</button>
+      </div>
+      <div class="summary">
+        <div class="tile"><span>Summe (Jahr)</span><strong id="sumYear">0,0</strong></div>
+        <div class="tile"><span>Durchschnitt / Monat</span><strong id="avgMonth">0,0</strong></div>
+        <div class="tile"><span>Peak-Monat</span><strong id="peakMonth">-</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="table-wrap">
+        <table id="planTable">
+          <thead>
+            <tr>
+              <th style="min-width:120px;" data-sort="pnr">Personalnummer <span class="sort-indicator" data-sort-ind="pnr"></span></th>
+              <th style="min-width:200px;" data-sort="name">Mitarbeiter:in <span class="sort-indicator" data-sort-ind="name"></span></th>
+              <th class="month-col">Jan</th><th class="month-col">Feb</th><th class="month-col">Mrz</th><th class="month-col">Apr</th><th class="month-col">Mai</th><th class="month-col">Jun</th>
+              <th class="month-col">Jul</th><th class="month-col">Aug</th><th class="month-col">Sep</th><th class="month-col">Okt</th><th class="month-col">Nov</th><th class="month-col">Dez</th>
+              <th>&Oslash; Monat</th>
+              <th style="min-width:140px;">Qualifikation</th>
+              <th class="actions-col">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr class="totals-row">
+              <td></td>
+              <td>Summe Monat</td>
+              <td data-sum-month="0">0,0</td><td data-sum-month="1">0,0</td><td data-sum-month="2">0,0</td><td data-sum-month="3">0,0</td><td data-sum-month="4">0,0</td><td data-sum-month="5">0,0</td><td data-sum-month="6">0,0</td><td data-sum-month="7">0,0</td><td data-sum-month="8">0,0</td><td data-sum-month="9">0,0</td><td data-sum-month="10">0,0</td><td data-sum-month="11">0,0</td>
+              <td data-total-year>0,0</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-header">
+        <h3 style="margin-top:0;">Zusatzgruppen (SchÃ¼ler:innen, Azubis, MFA, ATA ...)</h3>
+      </div>
+      <div class="table-wrap">
+        <table id="extrasTable">
+          <thead>
+            <tr>
+              <th style="min-width:120px;" data-sort="pnr-ex">Personalnummer <span class="sort-indicator" data-sort-ind="pnr-ex"></span></th>
+              <th style="min-width:200px;" data-sort="cat-ex">Kategorie <span class="sort-indicator" data-sort-ind="cat-ex"></span></th>
+              <th class="month-col">Jan</th><th class="month-col">Feb</th><th class="month-col">Mrz</th><th class="month-col">Apr</th><th class="month-col">Mai</th><th class="month-col">Jun</th>
+              <th class="month-col">Jul</th><th class="month-col">Aug</th><th class="month-col">Sep</th><th class="month-col">Okt</th><th class="month-col">Nov</th><th class="month-col">Dez</th>
+              <th>&Oslash; Monat</th>
+              <th style="min-width:140px;">Qualifikation</th>
+              <th class="actions-col">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr class="totals-row">
+              <td></td>
+              <td>Summe Zusatz</td>
+              <td data-extra-month="0">0,0</td><td data-extra-month="1">0,0</td><td data-extra-month="2">0,0</td><td data-extra-month="3">0,0</td><td data-extra-month="4">0,0</td><td data-extra-month="5">0,0</td><td data-extra-month="6">0,0</td><td data-extra-month="7">0,0</td><td data-extra-month="8">0,0</td><td data-extra-month="9">0,0</td><td data-extra-month="10">0,0</td><td data-extra-month="11">0,0</td>
+              <td data-total-extra>0,0</td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr class="totals-row spacer-row">
+              <td></td>
+              <td>Abschluss (Haupt + Zusatz)</td>
+              <td data-combined-month="0">0,0</td><td data-combined-month="1">0,0</td><td data-combined-month="2">0,0</td><td data-combined-month="3">0,0</td><td data-combined-month="4">0,0</td><td data-combined-month="5">0,0</td><td data-combined-month="6">0,0</td><td data-combined-month="7">0,0</td><td data-combined-month="8">0,0</td><td data-combined-month="9">0,0</td><td data-combined-month="10">0,0</td><td data-combined-month="11">0,0</td>
+              <td data-total-combined>0,0</td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr class="totals-row">
+              <td></td>
+              <td>Wirtschaftsplan (VK)</td>
+              <td colspan="12" id="planRowNote" style="text-align:right; font-size:0.9rem; color:#475569;">-</td>
+              <td data-plan-total>0,0</td>
+              <td data-plan-delta>0,0</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const STORAGE_KEY = 'clinicon_stellenplan_v2_dienstart_02';
+    const SUPABASE_URL_STORAGE = 'clinicon_supabase_url';
+    const SUPABASE_KEY_STORAGE = 'clinicon_supabase_key';
+    const MONTHS = ['Jan','Feb','Mrz','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+    const DEPARTMENTS = ['Station 1','Station 2','Station 3','Station 4','Station 5','Station 6','Station 7','Endoskopie','OP','Sozialdienst','Pflegedienstleitung'];
+    const QUAL_OPTIONS = [
+      'Pflegefachkraft',
+      'Pflegefachassistenz',
+      'Notfallpflege','AnÃ¤sthesie/Intensiv','Hygiene','Praxisanleitung','OP','Endoskopie','Onkologie','Palliativ','Wundmanagement','Diabetes','Dialyse','Stroke Unit','Kardiologie','Geriatrie','Neonatologie','Psychiatrie','Schmerzmanagement','PflegepÃ¤dagogik','Stationsleitung','Fachkraft PrÃ¤v./Reha'
+    ];
+
+    const DEFAULT_SUPABASE_URL = 'https://fqilehnixnsujefyrdcy.supabase.co';
+    const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxaWxlaG5peG5zdWplZnlyZGN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MjIyNzUsImV4cCI6MjA3OTQ5ODI3NX0.Ml1J-YsID7_CXX7LbLZM4ayhWpV08FBSZc3rgVuwqt4';
+    const SUPABASE_URL = (window.SUPABASE_URL || localStorage.getItem(SUPABASE_URL_STORAGE) || DEFAULT_SUPABASE_URL).trim();
+    const SUPABASE_ANON_KEY = (window.SUPABASE_ANON_KEY || localStorage.getItem(SUPABASE_KEY_STORAGE) || DEFAULT_SUPABASE_KEY).trim();
+    const ICON_TRASH = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6v-1a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14"/></svg>';
+    const ICON_MENU = '&#8942;';
+    const supabaseClient = (typeof window.supabase !== 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY)
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    if (!localStorage.getItem(SUPABASE_URL_STORAGE) && SUPABASE_URL) {
+      try { localStorage.setItem(SUPABASE_URL_STORAGE, SUPABASE_URL); } catch (e) {}
+    }
+    if (!localStorage.getItem(SUPABASE_KEY_STORAGE) && SUPABASE_ANON_KEY) {
+      try { localStorage.setItem(SUPABASE_KEY_STORAGE, SUPABASE_ANON_KEY); } catch (e) {}
+    }
+
+    const SITE_LABEL = (sessionStorage.getItem('cliniconSite') || '').trim();
+    const SITE_CODE = SITE_LABEL.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const HAS_SITE = Boolean(SITE_CODE);
+    const TABLE_EMP_BASE = 'stellenplan_employees';
+    const USE_REMOTE = Boolean(supabaseClient && HAS_SITE);
+    const tableName = (base) => SITE_CODE ? `${base}_${SITE_CODE}` : base;
+    const currentTableInfo = () => HAS_SITE
+      ? `Zieltabelle: ${tableName('stellenplan_employees')} / ${tableName('stellenplan_extras')}`
+      : 'Kein Standortcode gesetzt';
+    const PARAM_TABLE = SITE_CODE ? `parameter_${SITE_CODE}` : null;
+    let planVK = 0;
+    let combinedAvg = 0;
+
+    const state = { dept: DEPARTMENTS[0], year: new Date().getFullYear(), data: {}, sortKey:null, sortDir:'asc' };
+    let syncTimer = null;
+    const els = {
+      deptSelect: document.getElementById('deptSelect'),
+      yearInput: document.getElementById('yearInput'),
+      tbody: document.querySelector('#planTable tbody'),
+      extrasTbody: document.querySelector('#extrasTable tbody'),
+      sumYear: document.getElementById('sumYear'),
+      avgMonth: document.getElementById('avgMonth'),
+      peakMonth: document.getElementById('peakMonth'),
+      planTotalCell: document.querySelector('[data-plan-total]'),
+      planRowNote: document.getElementById('planRowNote')
+    };
+    const qualPopoverEl = document.getElementById('qualPopover');
+    const actionMenuEl = document.getElementById('actionMenu');
+    let qualTarget = null;
+    let actionTarget = null;
+
+    function loadStorage() {
+      try { state.data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+      catch (e) { state.data = {}; }
+    }
+    function saveStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data)); }
+    async function loadPlanValue(){
+      if(!supabaseClient || !PARAM_TABLE){ planVK = 0; updatePlanRow(); return; }
+      const { data, error } = await supabaseClient
+        .from(PARAM_TABLE)
+        .select('wirtschaftsplan_vk')
+        .eq('dept', state.dept)
+        .eq('year', state.year)
+        .limit(1)
+        .maybeSingle();
+      if(error){ console.warn('Planload', error.message); planVK = 0; }
+      else { planVK = Number(data?.wirtschaftsplan_vk)||0; }
+      updatePlanRow();
+    }
+    function updatePlanRow(){
+      if(els.planTotalCell) els.planTotalCell.textContent = fmt(planVK);
+      const deltaCell = document.querySelector('[data-plan-delta]');
+      if(deltaCell) deltaCell.textContent = fmt(planVK - combinedAvg);
+      if(els.planRowNote) els.planRowNote.textContent = `Wirtschaftsplan VK (${state.dept}, ${state.year})`;
+    }
+    function parseValues(arr) {
+      if (Array.isArray(arr)) return arr.map(v => Number(v) || 0);
+      if (typeof arr === 'string') {
+        const cleaned = arr.replace(/[{}]/g, '');
+        if (!cleaned) return Array(12).fill(0);
+        return cleaned.split(',').map(v => Number(v) || 0);
+      }
+      return Array(12).fill(0);
+    }
+
+    function ensureDefaults(plan) {
+      plan.employees.forEach(emp => {
+        if (emp.personalNumber === undefined) emp.personalNumber = '';
+        if (emp.include === undefined) emp.include = true;
+        if (emp.qual === undefined) emp.qual = '';
+        if (emp.hiddenRow === undefined) emp.hiddenRow = false;
+        if (emp.include === false && !emp.hiddenRow) emp.hiddenRow = true;
+        if (emp.hiddenRow) emp.include = false;
+        emp.values = parseValues(emp.values);
+      });
+      plan.extras.forEach(ex => {
+        if (ex.personalNumber === undefined) ex.personalNumber = '';
+        if (ex.include === undefined) ex.include = true;
+        if (ex.qual === undefined) ex.qual = '';
+        if (ex.hiddenRow === undefined) ex.hiddenRow = false;
+        if (ex.include === false && !ex.hiddenRow) ex.hiddenRow = true;
+        if (ex.hiddenRow) ex.include = false;
+        ex.values = parseValues(ex.values);
+      });
+    }
+
+    function getCurrentPlan() {
+      const key = `${state.dept}-${state.year}`;
+      if (!state.data[key]) {
+        state.data[key] = {
+          employees: [
+            { id: crypto.randomUUID(), personalNumber: '', name: 'Mitarbeiter:in 1', include: true, qual: '', values: Array(12).fill(0) },
+            { id: crypto.randomUUID(), personalNumber: '', name: 'Mitarbeiter:in 2', include: true, qual: '', values: Array(12).fill(0) }
+          ],
+          extras: [
+            { id: crypto.randomUUID(), personalNumber: '', category: 'SchÃ¼ler:in', include: true, qual: '', values: Array(12).fill(0) },
+            { id: crypto.randomUUID(), personalNumber: '', category: 'Azubi', include: true, qual: '', values: Array(12).fill(0) },
+            { id: crypto.randomUUID(), personalNumber: '', category: 'MFA/ATA', include: true, qual: '', values: Array(12).fill(0) }
+          ]
+        };
+      }
+      const plan = state.data[key];
+      ensureDefaults(plan);
+      return plan;
+    }
+
+    function isExtraRow(row){
+      const pn = (row.personal_number || row.personalNumber || '').toString();
+      return pn.startsWith('EX-');
+    }
+
+    function persistPersonalNumber(pn, isExtra){
+      const base = (pn || '').toString().trim();
+      if(!base) return '';
+      if(isExtra){
+        return base.startsWith('EX-') ? base : `EX-${base}`;
+      }
+      return base.replace(/^EX-/,'');
+    }
+
+    function displayPersonalNumber(pn){
+      return (pn || '').toString().replace(/^EX-/,'');
+    }
+
+    async function fetchRemotePlan() {
+      if (!USE_REMOTE) return null;
+      const { data: rawEmployees, error: empErr } = await supabaseClient
+        .from(tableName(TABLE_EMP_BASE))
+        .select('id, dept, year, personal_number, name, months, values, qual, include')
+        .eq('dept', state.dept)
+        .eq('year', state.year);
+      if (empErr) {
+        const msg = empErr?.message || 'Remote load fehlgeschlagen.';
+        setLoadStatus(msg);
+        throw new Error(msg);
+      }
+      const employees = [];
+      const extras = [];
+      (rawEmployees || []).forEach(emp => {
+        const isExtra = isExtraRow(emp);
+        const item = {
+          id: emp.id,
+          personalNumber: persistPersonalNumber(emp.personal_number || emp.personalNumber || '', isExtra),
+          name: emp.name,
+          qual: emp.qual || '',
+          include: emp.include !== false,
+          values: parseValues(emp.months ?? emp.values ?? [])
+        };
+        if(isExtra){
+          extras.push({
+            ...item,
+            category: emp.name || item.personalNumber || 'Zusatz'
+          });
+        } else {
+          employees.push(item);
+        }
+      });
+      return { employees, extras };
+    }
+
+    async function syncRemotePlan() {
+      if (!USE_REMOTE) return;
+      const plan = getCurrentPlan();
+      const rows = [];
+      plan.employees.forEach(emp => {
+        rows.push({
+          id: emp.id,
+          dept: state.dept,
+          year: state.year,
+          personal_number: persistPersonalNumber(emp.personalNumber || '', false),
+          name: emp.name,
+          qual: emp.qual || '',
+          include: emp.include !== false,
+          months: emp.values.map(v => Number(v) || 0)
+        });
+      });
+      plan.extras.forEach(ex => {
+        rows.push({
+          id: ex.id,
+          dept: state.dept,
+          year: state.year,
+          personal_number: persistPersonalNumber(ex.personalNumber || '', true),
+          name: ex.category || ex.name || persistPersonalNumber(ex.personalNumber || '', true),
+          qual: ex.qual || '',
+          include: ex.include !== false,
+          months: ex.values.map(v => Number(v) || 0)
+        });
+      });
+      if (!USE_REMOTE) return;
+      const tName = tableName(TABLE_EMP_BASE);
+      const del = await supabaseClient.from(tName).delete().eq('dept', state.dept).eq('year', state.year);
+      if (del.error) throw new Error(`DELETE: ${del.error.message}`);
+      if (rows.length === 0) return;
+      const up = await supabaseClient.from(tName).upsert(rows);
+      if (up.error) throw new Error(`UPSERT: ${up.error.message}`);
+    }
+
+    function scheduleSync() {
+      if (!USE_REMOTE) return;
+      if (syncTimer) clearTimeout(syncTimer);
+      syncTimer = setTimeout(() => {
+        syncRemotePlan().catch(err => console.warn('Remote sync failed', err));
+      }, 800);
+    }
+
+    function setSaveStatus(msg, err = false) {
+      const el = document.getElementById('saveStatus');
+      if (!el) return;
+      el.style.display = msg ? 'inline-block' : 'none';
+      el.textContent = msg || '';
+      el.classList.toggle('error', Boolean(err));
+    }
+    function setLoadStatus(msg) {
+      const el = document.getElementById('saveStatus');
+      if (!el) return;
+      el.style.display = msg ? 'inline-block' : 'none';
+      el.textContent = msg || '';
+      el.classList.add('error');
+    }
+    function setConnInfo() {
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+        setSaveStatus('Supabase URL/Key fehlen (localStorage clinicon_supabase_url / clinicon_supabase_key).', true);
+      } else if (!HAS_SITE) {
+        setSaveStatus('Kein Standortcode gefunden. Bitte zuerst einloggen.', true);
+      } else {
+        setSaveStatus('Bereit zum Speichern.');
+      }
+    }
+
+    async function saveToDatabase() {
+      if (!USE_REMOTE) {
+        setSaveStatus('Keine Datenbank-Verbindung konfiguriert.', true);
+        return;
+      }
+      try {
+        setSaveStatus('Speichere ...');
+        await syncRemotePlan();
+        const ts = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        setSaveStatus(`Gespeichert (${ts})`);
+      } catch (err) {
+        console.error('Speichern fehlgeschlagen', err);
+        setSaveStatus((err?.message || 'Speichern fehlgeschlagen. Tabelle vorhanden?') + ' ' + currentTableInfo(), true);
+      }
+    }
+
+    async function hydrateFromRemote() {
+      if (!USE_REMOTE) return;
+      try {
+        const remote = await fetchRemotePlan();
+        if (remote) {
+          const key = `${state.dept}-${state.year}`;
+          const hasRemote = (remote.employees && remote.employees.length) || (remote.extras && remote.extras.length);
+          if (hasRemote) {
+            state.data[key] = { employees: remote.employees || [], extras: remote.extras || [] };
+          } else if (!state.data[key]) {
+            state.data[key] = getCurrentPlan();
+          }
+          ensureDefaults(state.data[key]);
+          saveStorage();
+          renderTable();
+          renderExtras();
+          loadPlanValue();
+        }
+      } catch (err) {
+        console.warn('Remote load failed', err);
+        setLoadStatus((err?.message || 'Laden fehlgeschlagen. Tabelle vorhanden?') + ' ' + currentTableInfo());
+      }
+    }
+
+    function renderDeptSelect() {
+      els.deptSelect.innerHTML = DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
+      els.deptSelect.value = state.dept;
+      els.yearInput.value = state.year;
+    }
+    function fmt(n) { return Number(n || 0).toFixed(2).replace('.', ','); }
+
+    function calcTotals(plan) {
+      const monthMain = Array(12).fill(0);
+      let totalMain = 0;
+      plan.employees.forEach(emp => {
+        if (emp.include === false) return;
+        emp.values.forEach((v, i) => {
+          const val = Number(v) || 0;
+          monthMain[i] += val;
+          totalMain += val;
+        });
+      });
+      const monthExtra = Array(12).fill(0);
+      let totalExtra = 0;
+      plan.extras.forEach(ex => {
+        if (ex.include === false) return;
+        ex.values.forEach((v, i) => {
+          const val = Number(v) || 0;
+          monthExtra[i] += val;
+          totalExtra += val;
+        });
+      });
+      const combined = monthMain.map((v, i) => v + monthExtra[i]);
+      const totalCombined = totalMain + totalExtra;
+      const maxVal = Math.max(...monthMain);
+      const maxIdx = monthMain.indexOf(maxVal);
+      combinedAvg = totalCombined / 12;
+      els.sumYear.textContent = fmt(totalMain);
+      els.avgMonth.textContent = fmt(totalMain / 12);
+      els.peakMonth.textContent = maxVal > 0 ? `${MONTHS[maxIdx]} (${fmt(maxVal)})` : '-';
+
+      document.querySelectorAll('[data-sum-month]').forEach(c => {
+        c.textContent = fmt(monthMain[Number(c.dataset.sumMonth)]);
+      });
+      const totalCell = document.querySelector('[data-total-year]');
+      if (totalCell) totalCell.textContent = fmt(totalMain / 12);
+
+      document.querySelectorAll('[data-extra-month]').forEach(c => {
+        c.textContent = fmt(monthExtra[Number(c.dataset.extraMonth)]);
+      });
+      const totalExtraCell = document.querySelector('[data-total-extra]');
+      if (totalExtraCell) totalExtraCell.textContent = fmt(totalExtra / 12);
+
+      document.querySelectorAll('[data-combined-month]').forEach(c => {
+        c.textContent = fmt(combined[Number(c.dataset.combinedMonth)]);
+      });
+      const totalCombinedCell = document.querySelector('[data-total-combined]');
+      if (totalCombinedCell) totalCombinedCell.textContent = fmt(combinedAvg);
+      updatePlanRow();
+    }
+
+    function renderQualBadge(label, id, type) {
+      const text = label ? label : 'Qualifikation w\u00e4hlen';
+      return `<button class="qual-badge" data-qual-badge="${type}" data-id="${id}"><span>${text}</span><span>&#9660;</span></button>`;
+    }
+
+    function sortList(list, key){
+      const dir = state.sortDir === 'asc' ? 1 : -1;
+      list.sort((a,b)=>{
+        const va = (key==='avg'? (a.values||[]).reduce((x,y)=>x+Number(y||0),0)/12 : (a[key]||'')).toString().toLowerCase();
+        const vb = (key==='avg'? (b.values||[]).reduce((x,y)=>x+Number(y||0),0)/12 : (b[key]||'')).toString().toLowerCase();
+        if(va<vb) return -1*dir;
+        if(va>vb) return 1*dir;
+        return 0;
+      });
+    }
+    function updateSortIndicators(){
+      document.querySelectorAll('[data-sort-ind]').forEach(span=>{
+        const key = span.dataset.sortInd;
+        if(state.sortKey===key){
+          span.textContent = state.sortDir==='asc' ? 'â–²' : 'â–¼';
+        } else {
+          span.textContent = '';
+        }
+      });
+    }
+
+    function renderTable() {
+      const plan = getCurrentPlan();
+      if(state.sortKey==='pnr') sortList(plan.employees,'personalNumber');
+      if(state.sortKey==='name') sortList(plan.employees,'name');
+      if(state.sortKey==='avg') sortList(plan.employees,'avg');
+      els.tbody.innerHTML = '';
+      plan.employees.forEach(emp => {
+        if (emp.personalNumber === undefined) emp.personalNumber = '';
+        if (emp.qual === undefined) emp.qual = '';
+        if (emp.hiddenRow === undefined) emp.hiddenRow = false;
+        const tr = document.createElement('tr');
+        if (emp.hiddenRow) tr.classList.add('row-muted');
+        tr.dataset.id = emp.id;
+        let tds = `<td class="pnr-cell"><input class="name-input" data-field="pnr" placeholder="z.B. 1001" value="${displayPersonalNumber(emp.personalNumber)}"></td>`;
+        tds += `<td><input class="name-input" data-field="name" value="${emp.name || ''}"></td>`;
+        emp.values.forEach((val, idx) => {
+          tds += `<td class="month-col"><input class="vk-input" type="number" min="0" step="0.01" value="${val}" data-month="${idx}"></td>`;
+        });
+        const rowSum = emp.values.reduce((a, b) => a + Number(b || 0), 0);
+        const rowAvg = rowSum / 12;
+        tds += `<td data-row-sum>${fmt(rowAvg)}</td>`;
+        tds += `<td style="min-width:140px;">${renderQualBadge(emp.qual, emp.id, 'emp')}</td>`;
+        tds += `<td class="actions-cell"><div class="action-buttons"><button class="icon-btn menu-btn" data-action="toggle-hidden" title="Optionen">${ICON_MENU}</button><button class="icon-btn" data-action="delete" aria-label="LÃ¶schen">${ICON_TRASH}</button></div></td>`;
+        tr.innerHTML = tds;
+        els.tbody.appendChild(tr);
+      });
+      calcTotals(plan);
+      updateSortIndicators();
+    }
+
+    function renderExtras() {
+      const plan = getCurrentPlan();
+      if(state.sortKey==='pnr-ex') sortList(plan.extras,'personalNumber');
+      if(state.sortKey==='cat-ex') sortList(plan.extras,'category');
+      if(state.sortKey==='avg-ex') sortList(plan.extras,'avg');
+      els.extrasTbody.innerHTML = '';
+      plan.extras.forEach(ex => {
+        if (ex.personalNumber === undefined) ex.personalNumber = '';
+        if (ex.qual === undefined) ex.qual = '';
+        if (ex.hiddenRow === undefined) ex.hiddenRow = false;
+        const tr = document.createElement('tr');
+        if (ex.hiddenRow) tr.classList.add('row-muted');
+        tr.dataset.id = ex.id;
+        let tds = `<td class="pnr-cell"><input class="name-input" data-field="pnr" placeholder="z.B. 2001" value="${displayPersonalNumber(ex.personalNumber)}"></td>`;
+        tds += `<td><input class="name-input" data-field="category" value="${ex.category || ''}"></td>`;
+        ex.values.forEach((val, idx) => {
+          tds += `<td class="month-col"><input class="vk-input" type="number" min="0" step="0.01" value="${val}" data-month="${idx}"></td>`;
+        });
+        const rowSum = ex.values.reduce((a, b) => a + Number(b || 0), 0);
+        const rowAvg = rowSum / 12;
+        tds += `<td data-row-sum>${fmt(rowAvg)}</td>`;
+        tds += `<td style="min-width:140px;">${renderQualBadge(ex.qual, ex.id, 'extra')}</td>`;
+        tds += `<td class="actions-cell"><div class="action-buttons"><button class="icon-btn menu-btn" data-action="toggle-hidden-extra" title="Optionen">${ICON_MENU}</button><button class="icon-btn" data-action="delete-extra" aria-label="LÃ¶schen">${ICON_TRASH}</button></div></td>`;
+        tr.innerHTML = tds;
+        els.extrasTbody.appendChild(tr);
+      });
+      calcTotals(plan);
+      updateSortIndicators();
+    }
+
+    function recalcRow(tr, emp) {
+      tr.querySelectorAll('.vk-input').forEach(inp => {
+        const idx = Number(inp.dataset.month);
+        emp.values[idx] = Number(inp.value) || 0;
+      });
+      const sum = emp.values.reduce((a, b) => a + Number(b || 0), 0);
+      const avg = sum / 12;
+      const sumCell = tr.querySelector('[data-row-sum]');
+      if (sumCell) sumCell.textContent = fmt(avg);
+    }
+
+    function addExtraRow() {
+      const plan = getCurrentPlan();
+      plan.extras.push({ id: crypto.randomUUID(), personalNumber: '', category: 'Neu', include: true, qual: '', values: Array(12).fill(0) });
+      renderExtras();
+      saveStorage();
+      scheduleSync();
+    }
+    function openQualPopover(type, id, anchor) {
+      const rect = anchor.getBoundingClientRect();
+      qualTarget = { type, id };
+      const plan = getCurrentPlan();
+      const list = (type === 'emp' ? plan.employees : plan.extras);
+      const item = list.find(x => x.id === id);
+      const selected = new Set((item?.qual || '').split(',').map(s => s.trim()).filter(Boolean));
+      qualPopoverEl.innerHTML = QUAL_OPTIONS.map(opt => {
+        const checked = selected.has(opt) ? 'checked' : '';
+        return `<label><input type="checkbox" data-qual="${opt}" ${checked}>${opt}</label>`;
+      }).join('');
+      qualPopoverEl.style.display = 'block';
+      qualPopoverEl.style.left = `${rect.left + window.scrollX}px`;
+      qualPopoverEl.style.top = `${rect.bottom + window.scrollY + 4}px`;
+    }
+
+    function closeQualPopover(apply) {
+      if (qualPopoverEl.style.display !== 'block') return;
+      if (apply && qualTarget) {
+        const plan = getCurrentPlan();
+        const list = qualTarget.type === 'emp' ? plan.employees : plan.extras;
+        const item = list.find(x => x.id === qualTarget.id);
+        if (item) {
+          const checked = Array.from(qualPopoverEl.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.dataset.qual);
+          item.qual = checked.join(', ');
+          saveStorage();
+          renderTable();
+          renderExtras();
+          scheduleSync();
+        }
+      }
+      qualPopoverEl.style.display = 'none';
+      qualTarget = null;
+    }
+
+    function openActionMenu(type, id, anchor){
+      const plan = getCurrentPlan();
+      const list = type==='emp' ? plan.employees : plan.extras;
+      const item = list.find(x=>x.id===id);
+      if(!item) return;
+      const rect = anchor.getBoundingClientRect();
+      actionTarget = {type,id};
+      const hideLabel = item.hiddenRow ? 'Zeile einblenden' : 'Zeile ausblenden';
+      actionMenuEl.innerHTML = `<button data-act="toggle-hide">${hideLabel}</button>`;
+      actionMenuEl.style.display='block';
+      actionMenuEl.style.left = `${rect.left + window.scrollX}px`;
+      actionMenuEl.style.top = `${rect.bottom + window.scrollY + 4}px`;
+    }
+
+    function closeActionMenu(){
+      actionMenuEl.style.display='none';
+      actionTarget = null;
+    }
+
+    function bindEvents() {
+      els.deptSelect.addEventListener('change', () => {
+        state.dept = els.deptSelect.value;
+        renderTable();
+        renderExtras();
+        saveStorage();
+        hydrateFromRemote();
+        loadPlanValue();
+      });
+      els.yearInput.addEventListener('change', () => {
+        state.year = Number(els.yearInput.value) || new Date().getFullYear();
+        renderTable();
+        renderExtras();
+        saveStorage();
+        hydrateFromRemote();
+        loadPlanValue();
+      });
+      document.querySelectorAll('[data-sort]').forEach(th=>{
+        th.style.cursor='pointer';
+        th.addEventListener('click', ()=>{
+          const key = th.dataset.sort;
+          state.sortDir = (state.sortKey===key && state.sortDir==='asc') ? 'desc' : 'asc';
+          state.sortKey = key;
+          renderTable();
+          renderExtras();
+        });
+      });
+      document.getElementById('btnAddRow').addEventListener('click', () => {
+        const plan = getCurrentPlan();
+        plan.employees.push({ id: crypto.randomUUID(), personalNumber: '', name: 'Neu', qual: '', values: Array(12).fill(0) });
+        renderTable();
+        calcTotals(plan);
+        saveStorage();
+        scheduleSync();
+      });
+      const btnSave = document.getElementById('btnSaveDb');
+      if (btnSave) btnSave.addEventListener('click', saveToDatabase);
+      const btnAddExtra = document.getElementById('btnAddExtra');
+      if (btnAddExtra) btnAddExtra.addEventListener('click', addExtraRow);
+
+      els.tbody.addEventListener('input', (e) => {
+        const tr = e.target.closest('tr');
+        if (!tr) return;
+        const id = tr.dataset.id;
+        const plan = getCurrentPlan();
+        const emp = plan.employees.find(x => x.id === id);
+        if (!emp) return;
+        if (e.target.classList.contains('name-input')) {
+          if (e.target.dataset.field === 'name') {
+            emp.name = e.target.value;
+          } else {
+            emp.personalNumber = persistPersonalNumber(e.target.value, false);
+          }
+        }
+        if (e.target.classList.contains('vk-input')) recalcRow(tr, emp);
+        calcTotals(plan);
+        saveStorage();
+        scheduleSync();
+      });
+      els.tbody.addEventListener('click', (e) => {
+        const badge = e.target.closest('[data-qual-badge="emp"]');
+        if (badge) {
+          openQualPopover('emp', badge.dataset.id, badge);
+          return;
+        }
+        const btn = e.target.closest('button[data-action]');
+        const tr = e.target.closest('tr');
+        if (!btn || !tr) return;
+        const plan = getCurrentPlan();
+        const id = tr.dataset.id;
+        const emp = plan.employees.find(x=>x.id===id);
+        if(!emp) return;
+        if (btn.dataset.action === 'toggle-hidden') {
+          e.stopPropagation();
+          openActionMenu('emp', id, btn);
+        } else if (btn.dataset.action === 'delete') {
+          if (!confirm('Diesen Eintrag wirklich lÃ¶schen?')) return;
+          plan.employees = plan.employees.filter(x => x.id !== id);
+          renderTable();
+          calcTotals(plan);
+          saveStorage();
+          scheduleSync();
+        }
+      });
+
+      els.extrasTbody.addEventListener('input', (e) => {
+        const tr = e.target.closest('tr');
+        if (!tr) return;
+        const id = tr.dataset.id;
+        const plan = getCurrentPlan();
+        const ex = plan.extras.find(x => x.id === id);
+        if (!ex) return;
+        if (e.target.classList.contains('name-input')) {
+          if (e.target.dataset.field === 'category') {
+            ex.category = e.target.value;
+          } else {
+            ex.personalNumber = persistPersonalNumber(e.target.value, true);
+          }
+        }
+        if (e.target.classList.contains('vk-input')) {
+          const idx = Number(e.target.dataset.month);
+          ex.values[idx] = Number(e.target.value) || 0;
+          const sum = ex.values.reduce((a, b) => a + Number(b || 0), 0);
+          const avg = sum / 12;
+          const sumCell = tr.querySelector('[data-row-sum]');
+          if (sumCell) sumCell.textContent = fmt(avg);
+        }
+        calcTotals(plan);
+        saveStorage();
+        scheduleSync();
+      });
+      els.extrasTbody.addEventListener('click', (e) => {
+        const badge = e.target.closest('[data-qual-badge="extra"]');
+        if (badge) {
+          openQualPopover('extra', badge.dataset.id, badge);
+          return;
+        }
+        const btn = e.target.closest('button[data-action]');
+        const tr = e.target.closest('tr');
+        if (!btn || !tr) return;
+        const plan = getCurrentPlan();
+        const id = tr.dataset.id;
+        const ex = plan.extras.find(x=>x.id===id);
+        if(!ex) return;
+        if (btn.dataset.action === 'toggle-hidden-extra') {
+          e.stopPropagation();
+          openActionMenu('extra', id, btn);
+        } else if (btn.dataset.action === 'delete-extra') {
+          if (!confirm('Diese Zusatzzeile wirklich lÃ¶schen?')) return;
+          plan.extras = plan.extras.filter(x => x.id !== id);
+          renderExtras();
+          calcTotals(plan);
+          saveStorage();
+          scheduleSync();
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        const insidePopover = qualPopoverEl.contains(e.target);
+        const isBadge = e.target.closest('[data-qual-badge]');
+        if (qualPopoverEl.style.display === 'block' && !insidePopover && !isBadge) {
+          closeQualPopover(true);
+        }
+        const insideMenu = actionMenuEl.contains(e.target);
+        const isMenuBtn = e.target.closest('[data-action^="toggle-hidden"],[data-action^="toggle-hidden-extra"],.menu-btn');
+        if (actionMenuEl.style.display === 'block' && !insideMenu && !isMenuBtn) {
+          closeActionMenu();
+        }
+      });
+      actionMenuEl.addEventListener('click',(e)=>{
+        if(!actionTarget) return;
+        const act = e.target.dataset.act;
+        if(!act) return;
+        const plan = getCurrentPlan();
+        const list = actionTarget.type==='emp'?plan.employees:plan.extras;
+        const item = list.find(x=>x.id===actionTarget.id);
+        if(!item) return;
+        if(act==='toggle-hide'){
+          item.hiddenRow = !item.hiddenRow;
+          item.include = item.hiddenRow ? false : true;
+        }
+        saveStorage();
+        renderTable();
+        renderExtras();
+        calcTotals(plan);
+        scheduleSync();
+        closeActionMenu();
+      });
+    }
+
+    (function init() {
+      loadStorage();
+      renderDeptSelect();
+      renderTable();
+      renderExtras();
+      if (USE_REMOTE) { hydrateFromRemote(); }
+      loadPlanValue();
+      bindEvents();
+      setConnInfo();
+    })();
+  </script>
+  </template>
+
+  <script>
+    const __pageContent = document.getElementById("page-content")?.innerHTML || "";
+    const __pageStyle = document.getElementById("page-style")?.textContent || "";
+    const __pageTitle = document.title || "";
+
+    fetch("./layout.html")
+      .then((r) => r.text())
+      .then((html) => {
+        document.open();
+        document.write(html);
+        document.close();
+
+        window.addEventListener("DOMContentLoaded", () => {
+          if (__pageStyle) {
+            const style = document.createElement("style");
+            style.setAttribute("data-page-style", "true");
+            style.textContent = __pageStyle;
+            document.head.appendChild(style);
+          }
+
+          if (__pageTitle) {
+            document.title = __pageTitle;
+            const headerTitle = document.querySelector(".topbar-left h1");
+            if (headerTitle) {
+              headerTitle.textContent = __pageTitle;
+            }
+          }
+
+          const slot = document.getElementById("app-main") || document.querySelector("main");
+          if (slot) {
+            slot.innerHTML = __pageContent;
+
+            const scripts = Array.from(slot.querySelectorAll("script"));
+            const runScripts = (index) => {
+              if (index >= scripts.length) return;
+              const oldScript = scripts[index];
+              const script = document.createElement("script");
+              Array.from(oldScript.attributes).forEach((attr) => {
+                script.setAttribute(attr.name, attr.value);
+              });
+              script.async = false;
+              if (oldScript.textContent) {
+                script.textContent = oldScript.textContent;
+              }
+              const next = () => runScripts(index + 1);
+              if (script.src) {
+                script.onload = next;
+                script.onerror = next;
+              }
+              oldScript.replaceWith(script);
+              if (!script.src) {
+                next();
+              }
+            };
+            runScripts(0);
+          }
+
+          const current = (location.pathname.split("/").pop() || "").toLowerCase();
+          document.querySelectorAll(".nav a[href]").forEach((a) => a.classList.remove("active"));
+          document.querySelectorAll(".nav a[href]").forEach((a) => {
+            const href = (a.getAttribute("href") || "").split("?")[0].split("#")[0].toLowerCase();
+            if (href && href === current) {
+              a.classList.add("active");
+            }
+          });
+        });
+      });
+  </script>
+</body>
+</html>
+

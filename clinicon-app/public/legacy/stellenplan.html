@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stellenplan</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    :root{--accent:#2563eb; --accent-strong:#1d4ed8; --line:#e2e8f0; --muted:#94a3b8; --header:#f8fafc; --row:#ffffff; --hover:#f1f5f9; --card:#fff; --shadow:0 18px 32px rgba(15,23,42,.06);}
+    body{margin:0; font-family:var(--font-base); color:#0f172a;}
+    main{padding:20px; display:flex; flex-direction:column; gap:16px; width:100%; max-width:100%; margin:0 auto;}
+    .card{box-shadow:var(--shadow); border:1px solid var(--line); background:var(--card); border-radius:18px;}    .top{display:flex; flex-direction:column; gap:10px; padding:16px;}
+    .controls select{font-family:var(--font-base);}
+  </style>
+</head>
+<body>
+  <main class="ppug-layout">
+    <section class="card top">
+      <div class="header-row">
+        <div class="hero-title">
+          <div class="pill">Stellenplan</div>
+          <h1>Planung &amp; Kontrolle</h1>
+          <p style="margin:0; color:var(--muted);">VK-Werte pro Monat sichern; Jahr ueber Spaltensuffix (jan_YYYY ... dez_YYYY).</p>
+        </div>
+        <span id="saveStatus" class="save-status" aria-live="polite" style="display:none;"></span>
+      </div>
+      <div class="controls">
+        <label style="min-width:200px;">Abteilung
+          <select id="deptSelect"></select>
+        </label>
+        <label style="min-width:120px;">Jahr
+          <input id="yearInput" type="number" min="2026" max="2099" />
+        </label>
+        <button id="btnAddRow" type="button">+ Mitarbeiter:in</button>
+        <button id="btnAddExtra" type="button">+ Zusatzzeile</button>
+        <button id="btnSaveDb" class="btn-save" type="button">Speichern (DB)</button>
+      </div>
+      <div id="warningList" class="warning-list" role="status" aria-live="polite"></div>
+      <div class="summary">
+        <div class="tile"><span>Summe (Jahr)</span><strong id="sumYear">0,0</strong></div>
+        <div class="tile"><span>Durchschnitt / Monat</span><strong id="avgMonth">0,0</strong></div>
+        <div class="tile"><span>Peak-Monat</span><strong id="peakMonth">-</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="table-wrap">
+        <table id="planTable">
+          <thead>
+            <tr>
+              <th style="min-width:120px;" data-sort="pnr">Personalnummer <span class="sort-indicator" data-sort-ind="pnr"></span></th>
+              <th style="min-width:200px;" data-sort="name">Mitarbeiter:in <span class="sort-indicator" data-sort-ind="name"></span></th>
+              <th class="month-col">Jan</th><th class="month-col">Feb</th><th class="month-col">Mrz</th><th class="month-col">Apr</th><th class="month-col">Mai</th><th class="month-col">Jun</th>
+              <th class="month-col">Jul</th><th class="month-col">Aug</th><th class="month-col">Sep</th><th class="month-col">Okt</th><th class="month-col">Nov</th><th class="month-col">Dez</th>
+              <th>&Oslash; Monat</th>
+              <th style="min-width:140px;">Qualifikation</th>
+              <th class="actions-col">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr class="totals-row">
+              <td></td>
+              <td>Summe Monat</td>
+              <td data-sum-month="0">0,0</td><td data-sum-month="1">0,0</td><td data-sum-month="2">0,0</td><td data-sum-month="3">0,0</td><td data-sum-month="4">0,0</td><td data-sum-month="5">0,0</td><td data-sum-month="6">0,0</td><td data-sum-month="7">0,0</td><td data-sum-month="8">0,0</td><td data-sum-month="9">0,0</td><td data-sum-month="10">0,0</td><td data-sum-month="11">0,0</td>
+              <td data-total-year>0,0</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-header">
+        <h3 style="margin-top:0; padding:12px;">Zusatzgruppen (Schueler:innen, Azubis, MFA, ATA ...)</h3>
+      </div>
+      <div class="table-wrap">
+        <table id="extrasTable">
+          <thead>
+            <tr>
+              <th style="min-width:120px;" data-sort="pnr-ex">Personalnummer <span class="sort-indicator" data-sort-ind="pnr-ex"></span></th>
+              <th style="min-width:200px;" data-sort="cat-ex">Kategorie <span class="sort-indicator" data-sort-ind="cat-ex"></span></th>
+              <th class="month-col">Jan</th><th class="month-col">Feb</th><th class="month-col">Mrz</th><th class="month-col">Apr</th><th class="month-col">Mai</th><th class="month-col">Jun</th>
+              <th class="month-col">Jul</th><th class="month-col">Aug</th><th class="month-col">Sep</th><th class="month-col">Okt</th><th class="month-col">Nov</th><th class="month-col">Dez</th>
+              <th>&Oslash; Monat</th>
+              <th style="min-width:140px;">Qualifikation</th>
+              <th class="actions-col">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr class="totals-row">
+              <td></td>
+              <td>Summe Zusatz</td>
+              <td data-extra-month="0">0,0</td><td data-extra-month="1">0,0</td><td data-extra-month="2">0,0</td><td data-extra-month="3">0,0</td><td data-extra-month="4">0,0</td><td data-extra-month="5">0,0</td><td data-extra-month="6">0,0</td><td data-extra-month="7">0,0</td><td data-extra-month="8">0,0</td><td data-extra-month="9">0,0</td><td data-extra-month="10">0,0</td><td data-extra-month="11">0,0</td>
+              <td data-total-extra>0,0</td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr class="totals-row spacer-row">
+              <td></td>
+              <td>Abschluss (Haupt + Zusatz)</td>
+              <td data-combined-month="0">0,0</td><td data-combined-month="1">0,0</td><td data-combined-month="2">0,0</td><td data-combined-month="3">0,0</td><td data-combined-month="4">0,0</td><td data-combined-month="5">0,0</td><td data-combined-month="6">0,0</td><td data-combined-month="7">0,0</td><td data-combined-month="8">0,0</td><td data-combined-month="9">0,0</td><td data-combined-month="10">0,0</td><td data-combined-month="11">0,0</td>
+              <td data-total-combined>0,0</td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr class="totals-row">
+              <td></td>
+              <td>Wirtschaftsplan (VK)</td>
+              <td colspan="12" id="planRowNote" style="text-align:right;  color:#475569;">-</td>
+              <td data-plan-total>0,0</td>
+              <td data-plan-delta>0,0</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="qualPopover" class="qual-popover"></div>
+  <div id="actionMenu" class="action-menu"></div>
+  <div id="historyModal" class="history-modal" aria-hidden="true">
+    <div class="history-card" role="dialog" aria-modal="true" aria-labelledby="historyTitle">
+      <div class="history-head">
+        <strong id="historyTitle">Historie</strong>
+        <button id="historyClose" class="icon-btn" type="button" aria-label="Schliessen">x</button>
+      </div>
+      <div id="historyBody" class="history-body"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY='clinicon_stellenplan_v5';
+    const MONTHS=['Jan','Feb','Mrz','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+    const MONTH_KEYS=['jan','feb','mrz','apr','mai','jun','jul','aug','sep','okt','nov','dez'];
+    const YEAR_MIN=2026, YEAR_MAX=2099;
+    const DEPARTMENTS=['Station 1','Station 2','Station 3','Station 4','Station 5','Station 6','Station 7','Endoskopie','OP','Sozialdienst','Pflegedienstleitung'];
+    const QUAL_OPTIONS=[
+      'Pflegefachkraft','Pflegefachassistenz','Notfallpflege','Anaesthesie/Intensiv','Hygiene','Praxisanleitung','OP','Endoskopie','Onkologie','Palliativ','Wundmanagement','Diabetes','Dialyse','Stroke Unit','Kardiologie','Geriatrie','Neonatologie','Psychiatrie','Schmerzmanagement','Pflegepaedagogik','Stationsleitung','Fachkraft Praev./Reha'
+    ];
+
+    const SITE_LABEL=(sessionStorage.getItem('cliniconSite')||'').trim();
+    const SITE_CODE=SITE_LABEL.toLowerCase().replace(/[^a-z0-9_]/g,'');
+    const HAS_SITE=Boolean(SITE_CODE);
+    const workerDefault='https://divine-disk-6cb5.maarten-koomen.workers.dev';
+    const API_BASE=(window.CLINICON_API_BASE||localStorage.getItem('clinicon_api_base')||workerDefault).trim();
+    const PLAN_KEY='stellenplan_gesamt_plan_v1';
+
+    const ICON_TRASH='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6v-1a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14"/></svg>';
+    const ICON_MENU='&#8942;';
+
+    const els={
+      deptSelect:document.getElementById('deptSelect'),
+      yearInput:document.getElementById('yearInput'),
+      tbody:document.querySelector('#planTable tbody'),
+      extrasTbody:document.querySelector('#extrasTable tbody'),
+      sumYear:document.getElementById('sumYear'),
+      avgMonth:document.getElementById('avgMonth'),
+      peakMonth:document.getElementById('peakMonth'),
+      planTotalCell:document.querySelector('[data-plan-total]'),
+      planDeltaCell:document.querySelector('[data-plan-delta]'),
+      planRowNote:document.getElementById('planRowNote'),
+      actionMenu:document.getElementById('actionMenu'),
+      qualPopover:document.getElementById('qualPopover'),
+      warningList:document.getElementById('warningList'),
+      saveStatus:document.getElementById('saveStatus'),
+      historyModal:document.getElementById('historyModal'),
+      historyBody:document.getElementById('historyBody'),
+      historyClose:document.getElementById('historyClose')
+    };
+
+    const state={dept:DEPARTMENTS[0],year:Math.max(YEAR_MIN,Math.min(YEAR_MAX,new Date().getFullYear())),data:{},sortKey:null,sortDir:'asc'};
+    let planVK=0;
+    let combinedAvg=0;
+    let lastFocused=null;
+    let actionTarget=null;
+    let lastWarnings=[];
+
+    const dbMonthCols=(year)=>MONTH_KEYS.map(k=>`${k}_${year}`);
+    const fmt=(n)=>Number(n||0).toFixed(2).replace('.',',');
+
+    function loadPlanStore(){
+      try{
+        return JSON.parse(localStorage.getItem(PLAN_KEY) || '{}');
+      }catch(e){
+        return {};
+      }
+    }
+    const planStore = loadPlanStore();
+    function planBucketKey(){
+      const site = SITE_CODE || 'default';
+      const year = state.year || new Date().getFullYear();
+      return `${site}-${year}`;
+    }
+    function getPlanValue(dept){
+      const bucket = planStore[planBucketKey()] || {};
+      return Number(bucket[dept]) || 0;
+    }
+
+    function setSaveStatus(msg,err=false){ if(!els.saveStatus) return; els.saveStatus.style.display=msg?'inline-block':'none'; els.saveStatus.textContent=msg||''; els.saveStatus.classList.toggle('error',Boolean(err)); }
+    function setLoadStatus(msg){ setSaveStatus(msg||'',true); }
+
+    function clearWarnings(resetList=true){
+      if(resetList) lastWarnings=[];
+      if(els.warningList){
+        els.warningList.style.display='none';
+        els.warningList.innerHTML='';
+      }
+      document.querySelectorAll('.warn-row').forEach(row=>row.classList.remove('warn-row'));
+      document.querySelectorAll('.warn-cell').forEach(cell=>cell.classList.remove('warn-cell'));
+      document.querySelectorAll('.warn-input').forEach(inp=>inp.classList.remove('warn-input'));
+    }
+    function getItemLabelById(id){
+      const plan=getCurrentPlan();
+      const emp=plan.employees.find(x=>x.id===id);
+      if(emp) return emp.name||displayPersonalNumber(emp.personalNumber)||id;
+      const ex=plan.extras.find(x=>x.id===id);
+      if(ex) return ex.category||ex.name||displayPersonalNumber(ex.personalNumber)||id;
+      return id;
+    }
+    function applyWarnings(list, preserveList){
+      if(!preserveList) lastWarnings=Array.isArray(list)?list:[];
+      clearWarnings(false);
+      if(!Array.isArray(list)||!list.length) return;
+      const items=[];
+      list.forEach(w=>{
+        const empId=w.employeeId||w.employee_id;
+        if(!empId) return;
+        const idx=Number(w.month)-1;
+        if(!Number.isFinite(idx) || idx < 0 || idx > 11) return;
+        const safeId=(typeof CSS!=='undefined'&&CSS.escape)?CSS.escape(empId):empId.replace(/\"/g,'\\\"');
+        const row=document.querySelector(`tr[data-id="${safeId}"]`);
+        if(row){
+          row.classList.add('warn-row');
+          const input=row.querySelector(`.vk-input[data-month="${idx}"]`);
+          if(input){
+            input.classList.add('warn-input');
+            const cell=input.closest('td');
+            if(cell) cell.classList.add('warn-cell');
+          }
+        }
+        const name=getItemLabelById(empId);
+        const monthLabel=MONTHS[idx]||`M${idx+1}`;
+        const total=Number(w.totalFte||0);
+        const msg=w.message||'';
+        const suffix=total?`${fmt(total)} VK`:'';
+        const msgText=msg?`(${msg})`:'';
+        items.push(`<div class="warning-item"><strong>${name}</strong> ${monthLabel}: ${suffix} ${msgText}</div>`);
+      });
+      if(els.warningList){
+        els.warningList.innerHTML=items.join('')||'Warnungen vorhanden.';
+        els.warningList.style.display='block';
+      }
+    }
+
+    function openHistoryModal(title, entries){
+      if(!els.historyModal||!els.historyBody) return;
+      const header=document.getElementById('historyTitle');
+      if(header) header.textContent=title?`Historie: ${title}`:'Historie';
+      if(!Array.isArray(entries)||!entries.length){
+        els.historyBody.innerHTML='<div class="hint">Keine Historie gefunden.</div>';
+      }else{
+        els.historyBody.innerHTML=entries.map(item=>{
+          const ts=(item.changed_at||'').toString().replace('T',' ').replace('Z','');
+          const monthIdx=Number(item.month)-1;
+          const monthLabel=MONTHS[monthIdx]||`M${monthIdx+1}`;
+          const dept=item.department_id||'-';
+          const oldVal=Number(item.old_fte||0);
+          const newVal=Number(item.new_fte||0);
+          const action=item.action||'update';
+          const who=item.changed_by_user_id||'';
+          return `<div class="history-row">
+            <div>
+              <div class="history-label">${ts}</div>
+              <div class="history-label">${dept}</div>
+            </div>
+            <div>
+              <strong>${monthLabel}</strong> ${action}<br/>
+              ${fmt(oldVal)} VK &rarr; ${fmt(newVal)} VK ${who?`&middot; ${who}`:''}
+            </div>
+          </div>`;
+        }).join('');
+      }
+      els.historyModal.style.display='flex';
+      els.historyModal.setAttribute('aria-hidden','false');
+    }
+    function closeHistoryModal(){
+      if(!els.historyModal) return;
+      els.historyModal.style.display='none';
+      els.historyModal.setAttribute('aria-hidden','true');
+    }
+
+    function ensureDefaults(plan){
+      plan.employees.forEach(emp=>{
+        if(emp.personalNumber===undefined) emp.personalNumber='';
+        if(emp.include===undefined) emp.include=true;
+        if(emp.qual===undefined) emp.qual='';
+        if(emp.hiddenRow===undefined) emp.hiddenRow=false;
+        if(emp.include===false && !emp.hiddenRow) emp.hiddenRow=true;
+        if(emp.hiddenRow) emp.include=false;
+        emp.values=Array.isArray(emp.values)?emp.values.map(v=>Number(v)||0):Array(12).fill(0);
+      });
+      plan.extras.forEach(ex=>{
+        if(ex.personalNumber===undefined) ex.personalNumber='';
+        if(ex.include===undefined) ex.include=true;
+        if(ex.qual===undefined) ex.qual='';
+        if(ex.hiddenRow===undefined) ex.hiddenRow=false;
+        if(ex.include===false && !ex.hiddenRow) ex.hiddenRow=true;
+        if(ex.hiddenRow) ex.include=false;
+        ex.values=Array.isArray(ex.values)?ex.values.map(v=>Number(v)||0):Array(12).fill(0);
+      });
+    }
+
+    function getCurrentPlan(){
+      const key=`${state.dept}-${state.year}`;
+      if(!state.data[key]){
+        state.data[key]={
+          employees:[
+            {id:crypto.randomUUID(),personalNumber:'',name:'Mitarbeiter:in 1',include:true,qual:'',values:Array(12).fill(0)},
+            {id:crypto.randomUUID(),personalNumber:'',name:'Mitarbeiter:in 2',include:true,qual:'',values:Array(12).fill(0)}
+          ],
+          extras:[
+            {id:crypto.randomUUID(),personalNumber:'',category:'Schueler:in',include:true,qual:'',values:Array(12).fill(0)},
+            {id:crypto.randomUUID(),personalNumber:'',category:'Azubi',include:true,qual:'',values:Array(12).fill(0)},
+            {id:crypto.randomUUID(),personalNumber:'',category:'MFA/ATA',include:true,qual:'',values:Array(12).fill(0)}
+          ]
+        };
+      }
+      ensureDefaults(state.data[key]);
+      return state.data[key];
+    }
+
+    function persistPersonalNumber(pn,isExtra){ const base=(pn||'').toString().trim(); if(!base) return ''; if(isExtra) return base.startsWith('EX-')?base:`EX-${base}`; return base.replace(/^EX-/,''); }
+    function displayPersonalNumber(pn){ return (pn||'').toString().replace(/^EX-/,''); }
+    function isExtraRow(row){ const pn=(row.personal_number||row.personalNumber||'').toString(); return pn.startsWith('EX-'); }
+
+    function loadPlanValue(){
+      planVK = getPlanValue(state.dept);
+      updatePlanRow();
+    }
+    function updatePlanRow(){
+      if(els.planTotalCell) els.planTotalCell.textContent=fmt(planVK);
+      if(els.planDeltaCell) els.planDeltaCell.textContent=fmt(planVK - combinedAvg);
+      if(els.planRowNote) els.planRowNote.textContent=`Wirtschaftsplan VK (${state.dept}, ${state.year})`;
+    }
+
+    async function fetchRemotePlan(){
+      if(!API_BASE||!HAS_SITE) return null;
+      const payload={ siteId:SITE_CODE||SITE_LABEL, departmentId:state.dept, year:state.year };
+      try{
+        const res=await fetch(`${API_BASE}/api/roster/list`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const data=await res.json();
+        if(!res.ok||data.ok===false) throw new Error(data.error||'Laden fehlgeschlagen');
+        const employees=[], extras=[];
+        (data.rows||[]).forEach(row=>{
+          const pn=(row.personalNumber||'').toString();
+          const isExtra=pn.startsWith('EX-');
+          const values=Array.isArray(row.months)?row.months.map(v=>Number(v)||0):Array(12).fill(0);
+          const include=!(row.include===false||row.include===0);
+          const item={
+            id:row.employeeId||row.id,
+            personalNumber:persistPersonalNumber(pn,isExtra),
+            name:row.name||'',
+            qual:row.qual||'',
+            include,
+            hiddenRow:include?false:true,
+            values
+          };
+          if(isExtra) extras.push({...item,category:row.name||item.personalNumber||'Zusatz'});
+          else employees.push(item);
+        });
+        return {employees,extras};
+      }catch(err){
+        setLoadStatus(err.message||'Laden fehlgeschlagen');
+        return null;
+      }
+    }
+
+    async function syncRemotePlan(opts){
+      if(!API_BASE||!HAS_SITE) return;
+      const plan=getCurrentPlan();
+      const userId=(sessionStorage.getItem('cliniconUser')||'').trim()||null;
+      const payload={
+        siteId:SITE_CODE||SITE_LABEL,
+        departmentId:state.dept,
+        year:state.year,
+        updatedByUserId:userId,
+        employees:plan.employees.map(emp=>({
+          employeeId:emp.id,
+          personalNumber:persistPersonalNumber(emp.personalNumber||'',false),
+          name:emp.name||'',
+          qual:emp.qual||'',
+          include:emp.include!==false,
+          values:emp.values.map(v=>Number(v)||0)
+        })),
+        extras:plan.extras.map(ex=>({
+          employeeId:ex.id,
+          personalNumber:persistPersonalNumber(ex.personalNumber||'',true),
+          category:ex.category||ex.name||persistPersonalNumber(ex.personalNumber||'',true),
+          qual:ex.qual||'',
+          include:ex.include!==false,
+          values:ex.values.map(v=>Number(v)||0)
+        }))
+      };
+      const res=await fetch(`${API_BASE}/api/roster/save`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const data=await res.json();
+      if(!res.ok||data.ok===false) throw new Error(data.error||'Speichern fehlgeschlagen');
+      if(opts && opts.showWarnings) applyWarnings(data.warnings||[]);
+      return data;
+    }
+
+    function saveStorage(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data)); }catch(e){} }
+    function loadStorage(){ try{ state.data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); }catch(e){ state.data={}; } }
+    function calcTotals(plan){
+      const monthMain=Array(12).fill(0); let totalMain=0;
+      plan.employees.forEach(emp=>{
+        if(emp.include===false) return;
+        emp.values.forEach((v,i)=>{ const val=Number(v)||0; monthMain[i]+=val; totalMain+=val; });
+      });
+      const monthExtra=Array(12).fill(0); let totalExtra=0;
+      plan.extras.forEach(ex=>{
+        if(ex.include===false) return;
+        ex.values.forEach((v,i)=>{ const val=Number(v)||0; monthExtra[i]+=val; totalExtra+=val; });
+      });
+      const combined=monthMain.map((v,i)=>v+monthExtra[i]);
+      combinedAvg=(totalMain+totalExtra)/12;
+      const maxVal=Math.max(...monthMain);
+      const maxIdx=monthMain.indexOf(maxVal);
+
+      if(els.sumYear) els.sumYear.textContent=fmt(totalMain);
+      if(els.avgMonth) els.avgMonth.textContent=fmt(totalMain/12);
+      if(els.peakMonth) els.peakMonth.textContent=maxVal>0?`${MONTHS[maxIdx]} (${fmt(maxVal)})`:'-';
+      document.querySelectorAll('[data-sum-month]').forEach(c=>{ c.textContent=fmt(monthMain[Number(c.dataset.sumMonth)]); });
+      const totalCell=document.querySelector('[data-total-year]'); if(totalCell) totalCell.textContent=fmt(totalMain/12);
+
+      document.querySelectorAll('[data-extra-month]').forEach(c=>{ c.textContent=fmt(monthExtra[Number(c.dataset.extraMonth)]); });
+      const totalExtraCell=document.querySelector('[data-total-extra]'); if(totalExtraCell) totalExtraCell.textContent=fmt(totalExtra/12);
+
+      document.querySelectorAll('[data-combined-month]').forEach(c=>{ c.textContent=fmt(combined[Number(c.dataset.combinedMonth)]); });
+      const totalCombinedCell=document.querySelector('[data-total-combined]'); if(totalCombinedCell) totalCombinedCell.textContent=fmt(combinedAvg);
+
+      updatePlanRow();
+    }
+
+    function sortList(list,key){
+      const dir=state.sortDir==='asc'?1:-1;
+      list.sort((a,b)=>{
+        const va=(key==='avg'? (a.values||[]).reduce((x,y)=>x+Number(y||0),0)/12 : (a[key]||'')).toString().toLowerCase();
+        const vb=(key==='avg'? (b.values||[]).reduce((x,y)=>x+Number(y||0),0)/12 : (b[key]||'')).toString().toLowerCase();
+        if(va<vb) return -1*dir;
+        if(va>vb) return 1*dir;
+        return 0;
+      });
+    }
+    function updateSortIndicators(){
+      document.querySelectorAll('[data-sort-ind]').forEach(span=>{
+        const key=span.dataset.sortInd;
+        if(state.sortKey===key) span.textContent=state.sortDir==='asc'?'?':'?';
+        else span.textContent='';
+      });
+    }
+
+    function renderQualBadge(label,id,type){
+      const text=label?label:'Qualifikation waehlen';
+      return `<button class="qual-badge" data-qual-badge="${type}" data-id="${id}"><span>${text}</span><span>&#9660;</span></button>`;
+    }
+
+    function renderTable(){
+      const plan=getCurrentPlan();
+      if(state.sortKey==='pnr') sortList(plan.employees,'personalNumber');
+      if(state.sortKey==='name') sortList(plan.employees,'name');
+      if(state.sortKey==='avg') sortList(plan.employees,'avg');
+      els.tbody.innerHTML='';
+      plan.employees.forEach(emp=>{
+        const tr=document.createElement('tr');
+        if(emp.hiddenRow) tr.classList.add('row-muted');
+        tr.dataset.id=emp.id;
+        let tds=`<td class="pnr-cell"><input class="name-input" data-field="pnr" placeholder="z.B. 1001" value="${displayPersonalNumber(emp.personalNumber)}"></td>`;
+        tds+=`<td><input class="name-input" data-field="name" value="${emp.name||''}"></td>`;
+        emp.values.forEach((val,idx)=>{ tds+=`<td class="month-col"><input class="vk-input" type="number" min="0" step="0.01" value="${val}" data-month="${idx}"></td>`; });
+        const rowAvg=emp.values.reduce((a,b)=>a+Number(b||0),0)/12;
+        tds+=`<td data-row-sum>${fmt(rowAvg)}</td>`;
+        tds+=`<td style="min-width:140px;">${renderQualBadge(emp.qual,emp.id,'emp')}</td>`;
+        tds+=`<td class="actions-cell"><div class="action-buttons"><button class="icon-btn menu-btn" data-action="menu-emp" title="Optionen">${ICON_MENU}</button><button class="icon-btn" data-action="delete" aria-label="Loeschen">${ICON_TRASH}</button></div></td>`;
+        tr.innerHTML=tds;
+        els.tbody.appendChild(tr);
+      });
+      calcTotals(plan);
+      updateSortIndicators();
+      if(lastWarnings.length) applyWarnings(lastWarnings, true);
+    }
+
+    function renderExtras(){
+      const plan=getCurrentPlan();
+      if(state.sortKey==='pnr-ex') sortList(plan.extras,'personalNumber');
+      if(state.sortKey==='cat-ex') sortList(plan.extras,'category');
+      if(state.sortKey==='avg-ex') sortList(plan.extras,'avg');
+      els.extrasTbody.innerHTML='';
+      plan.extras.forEach(ex=>{
+        const tr=document.createElement('tr');
+        if(ex.hiddenRow) tr.classList.add('row-muted');
+        tr.dataset.id=ex.id;
+        let tds=`<td class="pnr-cell"><input class="name-input" data-field="pnr" placeholder="z.B. 2001" value="${displayPersonalNumber(ex.personalNumber)}"></td>`;
+        tds+=`<td><input class="name-input" data-field="category" value="${ex.category||''}"></td>`;
+        ex.values.forEach((val,idx)=>{ tds+=`<td class="month-col"><input class="vk-input" type="number" min="0" step="0.01" value="${val}" data-month="${idx}"></td>`; });
+        const rowAvg=ex.values.reduce((a,b)=>a+Number(b||0),0)/12;
+        tds+=`<td data-row-sum>${fmt(rowAvg)}</td>`;
+        tds+=`<td style="min-width:140px;">${renderQualBadge(ex.qual,ex.id,'extra')}</td>`;
+        tds+=`<td class="actions-cell"><div class="action-buttons"><button class="icon-btn menu-btn" data-action="menu-extra" title="Optionen">${ICON_MENU}</button><button class="icon-btn" data-action="delete-extra" aria-label="Loeschen">${ICON_TRASH}</button></div></td>`;
+        tr.innerHTML=tds;
+        els.extrasTbody.appendChild(tr);
+      });
+      calcTotals(plan);
+      updateSortIndicators();
+      if(lastWarnings.length) applyWarnings(lastWarnings, true);
+    }
+
+    function recalcRow(tr,item){
+      tr.querySelectorAll('.vk-input').forEach(inp=>{ const idx=Number(inp.dataset.month); item.values[idx]=Number(inp.value)||0; });
+      const avg=item.values.reduce((a,b)=>a+Number(b||0),0)/12;
+      const sumCell=tr.querySelector('[data-row-sum]');
+      if(sumCell) sumCell.textContent=fmt(avg);
+    }
+
+    function openQualPopover(type,id,anchor){
+      const rect=anchor.getBoundingClientRect();
+      const plan=getCurrentPlan();
+      const list=type==='emp'?plan.employees:plan.extras;
+      const item=list.find(x=>x.id===id);
+      const selected=new Set((item?.qual||'').split(',').map(s=>s.trim()).filter(Boolean));
+      els.qualPopover.innerHTML=QUAL_OPTIONS.map(opt=>{
+        const checked=selected.has(opt)?'checked':'';
+        return `<label><input type="checkbox" data-qual="${opt}" ${checked}>${opt}</label>`;
+      }).join('');
+      els.qualPopover.dataset.targetType=type;
+      els.qualPopover.dataset.targetId=id;
+      els.qualPopover.style.display='block';
+      els.qualPopover.style.left=`${rect.left+window.scrollX}px`;
+      els.qualPopover.style.top=`${rect.bottom+window.scrollY+4}px`;
+    }
+    function closeQualPopover(apply){
+      if(els.qualPopover.style.display!=='block') return;
+      if(apply){
+        const type=els.qualPopover.dataset.targetType;
+        const id=els.qualPopover.dataset.targetId;
+        const plan=getCurrentPlan();
+        const list=type==='emp'?plan.employees:plan.extras;
+        const item=list.find(x=>x.id===id);
+        if(item){
+          const checked=Array.from(els.qualPopover.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.dataset.qual);
+          item.qual=checked.join(', ');
+          saveStorage();
+          renderTable();
+          renderExtras();
+          syncRemoteDebounced();
+        }
+      }
+      els.qualPopover.style.display='none';
+      els.qualPopover.dataset.targetType='';
+      els.qualPopover.dataset.targetId='';
+    }
+
+    function openActionMenu(type,id,anchor){
+      const plan=getCurrentPlan();
+      const list=type==='emp'?plan.employees:plan.extras;
+      const item=list.find(x=>x.id===id);
+      if(!item) return;
+      actionTarget={type,id};
+      const rect=anchor.getBoundingClientRect();
+      const hideLabel=item.hiddenRow?'Zeile einblenden':'Zeile ausblenden';
+      els.actionMenu.innerHTML=[
+        `<button data-act="toggle-hide">${hideLabel}</button>`,
+        `<button data-act="history">Historie anzeigen</button>`,
+        `<button data-act="copy-forward">Ab Monat fortfuehren</button>`,
+        `<button data-act="copy-next-year">Ins Folgejahr uebernehmen (DB)</button>`
+      ].join('');
+      els.actionMenu.style.display='block';
+      els.actionMenu.style.left=`${rect.left+window.scrollX}px`;
+      els.actionMenu.style.top=`${rect.bottom+window.scrollY+4}px`;
+    }
+    function closeActionMenu(){ els.actionMenu.style.display='none'; actionTarget=null; }
+
+    function syncRemoteDebounced(){
+      if(!API_BASE||!HAS_SITE) return;
+      clearTimeout(syncRemoteDebounced.t);
+      syncRemoteDebounced.t=setTimeout(()=>{ syncRemotePlan({showWarnings:false}).catch(err=>console.warn('Sync failed',err)); },700);
+    }
+    function bindEvents(){
+      els.deptSelect.addEventListener('change',()=>{
+        state.dept=els.deptSelect.value;
+        clearWarnings();
+        renderTable(); renderExtras(); saveStorage();
+        fetchRemotePlan().then(remote=>{ if(remote){ const key=`${state.dept}-${state.year}`; state.data[key]=remote; ensureDefaults(state.data[key]); saveStorage(); clearWarnings(); renderTable(); renderExtras(); calcTotals(getCurrentPlan()); loadPlanValue(); }});
+        loadPlanValue();
+      });
+      els.yearInput.addEventListener('change',()=>{
+        state.year=Math.max(YEAR_MIN,Math.min(YEAR_MAX,Number(els.yearInput.value)||YEAR_MIN));
+        els.yearInput.value=state.year;
+        clearWarnings();
+        renderTable(); renderExtras(); saveStorage();
+        fetchRemotePlan().then(remote=>{ if(remote){ const key=`${state.dept}-${state.year}`; state.data[key]=remote; ensureDefaults(state.data[key]); saveStorage(); clearWarnings(); renderTable(); renderExtras(); calcTotals(getCurrentPlan()); loadPlanValue(); }});
+        loadPlanValue();
+      });
+
+      document.querySelectorAll('[data-sort]').forEach(th=>{
+        th.style.cursor='pointer';
+        th.addEventListener('click',()=>{
+          const key=th.dataset.sort;
+          state.sortDir=(state.sortKey===key && state.sortDir==='asc')?'desc':'asc';
+          state.sortKey=key;
+          renderTable();
+          renderExtras();
+        });
+      });
+
+      document.getElementById('btnAddRow').addEventListener('click',()=>{
+        const p=getCurrentPlan();
+        p.employees.push({id:crypto.randomUUID(),personalNumber:'',name:'Neu',include:true,qual:'',values:Array(12).fill(0)});
+        clearWarnings();
+        renderTable(); calcTotals(p); saveStorage(); syncRemoteDebounced();
+      });
+      document.getElementById('btnAddExtra').addEventListener('click',()=>{
+        const p=getCurrentPlan();
+        p.extras.push({id:crypto.randomUUID(),personalNumber:'',category:'Neu',include:true,qual:'',values:Array(12).fill(0)});
+        clearWarnings();
+        renderExtras(); calcTotals(p); saveStorage(); syncRemoteDebounced();
+      });
+      const btnSave=document.getElementById('btnSaveDb');
+      if(btnSave) btnSave.addEventListener('click', async()=>{
+        try{
+          clearWarnings();
+          setSaveStatus('Speichere ...');
+          const res=await syncRemotePlan({showWarnings:true});
+          const warnCount=(res&&Array.isArray(res.warnings))?res.warnings.length:0;
+          setSaveStatus(warnCount?`Gespeichert mit ${warnCount} Warnung(en).`:'Gespeichert.');
+        }
+        catch(err){ setSaveStatus(err.message||'Speichern fehlgeschlagen',true); }
+      });
+
+      els.tbody.addEventListener('input',e=>{
+        const tr=e.target.closest('tr'); if(!tr) return;
+        const id=tr.dataset.id;
+        const plan=getCurrentPlan();
+        const emp=plan.employees.find(x=>x.id===id);
+        if(!emp) return;
+        if(e.target.classList.contains('name-input')){
+          if(e.target.dataset.field==='name') emp.name=e.target.value;
+          else emp.personalNumber=persistPersonalNumber(e.target.value,false);
+        }
+        if(e.target.classList.contains('vk-input')){
+          recalcRow(tr,emp);
+          lastFocused={type:'emp',id,month:Number(e.target.dataset.month)};
+        }
+        clearWarnings();
+        calcTotals(plan); saveStorage(); syncRemoteDebounced();
+      });
+      els.tbody.addEventListener('click',e=>{
+        const badge=e.target.closest('[data-qual-badge="emp"]');
+        if(badge){ openQualPopover('emp',badge.dataset.id,badge); return; }
+        const btn=e.target.closest('button[data-action]');
+        const tr=e.target.closest('tr');
+        if(!btn||!tr) return;
+        const plan=getCurrentPlan();
+        const id=tr.dataset.id;
+        const emp=plan.employees.find(x=>x.id===id);
+        if(!emp) return;
+        if(btn.dataset.action==='menu-emp'){
+          openActionMenu('emp',id,btn);
+        } else if(btn.dataset.action==='delete'){
+          if(!confirm('Eintrag loeschen?')) return;
+          plan.employees=plan.employees.filter(x=>x.id!==id);
+          clearWarnings();
+          renderTable(); calcTotals(plan); saveStorage(); syncRemoteDebounced();
+        }
+      });
+
+      els.extrasTbody.addEventListener('input',e=>{
+        const tr=e.target.closest('tr'); if(!tr) return;
+        const id=tr.dataset.id;
+        const plan=getCurrentPlan();
+        const ex=plan.extras.find(x=>x.id===id);
+        if(!ex) return;
+        if(e.target.classList.contains('name-input')){
+          if(e.target.dataset.field==='category') ex.category=e.target.value;
+          else ex.personalNumber=persistPersonalNumber(e.target.value,true);
+        }
+        if(e.target.classList.contains('vk-input')){
+          recalcRow(tr,ex);
+          lastFocused={type:'extra',id,month:Number(e.target.dataset.month)};
+        }
+        clearWarnings();
+        calcTotals(plan); saveStorage(); syncRemoteDebounced();
+      });
+      els.extrasTbody.addEventListener('click',e=>{
+        const badge=e.target.closest('[data-qual-badge="extra"]');
+        if(badge){ openQualPopover('extra',badge.dataset.id,badge); return; }
+        const btn=e.target.closest('button[data-action]');
+        const tr=e.target.closest('tr');
+        if(!btn||!tr) return;
+        const plan=getCurrentPlan();
+        const id=tr.dataset.id;
+        const ex=plan.extras.find(x=>x.id===id);
+        if(!ex) return;
+        if(btn.dataset.action==='menu-extra'){
+          openActionMenu('extra',id,btn);
+        } else if(btn.dataset.action==='delete-extra'){
+          if(!confirm('Zusatzzeile loeschen?')) return;
+          plan.extras=plan.extras.filter(x=>x.id!==id);
+          clearWarnings();
+          renderExtras(); calcTotals(plan); saveStorage(); syncRemoteDebounced();
+        }
+      });
+
+      document.addEventListener('click',e=>{
+        const insidePopover=els.qualPopover.contains(e.target);
+        const isBadge=e.target.closest('[data-qual-badge]');
+        if(els.qualPopover.style.display==='block' && !insidePopover && !isBadge){
+          closeQualPopover(true);
+        }
+        const insideMenu=els.actionMenu.contains(e.target);
+        const isMenuBtn=e.target.closest('.menu-btn');
+        if(els.actionMenu.style.display==='block' && !insideMenu && !isMenuBtn){
+          closeActionMenu();
+        }
+      });
+      els.qualPopover.addEventListener('click',e=>{ if(e.target.tagName==='INPUT') e.stopPropagation(); });
+      if(els.historyClose){
+        els.historyClose.addEventListener('click', closeHistoryModal);
+      }
+      if(els.historyModal){
+        els.historyModal.addEventListener('click', (ev)=>{
+          if(ev.target===els.historyModal) closeHistoryModal();
+        });
+      }
+      els.actionMenu.addEventListener('click', async e=>{
+        const act=e.target.dataset.act;
+        if(!act||!actionTarget) return;
+        const plan=getCurrentPlan();
+        const list=actionTarget.type==='emp'?plan.employees:plan.extras;
+        const item=list.find(x=>x.id===actionTarget.id);
+        if(!item) return;
+        if(act==='toggle-hide'){
+          item.hiddenRow=!item.hiddenRow;
+          item.include=item.hiddenRow?false:true;
+          clearWarnings();
+          saveStorage(); renderTable(); renderExtras(); calcTotals(plan); syncRemoteDebounced(); closeActionMenu(); return;
+        }
+        if(act==='history'){
+          if(!API_BASE){ alert('API-Basis fehlt (clinicon_api_base / CLINICON_API_BASE).'); closeActionMenu(); return; }
+          try{
+            const payload={ employeeId:item.id, year: state.year };
+            const res=await fetch(`${API_BASE}/api/roster/history`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+            const data=await res.json(); if(!res.ok||data.ok===false) throw new Error(data.error||res.statusText);
+            const label=item.name||item.category||displayPersonalNumber(item.personalNumber)||'Mitarbeiter';
+            openHistoryModal(label, data.history||[]);
+          }catch(err){ alert('Historie nicht verfuegbar: '+(err.message||err)); }
+          closeActionMenu(); return;
+        }
+        if(act==='copy-forward'){
+          const start=(lastFocused && lastFocused.id===actionTarget.id && lastFocused.type===actionTarget.type)?Number(lastFocused.month):0;
+          const src=Number(item.values[start])||0;
+          for(let i=start;i<12;i++) item.values[i]=src;
+          clearWarnings();
+          saveStorage(); renderTable(); renderExtras(); calcTotals(plan); syncRemoteDebounced(); closeActionMenu(); return;
+        }
+        if(act==='copy-next-year'){
+          const nextYear=state.year+1;
+          if(nextYear>YEAR_MAX){ alert('Jahr ausserhalb Range.'); closeActionMenu(); return; }
+          if(!API_BASE){ alert('API-Basis fehlt (clinicon_api_base / CLINICON_API_BASE).'); closeActionMenu(); return; }
+          try{
+            const userId=(sessionStorage.getItem('cliniconUser')||'').trim()||null;
+            const payload={
+              siteId:SITE_CODE||SITE_LABEL,
+              departmentId:state.dept,
+              employeeId:item.id,
+              fromYear:state.year,
+              toYear:nextYear,
+              mode:'overwrite',
+              updatedByUserId:userId
+            };
+            const res=await fetch(`${API_BASE}/api/roster/rollover`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+            const data=await res.json(); if(!res.ok||data.ok===false) throw new Error(data.error||res.statusText);
+            alert('Rollover abgeschlossen.');
+          }catch(err){ alert('Fehler beim Rollover: '+(err.message||err)); }
+          closeActionMenu(); return;
+        }
+      });
+    }
+
+    function setDefaults(){
+      els.deptSelect.innerHTML=DEPARTMENTS.map(d=>`<option value="${d}">${d}</option>`).join('');
+      els.deptSelect.value=state.dept;
+      els.yearInput.value=state.year;
+    }
+
+    (function init(){
+      loadStorage();
+      setDefaults();
+      renderTable();
+      renderExtras();
+      if(HAS_SITE && API_BASE){
+        fetchRemotePlan().then(remote=>{
+          if(remote){
+            const key=`${state.dept}-${state.year}`;
+            state.data[key]=remote;
+            ensureDefaults(state.data[key]);
+            saveStorage();
+            clearWarnings();
+            renderTable();
+            renderExtras();
+            calcTotals(getCurrentPlan());
+          }
+        });
+      }
+      loadPlanValue();
+      bindEvents();
+      if(!API_BASE||!HAS_SITE) setSaveStatus('API/Standort nicht gesetzt.',true);
+    })();
+  </script>
+</body>
+</html>
+
+
+
+

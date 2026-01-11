@@ -1,0 +1,461 @@
+﻿<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinicon - Stellenplan Gesamt</title>
+  <style id="page-style">
+:root{
+      --bg:#eef3f7; --panel:#ffffff; --muted:#94a3b8; --text:#0f172a; --line:#e2e8f0;
+      --accent:#2563eb; --accent-weak:#dbeafe; --accent-strong:#1d4ed8; --shadow:0 18px 36px rgba(15,23,42,.08);
+    }
+main{
+      padding:24px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      width:100%;
+      max-width:none;
+      margin:0 auto;
+    }
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:var(--shadow);
+    }
+    .hero{display:flex; flex-direction:column; gap:14px; padding:24px; border-radius:20px; width:100%; max-width:none; margin:0; box-sizing:border-box; background:linear-gradient(120deg,#f3f7ff 0%,#e8f1ff 40%,#f3f7ff 100%); border:1px solid #d9e4ff; box-shadow:0 18px 45px rgba(15,23,42,0.18);}
+    .hero-top{display:flex; flex-wrap:wrap; justify-content:space-between; gap:14px; align-items:flex-start;}
+    .hero-copy{display:flex; flex-direction:column; gap:6px;}
+    .hero-pill{display:inline-flex; gap:8px; padding:9px 14px; border-radius:14px; background:linear-gradient(135deg,#1f4b82,#12355c); color:#fff; font-weight:700; box-shadow:0 12px 24px rgba(18,53,92,.25);}
+    h1{margin:0;}
+    .hero-meta{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:4px;}
+    .chip{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:12px; border:1px solid var(--line); background:#fff; box-shadow:0 10px 20px rgba(15,23,42,.06); font-weight:700; color:var(--text);}
+    .chip small{color:var(--muted); font-weight:600;}
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:flex-end;
+    }
+    .controls label{display:flex; flex-direction:column; gap:4px; font-weight:600; color:var(--text);}
+    .controls select{
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      font:inherit;
+      background:#fff;
+      min-width:140px;
+    }
+    .controls button{
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid transparent;
+      background:linear-gradient(135deg, #2563eb, #1d4ed8);
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 10px 24px rgba(37,99,235,.16);
+    }
+    table{width:100%; border-collapse:collapse;}
+    th,td{padding:10px 7px; border-bottom:1px solid var(--line);}
+    th{background:#f8fafc; text-align:left;}
+    th.num, td.num{text-align:right;}
+    th:first-child, td:first-child{text-align:left;}
+    .totals-row td{font-weight:700; background:#f8fafc;}
+    .plan-input{width:100%; max-width:120px; padding:8px 8px; border:1px solid var(--line); border-radius:10px; font:inherit; text-align:right;}
+    .plan-input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(37,99,235,.16);}
+    .delta-pos{color:#16a34a; font-weight:700;}
+    .delta-neg{color:#b91c1c; font-weight:700;}
+    .hint{color:var(--muted); font-size:.95rem;}
+body[data-app-page="stellenplan-gesamt"] h1{font-family:var(--font-display);letter-spacing:.01em;}
+body[data-app-page="stellenplan-gesamt"] .hero{background:linear-gradient(120deg, rgba(28,107,255,0.14), rgba(23,195,178,0.18));border:1px solid rgba(28,107,255,0.2);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:24px;}
+body[data-app-page="stellenplan-gesamt"] .chip{border-radius:var(--radius-sm);border:1px solid rgba(28,107,255,0.18);background:rgba(255,255,255,0.8);box-shadow:var(--shadow-soft);}
+@media(max-width:960px){
+table{font-size:0.95rem;}
+      th,td{padding:8px 6px;}
+    }
+    @media (max-width: 900px){
+
+}
+    @media (max-width: 600px){
+}
+@media (max-width: 900px){
+}
+  </style>
+</head>
+<body>
+  <template id="page-content">
+<section class="card hero">
+          <div class="hero-top">
+            <div class="hero-copy">
+<h1>Alle Abteilungen in einer &Uuml;bersicht</h1>
+              <p class="hint">Summiert VZ&auml; aus <strong>stellenplan_employees</strong> je Abteilung und Jahr.</p>
+              <div class="hero-meta">
+                <span class="chip"><small>Mandant</small><strong id="siteLabel">-</strong></span>
+                <span class="chip"><small>Jahr</small><strong id="heroYear">-</strong></span>
+                <span class="chip"><small>Abteilungen</small><strong id="heroDepts">-</strong></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="controls">
+            <label>Jahr
+              <select id="yearSelect"></select>
+            </label>
+            <button id="btnRefresh" type="button">Neu laden</button>
+          </div>
+          <div id="status" class="hint" style="margin-top:10px;"></div>
+          <div style="overflow:auto; margin-top:12px;">
+            <table id="deptTable"></table>
+          </div>
+        </section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL_STORAGE = 'clinicon_supabase_url';
+    const SUPABASE_KEY_STORAGE = 'clinicon_supabase_key';
+    const MONTHS = ['Jan','Feb','Mrz','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+    const KNOWN_DEPTS = ['Station 1','Station 2','Station 3','Station 4','Station 5','Station 6','Station 7','Endoskopie','OP','Sozialdienst','Pflegedienstleitung'];
+    const DEFAULT_SUPABASE_URL = 'https://fqilehnixnsujefyrdcy.supabase.co';
+    const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxaWxlaG5peG5zdWplZnlyZGN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MjIyNzUsImV4cCI6MjA3OTQ5ODI3NX0.Ml1J-YsID7_CXX7LbLZM4ayhWpV08FBSZc3rgVuwqt4';
+    const SUPABASE_URL = (window.SUPABASE_URL || localStorage.getItem(SUPABASE_URL_STORAGE) || DEFAULT_SUPABASE_URL).trim();
+    const SUPABASE_ANON_KEY = (window.SUPABASE_ANON_KEY || localStorage.getItem(SUPABASE_KEY_STORAGE) || DEFAULT_SUPABASE_KEY).trim();
+    const supabaseClient = (typeof window.supabase !== 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY)
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+    const SITE_LABEL = (sessionStorage.getItem('cliniconSite') || '').trim();
+    const SITE_CODE = SITE_LABEL.toLowerCase().replace(/[^a-z0-9_]/g,'');
+    const HAS_SITE = Boolean(SITE_CODE);
+    const tableName = (base) => SITE_CODE ? `${base}_${SITE_CODE}` : base;
+    if(!localStorage.getItem(SUPABASE_URL_STORAGE) && SUPABASE_URL){
+      try{ localStorage.setItem(SUPABASE_URL_STORAGE, SUPABASE_URL); }catch(e){ /* ignore quota issues */ }
+    }
+    if(!localStorage.getItem(SUPABASE_KEY_STORAGE) && SUPABASE_ANON_KEY){
+      try{ localStorage.setItem(SUPABASE_KEY_STORAGE, SUPABASE_ANON_KEY); }catch(e){ /* ignore quota issues */ }
+    }
+
+    const els = {
+      yearSelect: document.getElementById('yearSelect'),
+      btnRefresh: document.getElementById('btnRefresh'),
+      status: document.getElementById('status'),
+      deptTable: document.getElementById('deptTable'),
+      siteLabel: document.getElementById('siteLabel'),
+      heroYear: document.getElementById('heroYear'),
+      heroDepts: document.getElementById('heroDepts'),
+    };
+
+    const state = {
+      year: null,
+      rows: [],
+    };
+    const PARAM_TABLE = SITE_CODE ? `parameter_${SITE_CODE}` : null;
+    let planMap = {};
+    const PLAN_KEY = 'stellenplan_gesamt_plan_v1';
+
+    function loadPlanStore(){
+      try{
+        return JSON.parse(localStorage.getItem(PLAN_KEY) || '{}');
+      }catch(e){
+        return {};
+      }
+    }
+    const planStore = loadPlanStore();
+    function savePlanStore(){
+      try{ localStorage.setItem(PLAN_KEY, JSON.stringify(planStore)); }catch(e){}
+    }
+    function planBucketKey(){
+      const site = SITE_CODE || 'default';
+      const year = state.year || new Date().getFullYear();
+      return `${site}-${year}`;
+    }
+    function getPlanValue(dept){
+      const bucket = planStore[planBucketKey()] || {};
+      return Number(bucket[dept]) || 0;
+    }
+    function setPlanValue(dept, value){
+      const key = planBucketKey();
+      if(!planStore[key]) planStore[key] = {};
+      planStore[key][dept] = value;
+      savePlanStore();
+    }
+
+    function fmt(n){
+      const num = Number(n || 0);
+      return num.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
+    }
+
+    function setStatus(msg, ok=true){
+      els.status.textContent = msg;
+      els.status.style.color = ok ? '#16a34a' : '#b91c1c';
+    }
+
+    function getPlanValue(dept){
+      return Number(planMap[dept] || 0);
+    }
+
+    async function loadPlanValues(){
+      if(!supabaseClient || !PARAM_TABLE){
+        planMap = {};
+        return;
+      }
+      const { data, error } = await supabaseClient
+        .from(PARAM_TABLE)
+        .select('dept, wirtschaftsplan_vk')
+        .eq('year', state.year);
+      if(error){
+        setStatus(error.message, false);
+        planMap = {};
+        return;
+      }
+      planMap = {};
+      (data || []).forEach(row => {
+        if(row.dept){
+          planMap[row.dept] = Number(row.wirtschaftsplan_vk) || 0;
+        }
+      });
+    }
+
+    function parseMonths(arr){
+      if(Array.isArray(arr)) return arr.map(v=>Number(v)||0);
+      if(typeof arr === 'string'){
+        const cleaned = arr.replace(/[{}]/g,'');
+        if(!cleaned) return Array(12).fill(0);
+        return cleaned.split(',').map(v=>Number(v)||0);
+      }
+      return Array(12).fill(0);
+    }
+
+    async function loadMeta(){
+      if(!supabaseClient){
+        setStatus('Supabase nicht konfiguriert.', false);
+        return;
+      }
+      if(!HAS_SITE){
+        setStatus('Kein Standortcode gefunden. Bitte zuerst einloggen.', false);
+        return;
+      }
+      const { data: years, error } = await supabaseClient
+        .from(tableName('stellenplan_employees'))
+        .select('year')
+        .not('year', 'is', null)
+        .order('year');
+      if(error){
+        throw new Error(error.message);
+      }
+      const yearList = [...new Set((years || []).map(y=>y.year).filter(Boolean))];
+      els.yearSelect.innerHTML = yearList.length ? yearList.map(y=>`<option value="${y}">${y}</option>`).join('') : `<option value="${new Date().getFullYear()}">${new Date().getFullYear()}</option>`;
+      state.year = yearList[0] || new Date().getFullYear();
+      els.yearSelect.value = state.year;
+      if(els.siteLabel) els.siteLabel.textContent = SITE_LABEL || '-';
+      if(els.heroYear) els.heroYear.textContent = state.year;
+    }
+
+    function aggregate(emps){
+      const map = new Map();
+      const ensure = (dept) => {
+        if(!map.has(dept)){
+          map.set(dept, {
+            dept,
+            empCount:0,
+            months:Array(12).fill(0)
+          });
+        }
+        return map.get(dept);
+      };
+      KNOWN_DEPTS.forEach(ensure);
+      emps.forEach(e => {
+        const target = ensure(e.dept);
+        target.empCount += 1;
+        const months = parseMonths(e.months ?? e.values);
+        months.forEach((v,i) => target.months[i] += Number(v)||0);
+      });
+
+      const ordered = [];
+      KNOWN_DEPTS.forEach(d => { if(map.has(d)) ordered.push(map.get(d)); });
+      map.forEach((val, key) => { if(!KNOWN_DEPTS.includes(key)) ordered.push(val); });
+      return ordered;
+    }
+
+    function renderTable(rows){
+      const safeRows = rows || [];
+      if(!safeRows.length){
+        els.deptTable.innerHTML = '<tr><td>Keine Daten gefunden.</td></tr>';
+        if(els.heroDepts) els.heroDepts.textContent = '0';
+        return;
+      }
+      const header = `<tr>
+        <th>Abteilung</th>
+        <th class="num">Wirtschaftsplan (VK)</th>
+        ${MONTHS.map(m=>`<th class="num">${m}</th>`).join('')}
+        <th class="num">&Oslash; Jahr</th>
+        <th class="num">Abweichung</th>
+        <th class="num">K&ouml;pfe</th>
+      </tr>`;
+      const body = safeRows.map(r => {
+        const total = r.months.reduce((a,b)=>a+b,0);
+        const avgYear = total/12;
+        const plan = getPlanValue(r.dept);
+        const delta = avgYear - plan;
+        const deltaClass = delta >= 0 ? 'delta-pos' : 'delta-neg';
+        return `<tr>
+          <td>${r.dept}</td>
+          <td class="num">${fmt(plan)}</td>
+          ${r.months.map(v=>`<td class="num">${fmt(v)}</td>`).join('')}
+          <td class="num">${fmt(avgYear)}</td>
+          <td class="num ${deltaClass}">${fmt(delta)}</td>
+          <td class="num">${r.empCount}</td>
+        </tr>`;
+      }).join('');
+      const totals = safeRows.reduce((acc, r) => {
+        acc.emp += r.empCount;
+        r.months.forEach((v,i)=> acc.months[i]+=v);
+        return acc;
+      }, { emp:0, months:Array(12).fill(0) });
+      const totalYear = totals.months.reduce((a,b)=>a+b,0);
+      const avgYearTotal = totalYear/12;
+      const planTotal = safeRows.reduce((sum,r)=>sum + getPlanValue(r.dept),0);
+      const deltaTotal = avgYearTotal - planTotal;
+      const deltaTotalClass = deltaTotal >= 0 ? 'delta-pos' : 'delta-neg';
+      const footer = `<tr class="totals-row">
+        <td>Gesamt</td>
+        <td class="num">${fmt(planTotal)}</td>
+        ${totals.months.map(v=>`<td class="num">${fmt(v)}</td>`).join('')}
+        <td class="num">${fmt(avgYearTotal)}</td>
+        <td class="num ${deltaTotalClass}">${fmt(deltaTotal)}</td>
+        <td class="num">${totals.emp}</td>
+      </tr>`;
+      els.deptTable.innerHTML = header + body + footer;
+      if(els.heroDepts) els.heroDepts.textContent = safeRows.length;
+    }
+
+    async function loadData(){
+      if(!supabaseClient){
+        setStatus('Supabase nicht konfiguriert.', false);
+        renderTable([]);
+        return;
+      }
+      if(!HAS_SITE){
+        setStatus('Kein Standortcode gefunden. Bitte zuerst einloggen.', false);
+        renderTable([]);
+        return;
+      }
+      setStatus('Lade Daten ...', true);
+      await loadPlanValues();
+      const { data: emps, error: empErr } = await supabaseClient
+        .from(tableName('stellenplan_employees'))
+        .select('dept, year, personal_number, months, values')
+        .eq('year', state.year);
+      if(empErr){
+        throw new Error(empErr.message || 'Laden fehlgeschlagen.');
+      }
+      const rows = aggregate(emps || []);
+      state.rows = rows;
+      renderTable(rows);
+      setStatus('Fertig.');
+    }
+
+    function bindEvents(){
+      els.yearSelect.addEventListener('change', () => {
+        state.year = Number(els.yearSelect.value);
+        if(els.heroYear) els.heroYear.textContent = state.year;
+      });
+      els.btnRefresh.addEventListener('click', () => {
+        loadData().catch(err => setStatus(err.message, false));
+      });
+    }
+
+    (async function init(){
+      bindEvents();
+      if(!supabaseClient){
+        setStatus('Supabase nicht konfiguriert. Bitte URL/Key setzen (localStorage clinicon_supabase_url / clinicon_supabase_key).', false);
+        return;
+      }
+      if(!HAS_SITE){
+        setStatus('Kein Standortcode gefunden. Bitte zuerst einloggen.', false);
+        return;
+      }
+      try{
+        await loadMeta();
+        await loadData();
+      }catch(err){
+        setStatus(err.message, false);
+      }
+    })();
+  </script>
+  </template>
+
+  <script>
+    const __pageContent = document.getElementById("page-content")?.innerHTML || "";
+    const __pageStyle = document.getElementById("page-style")?.textContent || "";
+    const __pageTitle = document.title || "";
+
+    fetch("./layout.html")
+      .then((r) => r.text())
+      .then((html) => {
+        document.open();
+        document.write(html);
+        document.close();
+
+        window.addEventListener("DOMContentLoaded", () => {
+          if (__pageStyle) {
+            const style = document.createElement("style");
+            style.setAttribute("data-page-style", "true");
+            style.textContent = __pageStyle;
+            document.head.appendChild(style);
+          }
+
+          if (__pageTitle) {
+            document.title = __pageTitle;
+            const headerTitle = document.querySelector(".topbar-left h1");
+            if (headerTitle) {
+              headerTitle.textContent = __pageTitle;
+            }
+          }
+
+          const slot = document.getElementById("app-main") || document.querySelector("main");
+          if (slot) {
+            slot.innerHTML = __pageContent;
+
+            const scripts = Array.from(slot.querySelectorAll("script"));
+            const runScripts = (index) => {
+              if (index >= scripts.length) return;
+              const oldScript = scripts[index];
+              const script = document.createElement("script");
+              Array.from(oldScript.attributes).forEach((attr) => {
+                script.setAttribute(attr.name, attr.value);
+              });
+              script.async = false;
+              if (oldScript.textContent) {
+                script.textContent = oldScript.textContent;
+              }
+              const next = () => runScripts(index + 1);
+              if (script.src) {
+                script.onload = next;
+                script.onerror = next;
+              }
+              oldScript.replaceWith(script);
+              if (!script.src) {
+                next();
+              }
+            };
+            runScripts(0);
+          }
+
+          const current = (location.pathname.split("/").pop() || "").toLowerCase();
+          document.querySelectorAll(".nav a[href]").forEach((a) => a.classList.remove("active"));
+          document.querySelectorAll(".nav a[href]").forEach((a) => {
+            const href = (a.getAttribute("href") || "").split("?")[0].split("#")[0].toLowerCase();
+            if (href && href === current) {
+              a.classList.add("active");
+            }
+          });
+        });
+      });
+  </script>
+</body>
+</html>
+

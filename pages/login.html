@@ -1,0 +1,210 @@
+<!-- Login Seite -->
+<style>
+  .login-page{
+    grid-column:1/-1;
+    width:100%;
+    min-height:calc(100dvh - clamp(8rem, 18vw, 12.5rem));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:clamp(1.2rem, 3vw, 2rem);
+    background:transparent;
+    border-radius:18px;
+    border:none;
+    box-shadow:none;
+  }
+  .login-box{
+    background:var(--panel,#fff);
+    border-radius:18px;
+    border:1px solid var(--line,#e2e8f0);
+    box-shadow:0 18px 32px rgba(15,23,42,.06);
+    padding:clamp(1.4rem, 3vw, 2rem) clamp(1.3rem, 3.4vw, 2.2rem);
+    width:100%;
+    max-width:26rem;
+    display:flex;
+    flex-direction:column;
+    gap:clamp(0.9rem, 2vw, 1.3rem);
+    text-align:center;
+  }
+  .login-logo{
+    width:clamp(8rem, 25vw, 11rem);
+    margin:0 auto;
+  }
+  .login-box h2{
+    margin:0;
+    
+  }
+  .login-intro{
+    margin:0;
+    color:var(--muted);
+    
+  }
+  .input-group{
+    display:flex;
+    flex-direction:column;
+    text-align:left;
+    gap:6px;
+  }
+  .input-group label{
+    font-weight:600;
+    
+    color:#475569;
+  }
+  .error{
+    color:#dc2626;
+    
+    min-height:1.2em;
+  }
+  .login-note{
+    margin:0;
+    color:var(--muted);
+    
+  }
+  .turnstile-wrapper{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:center;
+    padding:4px 0 2px;
+  }
+  .turnstile-hint{
+    margin:0;
+    color:var(--muted);
+    
+  }
+  @media (max-width: 960px){
+    .login-page{
+      padding:clamp(1rem, 3vw, 1.5rem);
+      min-height:auto;
+      border-radius:16px;
+    }
+    .login-box{
+      padding:clamp(1.2rem, 3.4vw, 1.7rem) clamp(1.1rem, 3vw, 1.5rem);
+    }
+  }
+</style>
+
+<section class="login-page ppug-layout">
+  <form class="login-box" onsubmit="return login(event)">
+    <img alt="CliniCon Logo" class="login-logo" src="../assets/Bilder/CliniConLogo.png" />
+    <h2>Interner Bereich</h2>
+    <p class="login-intro">Bitte melden Sie sich mit Ihrem Standortk&uuml;rzel und Ihrem pers&ouml;nlichen Passwort an.</p>
+    <div class="input-group">
+      <label for="username">Benutzername</label>
+      <input id="username" placeholder="Benutzername" required type="text" autocomplete="username" />
+    </div>
+    <div class="input-group">
+      <label for="password">Passwort</label>
+      <input id="password" placeholder="Passwort" required type="password" autocomplete="current-password" />
+    </div>
+    <div class="turnstile-wrapper">
+      <div
+        id="turnstile-container"
+        class="cf-turnstile"
+        data-sitekey=""
+        data-callback="onTurnstileSuccess"
+        data-expired-callback="onTurnstileExpired"
+        data-error-callback="onTurnstileError"
+      ></div>
+      <p class="turnstile-hint">Sicherheitspruefung durch Cloudflare Turnstile.</p>
+    </div>
+    <button class="btn primary" type="submit">Anmelden</button>
+    <div aria-live="polite" class="error" id="error" role="alert"></div>
+    <p class="login-note">&copy; CliniCon - Interner Bereich</p>
+  </form>
+</section>
+
+<script>
+  const API_LOGIN_URL = "https://divine-disk-6cb5.maarten-koomen.workers.dev";
+  const START_PAGE_BASE = "pages/internerBereich/GFO/1-Seite.html";
+  const START_HASH = "unterstartseite";
+    const TURNSTILE_SITE_KEY = "1x00000000000000000000AA"; // Cloudflare testing key; replace for production.
+  let turnstileToken = "";
+
+  (function(){
+    const container = document.getElementById("turnstile-container");
+    if(container && TURNSTILE_SITE_KEY){
+      container.setAttribute("data-sitekey", TURNSTILE_SITE_KEY);
+    }
+  })();
+
+  const buildStartUrl = (siteCode) => {
+    const base = START_PAGE_BASE;
+    const param = siteCode ? `?site=${encodeURIComponent(siteCode)}` : "";
+    const hash = START_HASH ? `#${START_HASH}` : "";
+    return `${base}${param}${hash}`;
+  };
+
+  function onTurnstileSuccess(token){
+    turnstileToken = token;
+    const errorField = document.getElementById("error");
+    if(errorField && errorField.textContent.toLowerCase().includes("sicherheitspruefung")){
+      errorField.textContent = "";
+    }
+  }
+
+  function onTurnstileExpired(){
+    turnstileToken = "";
+  }
+
+  function onTurnstileError(){
+    turnstileToken = "";
+    const errorField = document.getElementById("error");
+    if(errorField){
+      errorField.textContent = "Sicherheitspruefung konnte nicht geladen werden. Bitte neu versuchen.";
+    }
+  }
+
+  function resetTurnstile(){
+    turnstileToken = "";
+    try{
+      if(window.turnstile){
+        window.turnstile.reset();
+      }
+    }catch(_){}
+  }
+
+  async function login(event){
+    event.preventDefault();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const errorField = document.getElementById("error");
+    errorField.textContent = "";
+
+    if(!username || !password){
+      errorField.textContent = "Bitte Benutzername und Passwort eingeben.";
+      return false;
+    }
+
+    if(!turnstileToken){
+      errorField.textContent = "Bitte die Sicherheitspruefung abschliessen.";
+      return false;
+    }
+
+    try{
+      const res = await fetch(API_LOGIN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, turnstileToken })
+      });
+
+      if(!res.ok){
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Benutzername oder Passwort ist falsch.");
+      }
+
+      const data = await res.json();
+      const siteCode = (data.siteCode || username).trim().toUpperCase();
+      sessionStorage.setItem("cliniconSite", siteCode);
+      sessionStorage.setItem("cliniconUser", username.trim());
+      window.location.href = buildStartUrl(siteCode);
+      return false;
+    }catch(err){
+      errorField.textContent = err.message || "Anmeldung fehlgeschlagen.";
+      resetTurnstile();
+      return false;
+    }
+  }
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+

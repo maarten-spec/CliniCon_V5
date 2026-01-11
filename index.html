@@ -1,0 +1,740 @@
+﻿<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="CliniCon: Tools und Suite fuer Personal- und Versorgungsplanung im Krankenhaus." />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="robots" content="index,follow" />
+  <title>CliniCon - Portal</title>
+  <link rel="icon" href="assets/Bilder/CliniConFavi.png" />
+  <link rel="canonical" href="https://www.clinicon.de/" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="side" aria-label="Hauptnavigation" id="mainSidebar">
+      <a class="brand" href="#" onclick="handleBrandClick(event); return false;">
+        <img src="assets/Bilder/CliniConLogo.png" alt="CliniCon Logo" />
+      </a>
+      <nav class="nav" id="mainNav">
+        <a href="#"
+           data-key="start"
+           data-path="pages/start.html"
+           data-title="Start"
+           data-subtitle="&Uuml;bersicht &amp; Schnellzugriff"
+           onclick="handleNavClick(event,this);">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11.5 12 4l9 7.5" />
+            <path d="M5 10.5V20h14v-9.5" />
+            <path d="M9 20v-5a3 3 0 0 1 6 0v5" />
+          </svg>
+          <span>Start</span>
+        </a>
+        <a href="#"
+           data-key="dokumente"
+           data-path="pages/dokumente.html"
+           data-title="Roadmap und Updates"
+           data-subtitle="Produktplanung &amp; Versionshinweise"
+           onclick="handleNavClick(event,this);">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 4.5h6.5L19 10v9.5a1.5 1.5 0 0 1-1.5 1.5H7A1.5 1.5 0 0 1 5.5 19.5v-13A1.5 1.5 0 0 1 7 5Z" />
+            <path d="M13.5 4.5V10H19" />
+            <path d="M8.5 13.5H15" />
+            <path d="M8.5 17H15" />
+          </svg>
+          <span>Roadmap und Updates</span>
+        </a>
+        <a href="#"
+           data-key="besetzungsbedarf"
+           data-path="pages/besetzungsbedarf.html"
+           data-title="Besetzungsbedarf"
+           data-subtitle="Personalbedarf pro Einheit"
+           onclick="handleNavClick(event,this);">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16v4H4z" />
+            <path d="M4 10h10v10H4z" />
+            <path d="M16 10h4v6h-4z" />
+            <path d="M8 14h2" />
+            <path d="M8 18h2" />
+            <path d="M18 12v2" />
+          </svg>
+          <span>Besetzungsbedarf</span>
+        </a>
+        <a href="#"
+           data-key="ppug"
+           data-path="pages/ppug-rechner.html"
+           data-title="PPUG-Rechner"
+           data-subtitle="Untergrenzen berechnen"
+           onclick="handleNavClick(event,this);">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3.5" y="4" width="17" height="13" rx="2" />
+            <path d="M7 20h10" />
+            <path d="M9 12h6" />
+            <path d="M9 8h6" />
+          </svg>
+          <span>PPUG-Rechner</span>
+        </a>
+        <a href="#"
+           data-key="ppbv"
+           data-path="pages/ppbv-berechnung.html"
+           data-title="PPBV-Berechner"
+           data-subtitle="Parameter steuern &amp; vergleichen"
+           onclick="handleNavClick(event,this);">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 20V9" />
+            <path d="M12 20V4" />
+            <path d="M17 20v-6" />
+            <path d="M5 20h14" />
+          </svg>
+          <span>PPBV-Berechner</span>
+        </a>
+        <a href="#"
+           data-key="schichtmatrix"
+           data-path="pages/schichtMatrix.html"
+           data-title="Schichtmatrix"
+           data-subtitle="Dienste &amp; VK-Bedarf kalkulieren"
+           onclick="handleNavClick(event,this);">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 20V6" />
+            <path d="M4 20h16" />
+            <path d="M8 14.5 10.5 11l3 4 4-6" />
+            <path d="M17 9h3v3" />
+          </svg>
+          <span>Schichtmatrix</span>
+        </a>
+        <a href="#"
+           data-key="schichtbesetzung"
+           data-path="pages/schichtbesetzung.html"
+           data-title="Schichtbesetzung"
+           data-subtitle="Planung &amp; Visualisierung"
+           onclick="handleNavClick(event,this);">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h6v6H4z" />
+            <path d="M14 4h6v6h-6z" />
+            <path d="M4 14h6v6H4z" />
+            <path d="M14 17h6" />
+            <path d="M17 14v6" />
+          </svg>
+          <span>Schichtbesetzung</span>
+        </a>
+        <a href="#"
+           data-key="gehaltsrechner"
+           data-path="pages/gehaltsrechner.html"
+           data-title="Gehaltsrechner"
+           data-subtitle="AVR Caritas Anlage 31 (Pflegedienst)"
+           onclick="handleNavClick(event,this);">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+            <path d="M7 8.5h10" />
+            <path d="M7 12h4" />
+            <path d="M7 15.5h6" />
+          </svg>
+          <span>Gehaltsrechner</span>
+        </a>
+        <a href="#"
+           class="secure"
+           data-key="login"
+           data-path="pages/login.html"
+           data-title="Interner Bereich"
+           data-subtitle="Anmeldung erforderlich"
+           onclick="handleNavClick(event,this);">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3l7 4v5c0 5-3.5 9-7 10-3.5-1-7-5-7-10V7l7-4z" />
+            <path d="M9 12l2 2 4-4" />
+          </svg>
+          <span>Interner Bereich</span>
+        </a>
+        <a href="#"
+           class="nav-separator"
+           data-key="produkt"
+           data-path="pages/produkt.html"
+           data-title="Produkt"
+           data-subtitle="CliniCon im &Uuml;berblick"
+           onclick="handleNavClick(event,this);">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3.5" y="4" width="17" height="13" rx="2" />
+            <path d="M7 8h10" />
+            <path d="M7 12h6" />
+            <path d="M9 20h6" />
+          </svg>
+          <span>Produkt</span>
+        </a>
+        <a href="#"
+           data-key="impressum"
+           data-path="pages/impressum.html"
+           data-title="Impressum"
+           data-subtitle="Angaben gem&auml;&szlig; &sect; 5 TMG"
+           onclick="handleNavClick(event,this);">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 11.5v5" />
+            <path d="M12 7h.01" />
+            <rect x="4" y="3.5" width="16" height="17" rx="2" />
+          </svg>
+          <span>Impressum</span>
+        </a>
+      </nav>
+    </aside>
+    <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
+    <div class="shell-main">
+      <header class="topbar">
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Menue oeffnen" aria-controls="mainSidebar" aria-expanded="false">
+          <span class="bar" aria-hidden="true"></span>
+        </button>
+        <div class="topbar-left">
+          <h1 id="pageHeading">CliniCon - Portal</h1>
+          <p id="pageSubheading">W&auml;hlen Sie links eine Anwendung aus.</p>
+        </div>
+        <img class="product-logo" src="assets/Bilder/CliniConLogo.png" alt="CliniCon Logo" />
+      </header>
+
+      <main id="mainContent" role="main" class="ppug-layout">
+        <section class="card" style="text-align:center; padding:48px;">
+          <h2>Willkommen bei CliniCon</h2>
+          <p>Die Inhalte werden geladen. Bitte w&auml;hlen Sie eine Anwendung in der Navigation aus.</p>
+        </section>
+      </main>
+
+      <footer>&copy; CliniCon</footer>
+    </div>
+  </div>
+
+  <!-- Cookie Consent: Banner + Settings Modal -->
+  <div id="cc-backdrop" class="cc-backdrop" aria-hidden="true"></div>
+
+  <section id="cc-banner" class="cc-banner" role="dialog" aria-modal="true" aria-labelledby="cc-title" aria-hidden="true">
+    <div class="cc-inner">
+      <div class="cc-text">
+        <h2 id="cc-title">Cookies &amp; Datenschutz</h2>
+        <p>
+          Wir verwenden technisch notwendige Cookies, um die Website sicher bereitzustellen.
+          Statistik- und Marketing-Cookies setzen wir nur mit Ihrer Einwilligung.
+          Ihre Auswahl wird gespeichert und kann jederzeit unter &quot;Cookie-Einstellungen&quot; ge&auml;ndert werden.
+          Details finden Sie in der <a id="cc-privacy-link" href="pages/impressum.html">Datenschutzerkl&auml;rung</a>.
+        </p>
+      </div>
+
+      <div class="cc-actions">
+        <button class="cc-btn cc-btn-secondary" id="cc-reject">Ablehnen</button>
+        <button class="cc-btn cc-btn-secondary" id="cc-settings">Einstellungen</button>
+        <button class="cc-btn cc-btn-primary" id="cc-accept">Alle akzeptieren</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="cc-modal" class="cc-modal" role="dialog" aria-modal="true" aria-labelledby="cc-modal-title" aria-hidden="true">
+    <div class="cc-modal-card">
+      <div class="cc-modal-head">
+        <h3 id="cc-modal-title">Cookie-Einstellungen</h3>
+        <button class="cc-icon-btn" id="cc-close" aria-label="Schliessen">&times;</button>
+      </div>
+
+      <div class="cc-modal-body">
+        <p class="cc-muted">
+          Technisch notwendige Cookies sind immer aktiv. Statistik- und Marketing-Cookies werden nur mit Einwilligung gesetzt.
+          Ihre Auswahl wird gespeichert.
+        </p>
+
+        <div class="cc-toggle">
+          <div>
+            <strong>Notwendig</strong>
+            <div class="cc-muted">Sicherheit, Seitennavigation, Basisfunktionen.</div>
+          </div>
+          <label class="cc-switch">
+            <input type="checkbox" checked disabled />
+            <span class="cc-slider"></span>
+          </label>
+        </div>
+
+        <div class="cc-toggle">
+          <div>
+            <strong>Statistik</strong>
+            <div class="cc-muted">Hilft uns zu verstehen, wie die Website genutzt wird.</div>
+          </div>
+          <label class="cc-switch">
+            <input type="checkbox" id="cc-statistics" />
+            <span class="cc-slider"></span>
+          </label>
+        </div>
+
+        <div class="cc-toggle">
+          <div>
+            <strong>Marketing</strong>
+            <div class="cc-muted">Personalisierung und Messung von Kampagnen (optional).</div>
+          </div>
+          <label class="cc-switch">
+            <input type="checkbox" id="cc-marketing" />
+            <span class="cc-slider"></span>
+          </label>
+        </div>
+
+        <details class="cc-details">
+          <summary>Technische Details</summary>
+          <p class="cc-muted">
+            Ihre Auswahl wird f&uuml;r 6 Monate gespeichert. Sie k&ouml;nnen diese jederzeit &uuml;ber &quot;Cookie-Einstellungen&quot; &auml;ndern.
+          </p>
+        </details>
+      </div>
+
+      <div class="cc-modal-actions">
+        <button class="cc-btn cc-btn-secondary" id="cc-save">Auswahl speichern</button>
+        <button class="cc-btn cc-btn-primary" id="cc-accept-2">Alle akzeptieren</button>
+      </div>
+    </div>
+  </section>
+
+  <button id="cc-open-link" class="cc-link-btn" type="button">Cookie-Einstellungen</button>
+
+  <a class="donate-badge" id="donateBadge" href="https://www.paypal.com/donate/?hosted_button_id=R596JLUVNM69L&sdkMeta=eyJ1cmwiOiJodHRwczovL3d3dy5wYXlwYWxvYmplY3RzLmNvbS9kb25hdGUvc2RrL2RvbmF0ZS1zZGsuanMiLCJhdHRycyI6eyJkYXRhLXVpZCI6InVpZF9wb2t1aW9tbmJnc293cGhpc2F1Z2VianVpb21iamsifX0&targetMeta=eyJ6b2lkVmVyc2lvbiI6IjlfMF81OCIsInRhcmdldCI6IkRPTkFURSIsInNka1ZlcnNpb24iOiIwLjkuMCJ9" target="_blank" rel="noopener" aria-label="Kaffee spendieren (PayPal)" title="Kaffee spendieren">
+    <span class="donate-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8h1a4 4 0 1 1 0 8h-1" />
+        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+        <path d="M6 1v3" />
+        <path d="M10 1v3" />
+        <path d="M14 1v3" />
+      </svg>
+    </span>
+    <span class="donate-text">
+      <span class="donate-label">Kaffee</span>
+      <span class="donate-sub">spendieren</span>
+    </span>
+  </a>
+
+
+  <script>
+    const navLinks = () => Array.from(document.querySelectorAll('#mainNav a'));
+    const navToggle = document.getElementById('navToggle');
+    const navBackdrop = document.getElementById('navBackdrop');
+    const topbar = document.querySelector('.topbar');
+    const updateTopbarHeight = () => {
+      if(!topbar) return;
+      document.documentElement.style.setProperty('--topbar-h', `${topbar.offsetHeight}px`);
+    };
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      const main = document.getElementById('mainContent');
+      if(main && typeof main.scrollTo === 'function'){
+        main.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      }
+    };
+    const TEXT_FIXES = [
+      ['zun?chst','zun\u00e4chst'],
+      ['Arbeitspl?tze','Arbeitspl\u00e4tze'],
+      ['Krei?saal','Krei\u00dfsaal'],
+      ['R?ntgen','R\u00f6ntgen'],
+      ['hinzuf?gen','hinzuf\u00fcgen'],
+      ['durchf?hren','durchf\u00fchren'],
+      ['Ausf?llen','Ausf\u00fcllen'],
+      ['Ausf?lle','Ausf\u00e4lle'],
+      ['Ben?tigte','Ben\u00f6tigte'],
+      ['Gesamtberechnung durchf?hren','Gesamtberechnung durchf\u00fchren'],
+      ['weiteren Arbeitsplatz hinzuf?gen','weiteren Arbeitsplatz hinzuf\u00fcgen'],
+      ['Fehlzeiten ?','Fehlzeiten \u2013'],
+      ['Einsatzbedarf ?','Einsatzbedarf \u2013'],
+      ['Bruttobedarf ?','Bruttobedarf \u2013'],
+      ['Feiertage ?','Feiertage \u2013'],
+      ['l?nder','l\u00e4nder'],
+      ['f?r','f\u00fcr'],
+      ['n?chsten','n\u00e4chsten'],
+      ['Menge ? Zeit','Menge \u00d7 Zeit'],
+      ['Baden-W?rttemberg','Baden-W\u00fcrttemberg'],
+      ['Th?ringen','Th\u00fcringen'],
+      ['L?nderspezifische','L\u00e4nderspezifische'],
+      ['K?nige','K\u00f6nige'],
+      ['Ost-L?ndern','Ost-L\u00e4ndern'],
+      ['Bu?-','Bu\u00df-'],
+      ['Mari?','Mari\u00e4'],
+      ['vollst?ndig','vollst\u00e4ndig'],
+      ['Mo?Fr','Mo-Fr'],
+      ['zus?tzlich','zus\u00e4tzlich'],
+      ['verf?gbare','verf\u00fcgbare'],
+      ['verf?gba','verf\u00fcgba'],
+      ['Abz?ge','Abz\u00fcge'],
+      ['Hilfskr?fte','Hilfskr\u00e4fte'],
+      ['Pflegekr?fte','Pflegekr\u00e4fte'],
+      ['Verh?ltnis','Verh\u00e4ltnis'],
+      ['zul?ssig','zul\u00e4ssig'],
+      ['k?nnen','k\u00f6nnen'],
+      ['VZ?','VZ\u00c4'],
+      ['Gr??e','Gr\u00f6\u00dfe'],
+      ['K?rper','K\u00f6rper'],
+      ['k?rper','k\u00f6rper'],
+      ['Bezugsgr??e','Bezugsgr\u00f6\u00dfe']
+    ];
+
+    function normalizeTextContent(root){
+      const walker = document.createTreeWalker(
+        root,
+        NodeFilter.SHOW_TEXT,
+        {
+          acceptNode(node){
+            const parent = node.parentNode;
+            if(!parent) return NodeFilter.FILTER_REJECT;
+            const tag = parent.tagName;
+            if(tag === 'SCRIPT' || tag === 'STYLE') return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        }
+      );
+      while(walker.nextNode()){
+        const node = walker.currentNode;
+        let value = node.nodeValue;
+        let updated = value;
+        TEXT_FIXES.forEach(([from,to])=>{
+          if(updated.includes(from)){
+            updated = updated.split(from).join(to);
+          }
+        });
+        if(updated !== value){
+          node.nodeValue = updated;
+        }
+      }
+    }
+
+    function resolveRelativeImages(root, basePath){
+      const baseUrl = new URL(basePath, window.location.href);
+      const nodes = [
+        ...root.querySelectorAll('img[src]'),
+        ...root.querySelectorAll('source[src]'),
+        ...root.querySelectorAll('audio[src]'),
+        ...root.querySelectorAll('video[poster]')
+      ];
+      nodes.forEach(node => {
+        const attr = node.tagName.toLowerCase() === 'video' ? 'poster' : 'src';
+        const value = (node.getAttribute(attr) || '').trim();
+        if(!value) return;
+        if(value.startsWith('#') || value.startsWith('data:') || value.startsWith('http://') || value.startsWith('https://') || value.startsWith('//')){
+          return;
+        }
+        try{
+          const resolved = new URL(value, baseUrl);
+          node.setAttribute(attr, resolved.href);
+        }catch(_){}
+      });
+    }
+
+    function setNavOpen(isOpen){
+      document.body.classList.toggle('nav-open', isOpen);
+      if(navToggle){
+        navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        navToggle.setAttribute('aria-label', isOpen ? 'Menue schliessen' : 'Menue oeffnen');
+      }
+    }
+
+
+    function setActive(el){
+      navLinks().forEach(a => a.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    async function loadPage(path, title, subtitle){
+      const content = document.getElementById('mainContent');
+      content.innerHTML = '<section class="card" style="text-align:center; padding:40px;">Inhalte werden geladen ...</section>';
+      try{
+        const res = await fetch(path, { cache: "no-store" });
+        if(!res.ok) throw new Error('Seite nicht gefunden.');
+        const html = await res.text();
+        content.innerHTML = html;
+        resolveRelativeImages(content, path);
+        normalizeTextContent(content);
+        const scripts = Array.from(content.querySelectorAll('script'));
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+          newScript.textContent = oldScript.textContent;
+          oldScript.replaceWith(newScript);
+        });
+        if(window.CCConsent && typeof window.CCConsent.refresh === 'function'){
+          window.CCConsent.refresh();
+        }
+        document.getElementById('pageHeading').textContent = 'CliniCon - ' + title;
+        document.getElementById('pageSubheading').textContent = subtitle || '';
+        document.title = 'CliniCon - ' + title;
+      }catch(err){
+        content.innerHTML = '<section class="card" style="color:red; text-align:center;">'+err.message+'</section>';
+      }
+    }
+
+    function navigate(link, push = true){
+      const path = link.dataset.path;
+      const title = link.dataset.title || link.textContent.trim();
+      const subtitle = link.dataset.subtitle || '';
+      if(!path) return;
+      setActive(link);
+      setNavOpen(false);
+      scrollToTop();
+      loadPage(path, title, subtitle);
+      if(push){
+        const key = link.dataset.key || '';
+        history.pushState({path, title, subtitle, key}, '', '#' + key);
+      }
+    }
+
+    function handleNavClick(event, link){
+      event.preventDefault();
+      navigate(link);
+    }
+
+    function handleBrandClick(event){
+      event.preventDefault();
+      const startLink = document.querySelector('#mainNav a[data-key="start"]');
+      if(startLink){
+        navigate(startLink);
+      }
+    }
+
+    window.addEventListener('popstate', (event) => {
+      if(event.state){
+        const { path, title, subtitle, key } = event.state;
+        const active = key ? document.querySelector('#mainNav a[data-key="'+key+'"]') : null;
+        if(active){
+          setActive(active);
+        }
+        scrollToTop();
+        loadPage(path, title, subtitle);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setNavOpen(false);
+      if(navToggle){
+        navToggle.addEventListener('click', () => {
+          setNavOpen(!document.body.classList.contains('nav-open'));
+        });
+      }
+      if(navBackdrop){
+        navBackdrop.addEventListener('click', () => {
+          setNavOpen(false);
+        });
+      }
+      document.addEventListener('keydown', (event) => {
+        if(event.key === 'Escape'){
+          setNavOpen(false);
+        }
+      });
+      const map = navLinks().reduce((acc, link) => {
+        if(link.dataset.key){
+          acc[link.dataset.key] = link;
+        }
+        return acc;
+      }, {});
+      const key = (location.hash || '#start').replace('#','');
+      const normalizedKey = key === 'perzentilen' ? 'schichtmatrix' : key;
+      const link = map[normalizedKey] || map.start;
+      if(link){
+        navigate(link, false);
+      }
+      updateTopbarHeight();
+      window.addEventListener('resize', () => {
+        updateTopbarHeight();
+        if(window.innerWidth <= 960){
+          document.body.classList.add('is-mobile');
+        }else{
+          document.body.classList.remove('is-mobile');
+        }
+        if(window.innerWidth >= 960){
+          setNavOpen(false);
+        }
+      });
+      if(window.innerWidth <= 960){
+        document.body.classList.add('is-mobile');
+      }
+    });
+  </script>
+  <script>
+  /**
+   * CliniCon Cookie Consent (standard)
+   * - Speichert Entscheidung in cookie + localStorage
+   * - Kategorien: necessary (always true), statistics, marketing
+   * - Blockiert optionale Scripts ueber data-consent="statistics|marketing"
+   */
+  (function(){
+    const CONSENT_KEY = "clinicon_cookie_consent_v1";
+    const MAX_AGE_DAYS = 180;
+
+    const els = {
+      backdrop: document.getElementById("cc-backdrop"),
+      banner: document.getElementById("cc-banner"),
+      modal: document.getElementById("cc-modal"),
+      reject: document.getElementById("cc-reject"),
+      accept: document.getElementById("cc-accept"),
+      settings: document.getElementById("cc-settings"),
+      close: document.getElementById("cc-close"),
+      save: document.getElementById("cc-save"),
+      accept2: document.getElementById("cc-accept-2"),
+      stat: document.getElementById("cc-statistics"),
+      mkt: document.getElementById("cc-marketing"),
+      openLink: document.getElementById("cc-open-link"),
+      privacyLink: document.getElementById("cc-privacy-link")
+    };
+
+    function setCookie(name, value, days){
+      const d = new Date();
+      d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+      document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; expires=${d.toUTCString()}; path=/; SameSite=Lax`;
+    }
+
+    function getCookie(name){
+      const needle = encodeURIComponent(name) + "=";
+      const parts = document.cookie.split("; ");
+      for(const p of parts){
+        if(p.indexOf(needle) === 0) return decodeURIComponent(p.substring(needle.length));
+      }
+      return null;
+    }
+
+    function loadConsent(){
+      try{
+        const ls = localStorage.getItem(CONSENT_KEY);
+        if(ls) return JSON.parse(ls);
+      }catch(_){}
+
+      const c = getCookie(CONSENT_KEY);
+      if(c){
+        try{ return JSON.parse(c); }catch(_){}
+      }
+      return null;
+    }
+
+    function saveConsent(consent){
+      const payload = JSON.stringify({
+        necessary: true,
+        statistics: !!consent.statistics,
+        marketing: !!consent.marketing,
+        ts: Date.now()
+      });
+
+      try{ localStorage.setItem(CONSENT_KEY, payload); }catch(_){}
+      setCookie(CONSENT_KEY, payload, MAX_AGE_DAYS);
+    }
+
+    function showBanner(){
+      if(!els.banner) return;
+      els.banner.style.display = "block";
+      els.banner.setAttribute("aria-hidden", "false");
+    }
+
+    function hideBanner(){
+      if(!els.banner) return;
+      els.banner.style.display = "none";
+      els.banner.setAttribute("aria-hidden", "true");
+    }
+
+    function openModal(){
+      if(els.backdrop) els.backdrop.style.display = "block";
+      if(els.modal) els.modal.style.display = "flex";
+      if(els.backdrop) els.backdrop.setAttribute("aria-hidden", "false");
+      if(els.modal) els.modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal(){
+      if(els.backdrop) els.backdrop.style.display = "none";
+      if(els.modal) els.modal.style.display = "none";
+      if(els.backdrop) els.backdrop.setAttribute("aria-hidden", "true");
+      if(els.modal) els.modal.setAttribute("aria-hidden", "true");
+    }
+
+    function showOpenLink(){
+      if(els.openLink){
+        els.openLink.style.transform = "translateY(0)";
+      }
+    }
+
+    function applyConsent(consent){
+      if(consent.statistics) enableScripts("statistics");
+      if(consent.marketing) enableScripts("marketing");
+    }
+
+    function enableScripts(category){
+      const nodes = document.querySelectorAll(`script[type="text/plain"][data-consent="${category}"]`);
+      nodes.forEach(node => {
+        const s = document.createElement("script");
+        [...node.attributes].forEach(attr => {
+          if(attr.name === "type") return;
+          s.setAttribute(attr.name, attr.value);
+        });
+        s.text = node.text || "";
+        node.parentNode.insertBefore(s, node);
+        node.remove();
+      });
+    }
+
+    function acceptAll(){
+      const consent = { statistics: true, marketing: true };
+      saveConsent(consent);
+      applyConsent(consent);
+      closeModal();
+      hideBanner();
+      showOpenLink();
+    }
+
+    function rejectAll(){
+      const consent = { statistics: false, marketing: false };
+      saveConsent(consent);
+      closeModal();
+      hideBanner();
+      showOpenLink();
+    }
+
+    function saveSelection(){
+      const consent = { statistics: !!(els.stat && els.stat.checked), marketing: !!(els.mkt && els.mkt.checked) };
+      saveConsent(consent);
+      applyConsent(consent);
+      closeModal();
+      hideBanner();
+      showOpenLink();
+    }
+
+    els.accept?.addEventListener("click", acceptAll);
+    els.accept2?.addEventListener("click", acceptAll);
+    els.reject?.addEventListener("click", rejectAll);
+    els.settings?.addEventListener("click", openModal);
+    els.close?.addEventListener("click", closeModal);
+    els.save?.addEventListener("click", saveSelection);
+    els.backdrop?.addEventListener("click", closeModal);
+
+    els.openLink?.addEventListener("click", () => {
+      const existing = loadConsent();
+      if(els.stat) els.stat.checked = !!(existing && existing.statistics);
+      if(els.mkt) els.mkt.checked = !!(existing && existing.marketing);
+      openModal();
+    });
+
+    if(els.privacyLink){
+      els.privacyLink.addEventListener("click", (event) => {
+        const navLink = document.querySelector('#mainNav a[data-key="impressum"]');
+        if(navLink){
+          event.preventDefault();
+          navLink.click();
+        }
+      });
+    }
+
+    window.CCConsent = {
+      refresh(){
+        const consent = loadConsent();
+        if(consent){
+          applyConsent(consent);
+        }
+      },
+      load: loadConsent
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const consent = loadConsent();
+      if(!consent){
+        showBanner();
+        return;
+      }
+      if(els.stat) els.stat.checked = !!consent.statistics;
+      if(els.mkt) els.mkt.checked = !!consent.marketing;
+      applyConsent(consent);
+      showOpenLink();
+    });
+  })();
+  </script>
+</body>
+</html>
+

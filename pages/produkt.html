@@ -1,0 +1,148 @@
+<!-- Produktseite -->
+<style>
+  #produkt{
+    width:100%;
+    display:block;
+    padding:0;
+  }
+  #produkt h2{
+    margin:0;
+    
+  }
+  #produkt h3{
+    margin:0;
+    
+  }
+  #produkt h4{
+    margin:0;
+    
+    color:#0f172a;
+  }
+  #produkt p{
+    margin:0;
+  }
+  #produkt .product-hero{
+    display:flex;
+    flex-direction:column;
+    gap:clamp(0.7rem, 1.6vw, 1rem);
+  }
+  #produkt .product-eyebrow{
+    
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent,#2563eb);
+  }
+  #produkt .product-tagline{
+    
+    color:var(--muted,#64748b);
+  }
+  #produkt .product-cta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:clamp(0.6rem, 1.6vw, 0.9rem);
+    margin-top:4px;
+  }
+  #produkt .product-grid{
+    display:grid;
+    gap:clamp(0.6rem, 1.6vw, 0.9rem);
+    grid-template-columns:repeat(auto-fit, minmax(clamp(12rem, 24vw, 15rem), 1fr));
+  }
+  #produkt .module-card{
+    border:1px solid var(--line,#e2e8f0);
+    border-radius:14px;
+    padding:clamp(0.9rem, 2.2vw, 1.2rem);
+    background:#fff;
+    display:flex;
+    flex-direction:column;
+    gap:clamp(0.4rem, 1vw, 0.7rem);
+  }
+  #produkt .muted{color:var(--muted,#64748b);}
+  #produkt .note{margin:0; }
+  #produkt ul{
+    margin:0;
+    padding-left:18px;
+    display:grid;
+    gap:6px;
+  }
+</style>
+
+<section class="card ppug-layout" id="produkt">
+  <div class="ppug-grid">
+    <div class="ppug-card">
+      <div class="product-hero">
+        <span class="product-eyebrow">CliniCon Suite</span>
+        <p class="product-tagline">Die integrierte Suite f&uuml;r strukturierte Stellenplanung, Analyse und Abgleich im Krankenhaus.</p>
+        <h2>Strukturierte Stellenplanung f&uuml;r komplexe Versorgungsrealit&auml;ten</h2>
+        <p class="muted">
+          In vielen Krankenh&auml;usern erfolgt die Stellenplanung weiterhin auf Basis einzelner Tabellen, historisch gewachsener Strukturen und individueller Logiken.
+        </p>
+        <p class="muted">
+          CliniCon schafft eine gemeinsame, nachvollziehbare und auswertbare Grundlage f&uuml;r die Planung von Personalressourcen &ndash; &uuml;ber Stationen, Bereiche und Qualifikationen hinweg.
+        </p>
+        <div class="product-cta">
+          <a class="btn primary" href="mailto:kontakt@clinicon.de?subject=CliniCon%20Demo%20anfragen">Demo anfragen</a>
+          <a class="btn" href="assets/flyer/Clinicon_Flyer.pdf" download>Flyer herunterladen (PDF)</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="ppug-card">
+      <h3>Warum tabellenbasierte Planung an Grenzen st&ouml;&szlig;t</h3>
+      <ul>
+        <li>Mehrere Tabellenversionen mit unterschiedlichen St&auml;nden.</li>
+        <li>Zellbez&uuml;ge, Verkn&uuml;pfungen und Berechnungslogiken sind anf&auml;llig f&uuml;r unbeabsichtigte &Auml;nderungen.</li>
+        <li>Formeln sind vorhanden, aber nicht gesch&uuml;tzt &ndash; &Auml;nderungen bleiben oft unbemerkt.</li>
+        <li>Wissen h&auml;ngt an Einzelpersonen; Logiken und Annahmen sind selten dokumentiert.</li>
+        <li>Nachvollziehbarkeit &uuml;ber Zeitr&auml;ume fehlt; historische Planungsst&auml;nde sind kaum rekonstruierbar.</li>
+      </ul>
+    </div>
+
+    <div class="ppug-card">
+      <h3>CliniCon Suite &ndash; strukturiert planen, vergleichen und analysieren</h3>
+      <p class="muted">Die CliniCon Suite ersetzt keine Tabellen &ndash; sie ordnet sie ein.</p>
+      <p class="muted">
+        Stellenpl&auml;ne werden strukturiert erfasst, versioniert und miteinander verkn&uuml;pft. Unterschiedliche Planungsst&auml;nde lassen sich vergleichen, analysieren und gezielt weiterentwickeln.
+      </p>
+    </div>
+
+    <div class="ppug-card">
+      <h3>Module der CliniCon Suite</h3>
+      <div class="product-grid">
+        <div class="module-card">
+          <h4>Stellenplan Core</h4>
+          <ul>
+            <li>Erfassung unterschiedlicher Stellenpl&auml;ne (z. B. Station, Bereich, Jahr).</li>
+            <li>Klare Versionierung und Vergleichbarkeit.</li>
+            <li>Einheitliche Struktur statt individueller Tabellenlogiken.</li>
+          </ul>
+        </div>
+        <div class="module-card">
+          <h4>Stellenplan Mapping</h4>
+          <ul>
+            <li>Abgleich mehrerer Stellenpl&auml;ne untereinander.</li>
+            <li>Zuordnung zu Wirtschaftsplanzahlen.</li>
+            <li>Transparente Gegen&uuml;berstellung von Planung und Zielgr&ouml;&szlig;en.</li>
+          </ul>
+        </div>
+        <div class="module-card">
+          <h4>Qualifikationslogik</h4>
+          <ul>
+            <li>Hinterlegung von Qualifikationen.</li>
+            <li>Zuordnung zu Stellen und Bereichen.</li>
+            <li>Filterbarkeit nach Qualifikationsanforderungen.</li>
+          </ul>
+        </div>
+        <div class="module-card">
+          <h4>Stellenplan Insights</h4>
+          <ul>
+            <li>Auswertung von Fachkraftquoten.</li>
+            <li>Analyse nach Qualifikationen, Bereichen, Zeitr&auml;umen.</li>
+            <li>Grundlage f&uuml;r interne Steuerung und externe Nachweise.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

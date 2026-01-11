@@ -1,0 +1,566 @@
+<!-- AVR Gehaltsrechner -->
+<style>
+  #gehaltsrechner{
+    width:100%;
+    display:block;
+    padding:0;
+  }
+  #gehaltsrechner .hint{
+    margin:0;
+    color:var(--muted,#64748b);
+    
+  }
+  #gehaltsrechner .result-meta{
+    margin:0;
+    color:var(--muted,#64748b);
+    
+  }
+  #gehaltsrechner .result-meta strong{
+    color:var(--text,#0f172a);
+    font-weight:600;
+  }
+  #gehaltsrechner .task-card{
+    margin-top:12px;
+    border:1px solid var(--line,#e2e8f0);
+    border-radius:14px;
+    padding:clamp(0.9rem, 2.2vw, 1.2rem);
+    background:#fff;
+    display:flex;
+    flex-direction:column;
+    gap:clamp(0.4rem, 1vw, 0.7rem);
+  }
+  #gehaltsrechner .task-card h4{
+    margin:0;
+    
+  }
+  #gehaltsrechner .task-text{
+    color:var(--text,#0f172a);
+    
+    line-height:1.5;
+  }
+  #gehaltsrechner .task-text ul{
+    margin:0;
+    padding-left:18px;
+    display:grid;
+    gap:6px;
+  }
+  #gehaltsrechner .task-text li{
+    margin:0;
+  }
+  #gehaltsrechner .future-note{
+    margin:10px 0 0;
+    padding:clamp(0.6rem, 1.8vw, 0.8rem) clamp(0.7rem, 2vw, 0.9rem);
+    border-radius:12px;
+    border:1px dashed var(--line,#e2e8f0);
+    background:#f8fafc;
+    color:var(--muted,#64748b);
+    
+  }
+  #gehaltsrechner .calc-btn{
+    background:var(--accent,#2563eb);
+    color:#fff;
+    border:1px solid var(--accent,#2563eb);
+    border-radius:12px;
+    padding:clamp(0.6rem, 1.6vw, 0.8rem) clamp(1rem, 2.4vw, 1.3rem);
+    font-weight:700;
+    box-shadow:0 12px 24px rgba(37,99,235,.22);
+    transition:.18s ease all;
+  }
+  #gehaltsrechner .calc-btn:hover{
+    filter:brightness(1.05);
+    transform:translateY(-1px);
+  }
+  #gehaltsrechner .calc-btn:active{
+    transform:translateY(0);
+  }
+  .tip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: help;
+    outline: none;
+  }
+  .tip .i {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 1;
+    border: 1px solid #0f172a;
+    background: #0f172a;
+    color: #ffffff;
+    font-weight: 700;
+    opacity: 1;
+  }
+  .tip::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    margin-top: 10px;
+    width: min(420px, 80vw);
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, .98);
+    color: #fff;
+    font-size: 12.5px;
+    line-height: 1.35;
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+    transition: opacity .15s ease, transform .15s ease;
+    z-index: 50;
+  }
+  .tip:hover::after,
+  .tip:focus::after,
+  .tip:focus-within::after {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<section class="card ppug-layout" id="gehaltsrechner">
+  <div class="ppug-grid">
+    <div class="ppug-card">
+      <h2>Gehaltsrechner AVR Caritas</h2>
+      <p class="hint">Anlage 31 (Pflegedienst), Tabellenwerte 2025 (Ost/West).</p>
+      <p class="future-note">Hinweis: Geplant ist eine kleine Visitenkarte mit QR-Code zur Gehaltsrechner-Seite, damit der Rechner unterwegs schnell per Handy genutzt werden kann.</p>
+
+      <div class="row">
+        <label class="field span-4">
+          Examsjahrgang
+          <input id="avr-exam-year" type="number" min="1970" max="2100" step="1" placeholder="z.B. 2016" />
+        </label>
+        <label class="field span-4">
+          Berufserfahrung (Jahre)
+          <input id="avr-exp-years" type="number" min="0" max="60" step="1" placeholder="z.B. 8" />
+        </label>
+        <label class="field span-4">
+          Bundesland
+          <select id="avr-state">
+            <option value="" disabled>Bitte auswaehlen</option>
+            <option value="baden-wuerttemberg">Baden-W&uuml;rttemberg</option>
+            <option value="bayern">Bayern</option>
+            <option value="berlin">Berlin</option>
+            <option value="brandenburg">Brandenburg</option>
+            <option value="bremen">Bremen</option>
+            <option value="hamburg">Hamburg</option>
+            <option value="hessen">Hessen</option>
+            <option value="mecklenburg-vorpommern">Mecklenburg-Vorpommern</option>
+            <option value="niedersachsen">Niedersachsen</option>
+            <option value="nordrhein-westfalen" selected>Nordrhein-Westfalen</option>
+            <option value="rheinland-pfalz">Rheinland-Pfalz</option>
+            <option value="saarland">Saarland</option>
+            <option value="sachsen">Sachsen</option>
+            <option value="sachsen-anhalt">Sachsen-Anhalt</option>
+            <option value="schleswig-holstein">Schleswig-Holstein</option>
+            <option value="thueringen">Th&uuml;ringen</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="field span-4">
+          Entgeltgruppe
+          <select id="avr-group"></select>
+        </label>
+      </div>
+
+      <div class="task-card" style="margin-top:12px;">
+        <h4>Zulagen (AVR Anlage 31) &ndash; optional</h4>
+
+        <div class="row" style="gap:12px;">
+
+          <label class="check span-6">
+            <input type="radio" name="shiftType" class="avr-allow" data-key="shift" />
+            <span class="tip" tabindex="0"
+              data-tip="Gilt, wenn du dauerhaft im Schichtdienst eingesetzt bist (dienstplanm&auml;&szlig;iger Wechsel von Fr&uuml;h/Sp&auml;t &uuml;ber einen l&auml;ngeren Zeitraum).">
+              Schichtzulage (st&auml;ndig) <span class="i" aria-hidden="true">?</span>
+            </span>
+            <input type="number" class="avr-allow-amt" data-key="shift" step="0.01" min="0" value="100.00" />
+            <span class="muted">&euro;/Monat</span>
+          </label>
+
+          <label class="check span-6">
+            <input type="radio" name="shiftType" class="avr-allow" data-key="ws" />
+            <span class="tip" tabindex="0"
+              data-tip="Gilt, wenn du st&auml;ndig in Wechselschicht arbeitest (dienstplanm&auml;&szlig;iger Wechsel zwischen Tag- und Nachtschichten).">
+              Wechselschichtzulage (st&auml;ndige Wechselschicht) <span class="i" aria-hidden="true">?</span>
+            </span>
+            <input type="number" class="avr-allow-amt" data-key="ws" step="0.01" min="0" value="250.00" />
+            <span class="muted">&euro;/Monat</span>
+          </label>
+
+          <label class="check span-6">
+            <input type="checkbox" class="avr-allow" data-key="care" />
+            <span class="tip" tabindex="0"
+              data-tip="Gilt f&uuml;r Mitarbeitende in den Pflege-Entgeltgruppen (z. B. P 4 bis P 16), wenn die Zulage f&uuml;r die jeweilige Eingruppierung vorgesehen ist.">
+              Pflegezulage <span class="i" aria-hidden="true">?</span>
+            </span>
+            <input type="number" class="avr-allow-amt" data-key="care" step="0.01" min="0" value="141.82" />
+            <span class="muted">&euro;/Monat</span>
+          </label>
+
+          <label class="check span-6">
+            <input type="checkbox" class="avr-allow" data-key="nonDyn" />
+            <span class="tip" tabindex="0"
+              data-tip="Gilt nur, wenn deine Eingruppierung oder regionale Regelung diese Zulage ausdr&uuml;cklich vorsieht.">
+              Nicht dynamische Zulage <span class="i" aria-hidden="true">?</span>
+            </span>
+            <input type="number" class="avr-allow-amt" data-key="nonDyn" step="0.01" min="0" value="25.00" />
+            <span class="muted">&euro;/Monat</span>
+          </label>
+
+        </div>
+
+        <p class="muted note" style="margin:8px 0 0 0;">
+          Hinweis: Manche Zulagen gelten nur f&uuml;r bestimmte T&auml;tigkeiten/Entgeltgruppen/Regionen. Betr&auml;ge sind editierbar. Alle Zulagen werden brutto gezahlt und unterliegen der Steuer- und Sozialversicherungspflicht.
+        </p>
+      </div>
+    </div>
+
+    <div class="ppug-card">
+      <h3>Ergebnis</h3>
+      <div class="kpi-grid">
+        <div class="kpi-tile">
+          <span class="muted">Entgeltgruppe</span>
+          <strong id="avr-result-group">-</strong>
+          <span class="muted">Anlage 31</span>
+        </div>
+        <div class="kpi-tile">
+          <span class="muted">Tabellenstufe</span>
+          <strong id="avr-result-step">-</strong>
+          <span class="muted" id="avr-result-exp">-</span>
+        </div>
+        <div class="kpi-tile">
+          <span class="muted">Bruttogehalt</span>
+          <strong id="avr-result-pay">-</strong>
+          <span class="muted">Grundentgelt / Monat</span>
+        </div>
+        <div class="kpi-tile">
+          <span class="muted">Zulagen (Summe)</span>
+          <strong id="avr-result-allowances">-</strong>
+          <span class="muted">&euro;/Monat</span>
+        </div>
+        <div class="kpi-tile">
+          <span class="muted">Gesamt (mit Zulagen)</span>
+          <strong id="avr-result-total">-</strong>
+          <span class="muted">Brutto / Monat</span>
+        </div>
+        <div class="kpi-tile">
+          <span class="muted">Tarifgebiet</span>
+          <strong id="avr-result-region">-</strong>
+          <span class="muted">01.01.2025 &ndash; 31.12.2025</span>
+        </div>
+      </div>
+      <p class="result-meta">Bundesland: <strong id="avr-result-state">-</strong></p>
+      <p class="muted note" id="avr-source-note">Quelle: AVR Caritas Anlage 31 (Tabellenwerte).</p>
+      <div class="task-card">
+        <h4>T&auml;tigkeitsmerkmale (Auszug)</h4>
+        <div class="task-text" id="avr-role-text">-</div>
+        <p class="muted note">Quelle: schiering.org &ndash; Anlage 31, Anhang D (Stand 31.12.2025).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function(){
+    const EAST_VALUES = {
+      P4: [2819.92, 2881.60, 2927.34, 2961.85, 2989.94, 3032.05],
+      P6: [2890.95, 3065.35, 3240.91, 3614.29, 3709.48, 3885.15],
+      P7: [null, 3387.31, 3577.66, 3870.55, 4016.98, 4167.80],
+      P8: [null, 3577.66, 3738.78, 3945.33, 4112.16, 4345.51],
+      P9: [null, 3864.79, 4050.67, 4174.56, 4412.90, 4513.41],
+      P10: [null, 4050.67, 4174.56, 4525.99, 4695.61, 4802.41],
+      P11: [null, 4278.46, 4411.65, 4744.62, 4965.75, 5066.28],
+      P12: [null, 4508.38, 4649.12, 5000.93, 5217.06, 5317.57],
+      P13: [null, 4738.35, 4886.62, 5257.26, 5524.88, 5593.99],
+      P14: [null, 4853.29, 5005.34, 5385.42, 5901.83, 5996.07],
+      P15: [null, 4968.27, 5124.07, 5513.58, 5979.74, 6157.76],
+      P16: [null, 5072.57, 5242.81, 5792.52, 6433.32, 6715.97]
+    };
+
+    const WEST_FACTOR = 1.025;
+    const round2 = (value) => Math.round(value * 100) / 100;
+
+    function buildWestValues(eastValues){
+      const out = {};
+      Object.keys(eastValues).forEach(group => {
+        out[group] = eastValues[group].map(value => {
+          if(value == null) return null;
+          return round2(value * WEST_FACTOR);
+        });
+      });
+      return out;
+    }
+
+    const AVR_DATA = {
+      validFrom: '2025-01-01',
+      validTo: '2025-12-31',
+      stufenlaufzeiten: [1, 2, 3, 4, 5],
+      regions: {
+        east: {
+          label: 'Ost',
+          source: {
+            title: 'schiering.org - Anhang B Anlage 31, Tabellenwerte 2025 (Ost)',
+            url: 'https://schiering.org/arhilfen/gesetz/avr/tabellen2025/230705-beschluss-rk-ost-tabellenwerte2025.pdf'
+          },
+          entgeltgruppen: EAST_VALUES
+        },
+        west: {
+          label: 'West',
+          source: {
+            title: 'schiering.org - Anhang B Anlage 31, Tabellenwerte 2025 (West aus Ost * 1.025)',
+            url: 'https://schiering.org/arhilfen/gesetz/avr/tabellen2025/230705-beschluss-rk-ost-tabellenwerte2025.pdf'
+          },
+          entgeltgruppen: buildWestValues(EAST_VALUES)
+        }
+      }
+    };
+
+    const groupOrder = ['P4','P6','P7','P8','P9','P10','P11','P12','P13','P14','P15','P16'];
+
+    const examInput = document.getElementById('avr-exam-year');
+    const expInput = document.getElementById('avr-exp-years');
+    const stateSelect = document.getElementById('avr-state');
+    const groupSelect = document.getElementById('avr-group');
+    const calcBtn = document.getElementById('avr-calc');
+
+    const resultGroup = document.getElementById('avr-result-group');
+    const resultStep = document.getElementById('avr-result-step');
+    const resultExp = document.getElementById('avr-result-exp');
+    const resultPay = document.getElementById('avr-result-pay');
+    const resultAllowances = document.getElementById('avr-result-allowances');
+    const resultTotal = document.getElementById('avr-result-total');
+    const resultState = document.getElementById('avr-result-state');
+    const resultRegion = document.getElementById('avr-result-region');
+    const sourceNote = document.getElementById('avr-source-note');
+    const roleText = document.getElementById('avr-role-text');
+    const allowChecks = Array.from(document.querySelectorAll('.avr-allow'));
+    const allowAmounts = Array.from(document.querySelectorAll('.avr-allow-amt'));
+
+    function buildThresholds(){
+      const thresholds = [0];
+      let total = 0;
+      AVR_DATA.stufenlaufzeiten.forEach(years => {
+        total += years;
+        thresholds.push(total);
+      });
+      return thresholds;
+    }
+
+    const STUFEN_THRESHOLDS = buildThresholds();
+
+    const STATE_TO_REGION = {
+      'berlin': 'east',
+      'brandenburg': 'east',
+      'mecklenburg-vorpommern': 'east',
+      'sachsen': 'east',
+      'sachsen-anhalt': 'east',
+      'thueringen': 'east'
+    };
+
+    const ROLE_BY_GROUP = {
+      P4: [
+        'Pflegehelfer mit entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3).'
+      ],
+      P6: [
+        'Pflegehelfer mit mindestens einj&auml;hriger Ausbildung und entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3).'
+      ],
+      P7: [
+        'Pfleger mit mindestens dreij&auml;hriger Ausbildung und entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3 und 7).',
+        'Operationstechnische Assistenten sowie An&auml;sthesietechnische Assistenten mit abgeschlossener Ausbildung nach der DKG-Empfehlung vom 17. September 2013 (oder gleichwertiger landesrechtlicher Regelung) und entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3).'
+      ],
+      P8: [
+        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 1, deren T&auml;tigkeit sich aufgrund besonderer Schwierigkeit erheblich aus der Entgeltgruppe P 7 Fallgruppe 1 heraushebt (Anmerkungen Nrn. 1 bis 6).',
+        'Praxisanleiter in der Pflege mit berufsp&auml;dagogischer Zusatzqualifikation nach bundesrechtlicher Regelung und entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3).',
+        'Hebammen und Entbindungspfleger mit mindestens dreij&auml;hriger Ausbildung und entsprechender T&auml;tigkeit.',
+        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 2, deren T&auml;tigkeit sich aufgrund besonderer Schwierigkeit erheblich aus der Entgeltgruppe P 7 Fallgruppe 2 heraushebt (Anmerkungen Nrn. 1 bis 6).'
+      ],
+      P9: [
+        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 1 mit abgeschlossener Fachweiterbildung und entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3 und 6).',
+        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 1 mit erfolgreich abgeschlossener Fachweiterbildung zur Hygienefachkraft und entsprechender T&auml;tigkeit.',
+        'Mitarbeiter als st&auml;ndige Vertreter von Gruppenleitern oder Teamleitern (Anmerkung).'
+      ],
+      P10: [
+        'Mitarbeiter als Gruppenleiter oder Teamleiter.',
+        'Mitarbeiter als st&auml;ndige Vertreter von Gruppenleitern oder Teamleitern der Entgeltgruppe P 11 Fallgruppe 1.'
+      ],
+      P11: [
+        'Mitarbeiter als Gruppenleiter bzw. Teamleiter mit einem h&ouml;heren Ma&szlig; von Verantwortlichkeit oder von gro&szlig;en Gruppen oder Teams.',
+        'Mitarbeiter als st&auml;ndige Vertreter von Stationsleitern.'
+      ],
+      P12: [
+        'Mitarbeiter als Stationsleiter.',
+        'Mitarbeiter als st&auml;ndige Vertreter von Stationsleitern der Entgeltgruppe P 13 oder von Bereichsleitern oder Abteilungsleitern.'
+      ],
+      P13: [
+        'Mitarbeiter als Stationsleiter mit einem h&ouml;heren Ma&szlig; von Verantwortlichkeit oder von gro&szlig;en Stationen.'
+      ],
+      P14: [
+        'Mitarbeiter als Bereichsleiter oder als Abteilungsleiter.',
+        'Mitarbeiter als st&auml;ndige Vertreter von Bereichsleitern der Entgeltgruppe P 15.'
+      ],
+      P15: [
+        'Mitarbeiter als Bereichsleiter oder als Abteilungsleiter, deren T&auml;tigkeit sich durch den Umfang und die Bedeutung ihres Aufgabengebietes sowie durch gro&szlig;e Selbst&auml;ndigkeit erheblich aus der Entgeltgruppe P 14 heraushebt oder von gro&szlig;en Bereichen bzw. Abteilungen.'
+      ],
+      P16: [
+        'Mitarbeiter der Entgeltgruppe P 15, deren T&auml;tigkeit sich durch das Ma&szlig; der damit verbundenen Verantwortung erheblich aus der Entgeltgruppe P 15 heraushebt.'
+      ]
+    };
+
+    function getRegionKey(){
+      const state = stateSelect ? stateSelect.value : '';
+      return STATE_TO_REGION[state] || 'west';
+    }
+
+    function syncExperienceFromExam(){
+      if(!examInput || !expInput) return;
+      const examYear = parseInt(examInput.value, 10);
+      if(Number.isNaN(examYear)) return;
+      const currentYear = new Date().getFullYear();
+      const years = Math.max(0, currentYear - examYear);
+      expInput.value = String(years);
+    }
+
+    function getExperienceYears(){
+      const exp = parseFloat(expInput.value);
+      if(!Number.isNaN(exp)){
+        return Math.max(0, exp);
+      }
+      const examYear = parseInt(examInput.value, 10);
+      if(!Number.isNaN(examYear)){
+        const currentYear = new Date().getFullYear();
+        return Math.max(0, currentYear - examYear);
+      }
+      return 0;
+    }
+
+    function getStufe(years){
+      let stufe = 1;
+      STUFEN_THRESHOLDS.forEach((threshold, idx) => {
+        if(years >= threshold){
+          stufe = idx + 1;
+        }
+      });
+      return Math.min(stufe, 6);
+    }
+
+    function normalizeStufe(values, stufe){
+      if(values[stufe - 1] != null){
+        return stufe;
+      }
+      for(let i = 0; i < values.length; i++){
+        if(values[i] != null){
+          return i + 1;
+        }
+      }
+      return stufe;
+    }
+
+    function formatCurrency(value){
+      if(value == null) return '-';
+      return value.toLocaleString('de-DE', { style:'currency', currency:'EUR' });
+    }
+
+    function renderRole(group){
+      if(!roleText) return;
+      const items = ROLE_BY_GROUP[group] || [];
+      if(!items.length){
+        roleText.textContent = '-';
+        return;
+      }
+      roleText.innerHTML = '<ul>' + items.map(item => `<li>${item}</li>`).join('') + '</ul>';
+    }
+
+    function update(){
+      const years = getExperienceYears();
+      const group = groupSelect.value || 'P7';
+      const regionKey = getRegionKey();
+      const region = AVR_DATA.regions[regionKey] || AVR_DATA.regions.west;
+      const values = region.entgeltgruppen[group];
+      if(!values){
+        resultGroup.textContent = '-';
+        resultStep.textContent = '-';
+        resultExp.textContent = '-';
+        resultPay.textContent = '-';
+        if(resultAllowances) resultAllowances.textContent = '-';
+        if(resultTotal) resultTotal.textContent = '-';
+        if(roleText) roleText.textContent = '-';
+        return;
+      }
+      let stufe = getStufe(years);
+      stufe = normalizeStufe(values, stufe);
+      const baseMonthly = values[stufe - 1];
+
+      resultGroup.textContent = group.replace('P', 'P ');
+      resultStep.textContent = 'Stufe ' + stufe;
+      resultExp.textContent = years.toFixed(0) + ' Jahre Erfahrung';
+      resultPay.textContent = formatCurrency(baseMonthly);
+      if(resultState){
+        resultState.textContent = (stateSelect && stateSelect.value)
+          ? stateSelect.options[stateSelect.selectedIndex].textContent
+          : '-';
+      }
+      resultRegion.textContent = region.label;
+      let allowancesSum = 0;
+      for (const cb of allowChecks) {
+        if (!cb.checked) continue;
+        const key = cb.dataset.key;
+        const amtEl = allowAmounts.find(x => x.dataset.key === key);
+        const amt = amtEl ? Math.max(0, parseFloat(amtEl.value || '0')) : 0;
+        allowancesSum += amt;
+      }
+      if (resultAllowances) resultAllowances.textContent = formatCurrency(allowancesSum);
+      const total = (baseMonthly || 0) + allowancesSum;
+      if (resultTotal) resultTotal.textContent = formatCurrency(total);
+      renderRole(group);
+    }
+
+    function populateGroups(){
+      if(!groupSelect) return;
+      groupSelect.innerHTML = '';
+      groupOrder.forEach(group => {
+        const opt = document.createElement('option');
+        opt.value = group;
+        opt.textContent = group.replace('P', 'P ');
+        groupSelect.appendChild(opt);
+      });
+      groupSelect.value = 'P7';
+    }
+
+    populateGroups();
+    syncExperienceFromExam();
+    update();
+
+    if(examInput){
+      examInput.addEventListener('input', () => {
+        syncExperienceFromExam();
+        update();
+      });
+      examInput.addEventListener('change', () => {
+        syncExperienceFromExam();
+        update();
+      });
+    }
+    [expInput, stateSelect, groupSelect].forEach(el => {
+      if(!el) return;
+      el.addEventListener('input', update);
+      el.addEventListener('change', update);
+    });
+    [...allowChecks, ...allowAmounts].forEach(el => {
+      el.addEventListener('input', update);
+      el.addEventListener('change', update);
+    });
+    if(calcBtn){
+      calcBtn.addEventListener('click', update);
+    }
+  })();
+</script>
+

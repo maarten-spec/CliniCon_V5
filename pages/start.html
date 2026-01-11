@@ -1,0 +1,356 @@
+<!-- Startseite Inhalt -->
+<style>
+  #start-frame{
+    --brand:#2563eb;
+    --navy:#0f172a;
+    --muted:#64748b;
+    --light:#f8fafc;
+    --topbar-h:clamp(3.5rem, 8vw, 5.5rem);
+    padding:0;
+  }
+
+  #start-frame #tools{
+    scroll-margin-top: calc(var(--topbar-h) + 20px);
+  }
+
+  .start-landing{
+    grid-column:1/-1;
+    display:flex;
+    flex-direction:column;
+    gap:clamp(1.5rem, 3vw, 2.4rem);
+  }
+
+  .hero-pro{
+    position:relative;
+    min-height:clamp(18rem, 45vw, 26rem);
+    border-radius:24px;
+    overflow:hidden;
+    background:var(--navy);
+    z-index:0;
+    isolation:isolate;
+    box-shadow:0 24px 46px rgba(15,23,42,.28);
+  }
+
+  .hero-media{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    overflow:hidden;
+  }
+
+  .hero-video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    filter:saturate(.92) contrast(1.06) brightness(1.12) blur(.5px);
+  }
+
+  .hero-gradient{
+    position:absolute;
+    inset:-20%;
+    background:
+      radial-gradient(600px 420px at 18% 20%, rgba(37,99,235,.32), transparent 60%),
+      radial-gradient(520px 360px at 80% 75%, rgba(16,185,129,.18), transparent 60%),
+      linear-gradient(130deg, rgba(15,23,42,.9), rgba(15,23,42,.65));
+  }
+
+  .hero-grid{
+    position:absolute;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size:48px 48px;
+    opacity:.25;
+    mix-blend-mode:screen;
+  }
+
+  .hero-pulse{
+    position:absolute;
+    width:clamp(6rem, 14vw, 9rem);
+    height:clamp(6rem, 14vw, 9rem);
+    border-radius:999px;
+    border:1px solid rgba(148,163,184,.35);
+    box-shadow:0 0 0 0 rgba(37,99,235,.15);
+    opacity:.35;
+    animation:heroPulse 14s ease-in-out infinite;
+  }
+  .hero-pulse.p1{ top:18%; left:58%; animation-delay:0s; }
+  .hero-pulse.p2{ top:62%; left:70%; width:clamp(5rem, 11vw, 7rem); height:clamp(5rem, 11vw, 7rem); animation-delay:3s; }
+  .hero-pulse.p3{ top:48%; left:38%; width:clamp(7rem, 16vw, 10rem); height:clamp(7rem, 16vw, 10rem); animation-delay:6s; }
+
+  .hero-panels{
+    position:absolute;
+    right:6%;
+    top:20%;
+    display:grid;
+    gap:clamp(0.6rem, 1.8vw, 0.9rem);
+    opacity:.45;
+  }
+  .hero-panel{
+    width:clamp(10rem, 22vw, 14rem);
+    height:clamp(2.6rem, 6vw, 4rem);
+    border-radius:16px;
+    border:1px solid rgba(148,163,184,.25);
+    background:rgba(15,23,42,.55);
+    box-shadow:0 12px 24px rgba(15,23,42,.25);
+  }
+  .hero-panel.small{ width:clamp(9rem, 18vw, 11rem); height:clamp(2.2rem, 5vw, 3.2rem); margin-left:clamp(0.8rem, 3vw, 1.8rem); }
+
+  .hero-grain{
+    position:absolute;
+    inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 2px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.03) 0 1px, transparent 1px 2px);
+    opacity:.18;
+    mix-blend-mode:soft-light;
+  }
+
+  .hero-overlay{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    background:linear-gradient(
+      90deg,
+      rgba(15,23,42,.8) 0%,
+      rgba(15,23,42,.52) 45%,
+      rgba(15,23,42,.22) 100%
+    );
+  }
+
+  .hero-content{
+    position:relative;
+    z-index:3;
+    max-width:45rem;
+    padding:clamp(1.6rem, 4vw, 3.6rem);
+    color:#ffffff;
+  }
+
+  .hero-content h1{
+    color:#ffffff;
+    line-height:1.12;
+    margin:0 0 16px;
+    font-weight:600;
+    letter-spacing:.01em;
+  }
+
+  .hero-lead{
+    
+    color:#cbd5f5;
+    max-width:40rem;
+    margin:0 0 28px;
+  }
+
+  .hero-actions{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+
+  .hero-note{
+    margin:14px 0 0;
+    
+    color:rgba(203,213,245,.85);
+  }
+
+  .btn-primary,
+  .btn-ghost{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:12px 22px;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:600;
+    transition:.18s ease all;
+  }
+  .btn-primary{
+    background:var(--brand);
+    color:#ffffff;
+    border:1px solid var(--brand);
+    box-shadow:0 12px 24px rgba(37,99,235,.25);
+  }
+  .btn-primary:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.05);
+  }
+  .btn-ghost{
+    border:1px solid rgba(255,255,255,.35);
+    color:#ffffff;
+    background:transparent;
+  }
+  .btn-ghost:hover{
+    border-color:rgba(255,255,255,.65);
+    transform:translateY(-1px);
+  }
+
+  .tool-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(clamp(14rem, 28vw, 18rem), 1fr));
+    gap:clamp(1rem, 3vw, 1.5rem);
+    margin-top:6px;
+  }
+
+  .tool-card{
+    position:relative;
+    border:1px solid #e5e7eb;
+    border-radius:18px;
+    padding:clamp(1.1rem, 2.5vw, 1.6rem);
+    background:
+      linear-gradient(90deg, #2563eb, #38bdf8) 0 0 / 100% 0.28rem no-repeat,
+      #ffffff;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    overflow:hidden;
+    box-shadow:0 14px 26px rgba(15,23,42,.08);
+    transition:.18s ease all;
+  }
+  .tool-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 18px 32px rgba(15,23,42,.12);
+  }
+  .tool-card h3{
+    margin:0;
+  }
+  .tool-card p{
+    color:var(--muted);
+    margin:0;
+  }
+  .tool-card a{
+    color:var(--brand);
+    text-decoration:none;
+    font-weight:600;
+    margin-top:auto;
+  }
+
+  .system-hint{
+    border-radius:20px;
+    padding:clamp(1.2rem, 3vw, 1.8rem);
+    background:linear-gradient(140deg, #f8fafc, #ffffff);
+    border:1px solid #e5e7eb;
+    box-shadow:0 16px 30px rgba(15,23,42,.08);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .system-hint h2{
+    margin:0;
+  }
+  .system-hint p{
+    color:var(--muted);
+    max-width:45rem;
+    margin:0 0 8px;
+  }
+
+  @keyframes heroPulse{
+    0%{ transform:scale(.9); opacity:.2; box-shadow:0 0 0 0 rgba(37,99,235,.1); }
+    55%{ transform:scale(1.05); opacity:.5; box-shadow:0 0 0 26px rgba(37,99,235,.06); }
+    100%{ transform:scale(.9); opacity:.2; box-shadow:0 0 0 0 rgba(37,99,235,.08); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .hero-pulse{ animation:none; }
+  }
+
+  @media (max-width: 980px){
+    .hero-panels{ display:none; }
+  }
+
+  @media (max-width: 900px){
+    .hero-content{ padding:clamp(1.4rem, 4vw, 2.4rem); }
+    .hero-actions{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+  }
+
+  @media (max-width: 720px){
+    .hero-content{ padding:clamp(1.2rem, 5vw, 1.8rem); }
+    .hero-pro{ min-height:clamp(16rem, 55vw, 22rem); }
+  }
+</style>
+
+<section class="card page-frame ppug-layout" id="start-frame">
+  <div class="ppug-grid">
+    <div class="start-landing">
+      <section class="hero-pro" aria-label="CliniCon Einstieg">
+        <div class="hero-media" aria-hidden="true">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto">
+            <source src="../assets/videos/clinicon-hero.mp4" type="video/mp4" />
+          </video>
+          <div class="hero-gradient"></div>
+          <div class="hero-grid"></div>
+          <div class="hero-pulse p1"></div>
+          <div class="hero-pulse p2"></div>
+          <div class="hero-pulse p3"></div>
+          <div class="hero-panels">
+            <div class="hero-panel"></div>
+            <div class="hero-panel small"></div>
+            <div class="hero-panel"></div>
+          </div>
+          <div class="hero-grain"></div>
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1>
+            Personal steuern<br>
+            statt Tabellenpflege
+          </h1>
+          <p class="hero-lead">
+            CliniCon verbindet Personalbedarf, Schichtlogik und Kosten
+            zu einer belastbaren Entscheidungsgrundlage f&uuml;r Krankenh&auml;user.
+          </p>
+          <div class="hero-actions">
+            <a href="#tools" class="btn-primary" onclick="const t=document.getElementById('tools'); if(t){t.scrollIntoView({behavior:'smooth'});} return false;">CliniCon Tools</a>
+            <a href="#" class="btn-ghost" onclick="const nav=document.querySelector('#mainNav a[data-key=&quot;produkt&quot;]'); if(nav){navigate(nav);} return false;">CliniCon Suite</a>
+          </div>
+          <p class="hero-note">
+            Tools: Einzelberechnungen &amp; Planung &middot; Suite: integrierte Steuerung &amp; Vergleichbarkeit
+          </p>
+        </div>
+      </section>
+
+      <section id="tools" class="tool-grid">
+        <div class="tool-card">
+          <h3>Personalbedarf &amp; Regulierung</h3>
+          <p>
+            PPUG-, PPBV- und Besetzungsbedarfe strukturiert berechnen &ndash;
+            als Grundlage f&uuml;r Planung, Argumentation und Steuerung.
+          </p>
+          <a href="#" onclick="const nav=document.querySelector('#mainNav a[data-key=&quot;ppug&quot;]'); if(nav){navigate(nav);} return false;">Zu den Rechnern &rarr;</a>
+        </div>
+
+        <div class="tool-card">
+          <h3>Schicht- &amp; Einsatzplanung</h3>
+          <p>
+            Schichtmatrix und Besetzungslogiken zur realistischen Planung
+            von Personal, VK-Bedarfen und Szenarien.
+          </p>
+          <a href="#" onclick="const nav=document.querySelector('#mainNav a[data-key=&quot;schichtmatrix&quot;]'); if(nav){navigate(nav);} return false;">Zur Planung &rarr;</a>
+        </div>
+
+        <div class="tool-card">
+          <h3>Gehaltsrechner AVR Anlage 31</h3>
+          <p>
+            Pflegekr&auml;fte im Pflegedienst (AVR Caritas Anlage 31) k&ouml;nnen ihr Gehalt
+            anhand der P-Entgeltgruppen schnell berechnen &ndash; ohne Tabellenarbeit.
+          </p>
+          <a href="#" onclick="const nav=document.querySelector('#mainNav a[data-key=&quot;gehaltsrechner&quot;]'); if(nav){navigate(nav);} return false;">Zum Gehaltsrechner &rarr;</a>
+        </div>
+      </section>
+
+      <section class="system-hint">
+        <h2>Wenn aus Tools Steuerung wird</h2>
+        <p>
+          Viele Einrichtungen starten mit einzelnen Berechnungstools.
+          Ab einer gewissen Komplexit&auml;t braucht es jedoch
+          eine integrierte, vergleichbare Systemlogik.
+        </p>
+        <a href="#" class="btn-primary" onclick="const nav=document.querySelector('#mainNav a[data-key=&quot;produkt&quot;]'); if(nav){navigate(nav);} return false;">Mehr zur CliniCon Suite</a>
+      </section>
+    </div>
+  </div>
+</section>
+

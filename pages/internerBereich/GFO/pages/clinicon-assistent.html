@@ -1,0 +1,205 @@
+﻿<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinicon Assistent</title>
+  <style id="page-style">
+:root{--bg:#eef3f7;--panel:#fff;--line:#e5e7eb;--muted:#6b7280;--text:#0f172a;--accent:#1f4b82;--accent-strong:#12355c;--accent-soft:#e0e7ff;--shadow:0 18px 36px rgba(15,23,42,.12);}
+main{width:100%;max-width:none;margin:0 auto;padding:24px;display:flex;flex-direction:column;gap:18px;}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px;}
+    .hero{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:18px;background:linear-gradient(120deg,#f7fbff 0%,#e8f1ff 40%,#f7fbff 100%);border:1px solid var(--line);box-shadow:var(--shadow);width:100%;max-width:none;margin:0;box-sizing:border-box;}
+    h1{margin:0;font-size:1.95rem;}
+    .badge{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-strong));color:#fff;font-weight:700;box-shadow:0 10px 22px rgba(18,53,92,.2);letter-spacing:.01em;}
+    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;}
+    label{display:flex;flex-direction:column;gap:6px;font-weight:700;color:var(--text);}
+    select,textarea,input{border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;background:#fff;min-width:220px;}
+    textarea{min-height:110px;resize:vertical;}
+    .btn{padding:12px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-weight:800;cursor:pointer;}
+    .layout{display:grid;gap:16px;grid-template-columns:1.1fr 0.9fr;}
+    .chat{display:flex;flex-direction:column;gap:10px;height:480px;overflow:auto;padding:12px;border:1px solid var(--line);border-radius:12px;background:#f8fafc;}
+    .bubble{padding:12px 14px;border-radius:12px;max-width:80%;line-height:1.45;box-shadow:0 4px 12px rgba(15,23,42,.08);}
+    .bubble.user{margin-left:auto;background:#2563eb;color:#fff;}
+    .bubble.bot{margin-right:auto;background:#fff;border:1px solid var(--line);}
+    .list{border:1px solid var(--line);border-radius:12px;padding:12px;background:#f8fafc;max-height:480px;overflow:auto;}
+    .list h3{margin:0 0 6px 0;}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#e5e7eb;color:#0f172a;font-weight:700;margin:4px 4px 0 0;}
+    .hint{color:var(--muted);font-size:0.95rem;}
+    @media(max-width:960px){main{padding:18px;} .layout{grid-template-columns:1fr;} .chat{height:360px;}}
+@media (max-width: 900px){
+
+}
+    @media (max-width: 600px){
+}
+@media (max-width: 900px){
+}
+  </style>
+</head>
+<body>
+  <template id="page-content">
+<section class="card hero">
+<h1>Clinicon Assistent</h1>
+      <p class="hint">Sortiert nach Fachabteilung. Schreibe eine Nachricht, um Infos im Klinikverbund abzurufen.</p>
+    </section>
+
+    <section class="card">
+      <div class="controls">
+        <label>Fachabteilung
+          <select id="deptSelect">
+            <option value="">Alle Fachabteilungen</option>
+          </select>
+        </label>
+        <label>Standort
+          <select id="siteSelect">
+            <option value="">Alle Standorte</option>
+          </select>
+        </label>
+      </div>
+      <div class="layout" style="margin-top:12px;">
+        <div>
+          <label>Nachricht
+            <textarea id="messageInput" placeholder="Frage oder Auftrag eingeben..."></textarea>
+          </label>
+          <button class="btn" id="sendBtn" type="button">Senden</button>
+          <div class="hint" style="margin-top:6px;"></div>
+        </div>
+        <div>
+          <h3 style="margin:0 0 6px 0;">Aktuelle Auswahl</h3>
+          <div id="filtersInfo" class="list"></div>
+        </div>
+      </div>
+      <div class="chat" id="chatBox" aria-label="Chat Verlauf"></div>
+    </section>
+
+<script>
+    const fachabteilungen=[
+      'AnÃƒÂ¤sthesie','Chirurgie','Dermatologie','GynÃƒÂ¤kologie','Kardiologie','Neurologie',
+      'Onkologie','OrthopÃƒÂ¤die','PÃƒÂ¤diatrie','Radiologie','Urologie','Zentrale Notaufnahme'
+    ].sort((a,b)=>a.localeCompare(b,'de'));
+    const standorte=['Bonn','DÃƒÂ¼ren','Dinslaken','Hilden','Kevelaer','KÃƒÂ¶ln','Neuss'].sort((a,b)=>a.localeCompare(b,'de'));
+
+    const els={
+      deptSelect:document.getElementById('deptSelect'),
+      siteSelect:document.getElementById('siteSelect'),
+      messageInput:document.getElementById('messageInput'),
+      sendBtn:document.getElementById('sendBtn'),
+      chatBox:document.getElementById('chatBox'),
+      filtersInfo:document.getElementById('filtersInfo'),
+    };
+
+    function initFilters(){
+      els.deptSelect.innerHTML='<option value=\"\">Alle Fachabteilungen</option>'+fachabteilungen.map(d=>`<option value=\"${d}\">${d}</option>`).join('');
+      els.siteSelect.innerHTML='<option value=\"\">Alle Standorte</option>'+standorte.map(s=>`<option value=\"${s}\">${s}</option>`).join('');
+      renderFilters();
+    }
+
+    function renderFilters(){
+      const d=els.deptSelect.value||'Alle Fachabteilungen';
+      const s=els.siteSelect.value||'Alle Standorte';
+      els.filtersInfo.innerHTML=`<div class=\"pill\">Fachabteilung: ${d}</div><div class=\"pill\">Standort: ${s}</div>`;
+    }
+
+    function appendBubble(text,type='bot'){
+      const div=document.createElement('div');
+      div.className='bubble '+type;
+      div.textContent=text;
+      els.chatBox.appendChild(div);
+      els.chatBox.scrollTop=els.chatBox.scrollHeight;
+    }
+
+    function handleSend(){
+      const msg=els.messageInput.value.trim();
+      if(!msg)return;
+      appendBubble(msg,'user');
+      const dept=els.deptSelect.value||'Alle Fachabteilungen';
+      const site=els.siteSelect.value||'Alle Standorte';
+      const reply=`(Demo) Anfrage verstanden:\nÃ¢â‚¬Â¢ Fachabteilung: ${dept}\nÃ¢â‚¬Â¢ Standort: ${site}\nÃ¢â‚¬Â¢ Inhalt: ${msg}`;
+      appendBubble(reply,'bot');
+      els.messageInput.value='';
+    }
+
+    els.sendBtn.addEventListener('click',handleSend);
+    els.messageInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))handleSend();});
+    els.deptSelect.addEventListener('change',renderFilters);
+    els.siteSelect.addEventListener('change',renderFilters);
+
+    initFilters();
+    // Demo-Chatverlauf
+    appendBubble('Versetze Ute MÃƒÂ¼ller zum 01.02.2026 auf die Station 8C','user');
+    appendBubble('Alles klar. Ich notiere: Ute MÃƒÂ¼ller wechselt zum 01.02.2026 auf Station 8C. MÃƒÂ¶chtest du auch den Dienstplan anpassen oder eine Benachrichtigung schicken?','bot');
+    appendBubble('Reduziere die Stelle von Maarten Koomen zum 01.05.2027 auf 0,4 VK','user');
+    appendBubble('Verstanden. Stelle fÃƒÂ¼r Maarten Koomen ab 01.05.2027 auf 0,4 VK gesetzt. Soll ich diese Ãƒâ€žnderung im Stellenplan speichern und den Vorgesetzten informieren?','bot');
+  </script>
+  </template>
+
+  <script>
+    const __pageContent = document.getElementById("page-content")?.innerHTML || "";
+    const __pageStyle = document.getElementById("page-style")?.textContent || "";
+    const __pageTitle = document.title || "";
+
+    fetch("./layout.html")
+      .then((r) => r.text())
+      .then((html) => {
+        document.open();
+        document.write(html);
+        document.close();
+
+        window.addEventListener("DOMContentLoaded", () => {
+          if (__pageStyle) {
+            const style = document.createElement("style");
+            style.setAttribute("data-page-style", "true");
+            style.textContent = __pageStyle;
+            document.head.appendChild(style);
+          }
+
+          if (__pageTitle) {
+            document.title = __pageTitle;
+            const headerTitle = document.querySelector(".topbar-left h1");
+            if (headerTitle) {
+              headerTitle.textContent = __pageTitle;
+            }
+          }
+
+          const slot = document.getElementById("app-main") || document.querySelector("main");
+          if (slot) {
+            slot.innerHTML = __pageContent;
+
+            const scripts = Array.from(slot.querySelectorAll("script"));
+            const runScripts = (index) => {
+              if (index >= scripts.length) return;
+              const oldScript = scripts[index];
+              const script = document.createElement("script");
+              Array.from(oldScript.attributes).forEach((attr) => {
+                script.setAttribute(attr.name, attr.value);
+              });
+              script.async = false;
+              if (oldScript.textContent) {
+                script.textContent = oldScript.textContent;
+              }
+              const next = () => runScripts(index + 1);
+              if (script.src) {
+                script.onload = next;
+                script.onerror = next;
+              }
+              oldScript.replaceWith(script);
+              if (!script.src) {
+                next();
+              }
+            };
+            runScripts(0);
+          }
+
+          const current = (location.pathname.split("/").pop() || "").toLowerCase();
+          document.querySelectorAll(".nav a[href]").forEach((a) => a.classList.remove("active"));
+          document.querySelectorAll(".nav a[href]").forEach((a) => {
+            const href = (a.getAttribute("href") || "").split("?")[0].split("#")[0].toLowerCase();
+            if (href && href === current) {
+              a.classList.add("active");
+            }
+          });
+        });
+      });
+  </script>
+</body>
+</html>
+

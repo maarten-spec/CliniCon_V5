@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinicon Insights - Stellenplan</title>
+  <style id="page-style">
+.tabbar{display:flex;flex-wrap:wrap;gap:10px;padding:12px;border-radius:18px;background:linear-gradient(135deg, rgba(255,255,255,0.92), rgba(235,244,255,0.85));border:1px solid rgba(28,107,255,0.18);box-shadow:0 14px 28px rgba(28,107,255,0.12);} 
+.tabbar button{border:1px solid transparent;background:rgba(255,255,255,0.9);color:var(--ink);padding:10px 16px;border-radius:999px;font-weight:600;cursor:pointer;font-family:var(--font-base);letter-spacing:.01em;transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;} 
+.tabbar button:hover{transform:translateY(-1px);border-color:rgba(28,107,255,0.25);background:rgba(28,107,255,0.12);box-shadow:0 10px 18px rgba(28,107,255,0.18);} 
+.tabbar button.active{background:linear-gradient(135deg, var(--accent), #458cff);color:#fff;border-color:transparent;box-shadow:0 14px 26px rgba(28,107,255,0.28);} 
+.tabbar button:focus{outline:none;box-shadow:0 0 0 3px rgba(28,107,255,0.18);} 
+.section-hidden{display:none!important;}
+
+.timeslicer-shell{
+  padding:4px 0 18px;
+}
+.app-timeslicer.timeslicer-modern{
+  padding:0;
+}
+.timeslicer-modern .timeslicer-card{
+  border-radius:22px;
+  border:1px solid rgba(99,147,255,0.22);
+  background:linear-gradient(135deg, rgba(255,255,255,0.98), rgba(236,244,255,0.92));
+  box-shadow:0 16px 32px rgba(33,111,191,0.12);
+  padding:14px 16px;
+  gap:12px;
+}
+.timeslicer-modern .timeslicer-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.timeslicer-modern .timeslicer-title{
+  font-size:0.74rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#1f3b6b;
+  font-weight:700;
+}
+.timeslicer-modern .timeslicer-sub{
+  font-size:0.88rem;
+  color:rgba(30,41,59,0.6);
+}
+.timeslicer-modern .timeslicer-pill{
+  background:rgba(76,156,255,0.12);
+  border:1px solid rgba(76,156,255,0.24);
+  color:#1f4b82;
+  box-shadow:none;
+}
+.timeslicer-modern .timeslicer-controls{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px 14px;
+  flex-wrap:wrap;
+}
+.timeslicer-modern .timeslicer-buttons{
+  display:flex;
+  gap:6px;
+  padding:4px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.88);
+  border:1px solid rgba(148,163,184,0.24);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.85);
+}
+.timeslicer-modern .timeslicer-btn{
+  border:1px solid transparent;
+  background:transparent;
+  padding:7px 14px;
+  border-radius:999px;
+  font-weight:600;
+  color:#1e293b;
+  font-size:0.88rem;
+  line-height:1;
+  box-shadow:none;
+}
+.timeslicer-modern .timeslicer-btn:hover{
+  background:rgba(79,156,255,0.14);
+  border-color:rgba(79,156,255,0.18);
+  box-shadow:none;
+  transform:translateY(-1px);
+}
+.timeslicer-modern .timeslicer-btn.active{
+  background:linear-gradient(135deg, #3b82f6, #22c1b8);
+  color:#fff;
+  border-color:transparent;
+  box-shadow:0 12px 22px rgba(59,130,246,0.26);
+}
+.timeslicer-modern .timeslicer-custom{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:nowrap;
+  background:rgba(255,255,255,0.96);
+  border:1px solid rgba(148,163,184,0.26);
+  padding:6px 8px;
+  border-radius:12px;
+  color:rgba(30,41,59,0.7);
+}
+.timeslicer-modern .timeslicer-custom label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+  font-size:0.86rem;
+  color:#1f2937;
+}
+.timeslicer-modern .timeslicer-custom input{
+  border:1px solid rgba(148,163,184,0.35);
+  background:#f8fafc;
+  padding:6px 10px;
+  border-radius:10px;
+  font:inherit;
+  color:#0f172a;
+  min-width:120px;
+  height:34px;
+}
+.timeslicer-modern .timeslicer-custom input:focus{
+  outline:none;
+  border-color:rgba(59,130,246,0.5);
+  box-shadow:0 0 0 3px rgba(59,130,246,0.16);
+}
+.timeslicer-divider{
+  color:rgba(30,41,59,0.45);
+  font-weight:600;
+}
+@media (max-width: 900px){
+  .timeslicer-modern .timeslicer-controls{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .timeslicer-modern .timeslicer-custom{
+    width:100%;
+    justify-content:space-between;
+  }
+}
+  </style>
+</head>
+<body>
+  <template id="page-content">
+    <section data-tabs="insights" class="hero">
+              <div>
+                <h2>Live-Visualisierung f&uuml;r den Stellenplan</h2>
+                <p>Dieses Cockpit kombiniert Auslastung, PPUG-Status und Personalabweichung in einem interaktiven &Uuml;berblick. Die Daten werden aktuell aus einem Demo-Datensatz geladen und sind bereit f&uuml;r die D1-Anbindung.</p>
+              </div>
+              <div class="hero-cards">
+                <div class="hero-card">
+                  <strong id="heroBeds">--</strong>
+                  <span>Belegte Betten gesamt</span>
+                </div>
+                <div class="hero-card">
+                  <strong id="heroOccupancy">--</strong>
+                  <span>Auslastung &uuml;ber alle Stationen</span>
+                </div>
+                <div class="hero-card">
+                  <strong id="heroVariance">--</strong>
+                  <span>Personalabweichung (Std)</span>
+                </div>
+              </div>
+            </section>
+
+    <section class="card">
+      <div class="tabbar">
+        <button class="active" type="button" data-tab-btn="insights">Insights</button>
+        <button type="button" data-tab-btn="dashboard">Dashboards</button>
+        <button type="button" data-tab-btn="charts">Charts</button>
+        <button type="button" data-tab-btn="ziel">Ziel</button>
+        <button type="button" data-tab-btn="qual">Qualifikation</button>
+        <button type="button" data-tab-btn="parameter">Parameter</button>
+      </div>
+    </section>
+
+    <div class="timeslicer-shell" data-tabs="insights dashboard charts ziel qual parameter">
+      <div class="app-timeslicer timeslicer-modern" data-timeslicer>
+        <div class="timeslicer-card">
+          <div class="timeslicer-head">
+            <div>
+              <div class="timeslicer-title">Zeitfenster</div>
+              <div class="timeslicer-sub">Filtert Kennzahlen und Reportings.</div>
+            </div>
+            <span class="timeslicer-pill" data-range-label>7 Tage</span>
+          </div>
+          <div class="timeslicer-controls">
+            <div class="timeslicer-buttons">
+              <button class="timeslicer-btn active" type="button" data-range="7d" data-label="7 Tage">7 Tage</button>
+              <button class="timeslicer-btn" type="button" data-range="30d" data-label="30 Tage">30 Tage</button>
+              <button class="timeslicer-btn" type="button" data-range="quarter" data-label="Quartal">Quartal</button>
+              <button class="timeslicer-btn" type="button" data-range="year" data-label="Jahr">Jahr</button>
+            </div>
+            <div class="timeslicer-custom">
+              <label>Von <input type="date" data-range-start /></label>
+              <span class="timeslicer-divider">-</span>
+              <label>Bis <input type="date" data-range-end /></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+            <section data-tabs="insights" class="kpi-grid">
+              <div class="kpi-card kpi-tone-teal">
+                <h4>Belegte Betten</h4>
+                <div class="kpi-value" id="kpiBeds">--</div>
+                <div class="kpi-sub" id="kpiBedsSub">Planbetten: --</div>
+                <div class="kpi-progress"><span id="kpiBedsProgress"></span></div>
+              </div>
+              <div class="kpi-card">
+                <h4>Auslastung</h4>
+                <div class="kpi-value" id="kpiOccupancy">--</div>
+                <div class="kpi-sub" id="kpiOccupancySub">Trend: --</div>
+                <div class="kpi-progress"><span id="kpiOccupancyProgress"></span></div>
+              </div>
+              <div class="kpi-card kpi-tone-orange">
+                <h4>PPUG Verst&ouml;&szlig;e</h4>
+                <div class="kpi-value" id="kpiViolations">--</div>
+                <div class="kpi-sub" id="kpiViolationsSub">Stationen in Pr&uuml;fung</div>
+                <div class="kpi-progress"><span id="kpiViolationsProgress"></span></div>
+              </div>
+              <div class="kpi-card kpi-tone-red">
+                <h4>Personalabweichung</h4>
+                <div class="kpi-value" id="kpiVariance">--</div>
+                <div class="kpi-sub" id="kpiVarianceSub">Ueber/Unterdeckung</div>
+                <div class="kpi-progress"><span id="kpiVarianceProgress"></span></div>
+              </div>
+            </section>
+            <section data-tabs="insights" class="grid-two">
+              <div class="card">
+                <div class="card-header">
+                  <h3>Trend: Auslastung &amp; Stunden</h3>
+                  <span class="card-sub" id="trendSource">Quelle: Demo</span>
+                </div>
+                <div class="chart-wrap">
+                  <canvas id="trendChart"></canvas>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <h3>Top Stationen (Auslastung)</h3>
+                  <span class="card-sub">Klickbar</span>
+                </div>
+                <div class="chart-wrap">
+                  <canvas id="topStationsChart"></canvas>
+                </div>
+              </div>
+            </section>
+
+            <section data-tabs="insights" class="grid-three">
+              <div class="card">
+                <div class="card-header">
+                  <h3>PPUG Statusmix</h3>
+                  <span class="card-sub">Alle Stationen</span>
+                </div>
+                <div class="chart-wrap small">
+                  <canvas id="statusChart"></canvas>
+                </div>
+                <div class="status-list" id="statusList"></div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <h3>Schichtmix</h3>
+                  <span class="card-sub">Ist-Stunden</span>
+                </div>
+                <div class="chart-wrap small">
+                  <canvas id="shiftChart"></canvas>
+                </div>
+                <div class="status-list">
+                  <div class="status-item"><span>Fr&uuml;h</span><span id="shiftEarly">--</span></div>
+                  <div class="status-item"><span>Sp&auml;t</span><span id="shiftLate">--</span></div>
+                  <div class="status-item"><span>Nacht</span><span id="shiftNight">--</span></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <h3>KPI Schnellcheck</h3>
+                  <span class="card-sub">Risikoklassen</span>
+                </div>
+                <div class="status-list">
+                  <div class="status-item">
+                    <span>Stationsabdeckung</span>
+                    <span class="status-pill status-ok" id="kpiCoverage">OK</span>
+                  </div>
+                  <div class="status-item">
+                    <span>Schichtbalance</span>
+                    <span class="status-pill status-warn" id="kpiShiftBalance">Warnung</span>
+                  </div>
+                  <div class="status-item">
+                    <span>PPUG Risiko</span>
+                    <span class="status-pill status-bad" id="kpiRisk">Hoch</span>
+                  </div>
+                </div>
+                <p class="data-note" id="dataNote">Datenquelle: Demo-Datensatz.</p>
+              </div>
+            </section>
+            <section data-tabs="insights" class="table-grid">
+              <div class="card">
+                <div class="card-header">
+                  <h3>Stations&uuml;bersicht</h3>
+                  <span class="card-sub">Klicke eine Station f&uuml;r Details</span>
+                </div>
+                <div style="overflow-x:auto">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Station</th>
+                        <th>Planbetten</th>
+                        <th>Belegt</th>
+                        <th>Auslastung</th>
+                        <th>PPUG</th>
+                        <th>Abw. Std</th>
+                      </tr>
+                    </thead>
+                    <tbody id="stationsTable"></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card spotlight">
+                <div>
+                  <div class="card-sub">Spotlight</div>
+                  <h4 id="spotlightStation">--</h4>
+                </div>
+                <div class="spotlight-row">
+                  <div class="spotlight-tile">
+                    <span>Auslastung</span>
+                    <strong id="spotlightOccupancy">--</strong>
+                  </div>
+                  <div class="spotlight-tile">
+                    <span>PPUG Status</span>
+                    <strong id="spotlightStatus">--</strong>
+                  </div>
+                  <div class="spotlight-tile">
+                    <span>Planbetten</span>
+                    <strong id="spotlightPlanned">--</strong>
+                  </div>
+                  <div class="spotlight-tile">
+                    <span>Belegt</span>
+                    <strong id="spotlightOccupied">--</strong>
+                  </div>
+                </div>
+                <div class="spotlight-tile">
+                  <span>Personalabweichung</span>
+                  <div class="value" id="spotlightVariance">--</div>
+                  <span id="spotlightVarianceLabel">--</span>
+                </div>
+                <p class="data-note">Hinweis: Im n&auml;chsten Schritt folgt die Anbindung an den Stellenplan-Import.</p>
+              </div>
+            </section>
+
+    <section class="card" data-tabs="dashboard">
+      <div class="card-header">
+        <h3>Dashboards</h3>
+        <span class="card-sub">In Vorbereitung</span>
+      </div>
+      <p class="data-note">Hier folgen die Dashboard-Module.</p>
+    </section>
+
+    <section class="card" data-tabs="charts">
+      <div class="card-header">
+        <h3>Charts</h3>
+        <span class="card-sub">In Vorbereitung</span>
+      </div>
+      <p class="data-note">Hier folgen die Chart-Ansichten.</p>
+    </section>
+
+    <section class="card" data-tabs="ziel">
+      <div class="card-header">
+        <h3>Ziel</h3>
+        <span class="card-sub">In Vorbereitung</span>
+      </div>
+      <p class="data-note">Hier folgen Zielwerte und Simulationen.</p>
+    </section>
+
+    <section class="card" data-tabs="qual">
+      <div class="card-header">
+        <h3>Qualifikation</h3>
+        <span class="card-sub">In Vorbereitung</span>
+      </div>
+      <p class="data-note">Hier folgen Qualifikations-Details.</p>
+    </section>
+
+    <section class="card" data-tabs="parameter">
+      <div class="card-header">
+        <h3>Parameter</h3>
+        <span class="card-sub">In Vorbereitung</span>
+      </div>
+      <p class="data-note">Hier folgen Parameter-Charts.</p>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <script>
+      // SCRIPT-START
+      const demoData = {
+        meta: {
+          updated_at: "2026-01-05 09:30",
+          range_label: "01.01.2026 - 05.01.2026",
+          source: "demo"
+        },
+        trend: [
+          { date: "2026-01-01", occupancy_pct: 78, staffed_hours: 320, required_hours: 340 },
+          { date: "2026-01-02", occupancy_pct: 81, staffed_hours: 330, required_hours: 342 },
+          { date: "2026-01-03", occupancy_pct: 84, staffed_hours: 315, required_hours: 340 },
+          { date: "2026-01-04", occupancy_pct: 83, staffed_hours: 326, required_hours: 339 },
+          { date: "2026-01-05", occupancy_pct: 87, staffed_hours: 336, required_hours: 340 }
+        ],
+        stations: [
+          { station: "ITS", beds_planned: 13, beds_occupied: 12, occupancy_pct: 92.3, ppug_status: "OK", variance_hours: -8.0 },
+          { station: "IMC", beds_planned: 10, beds_occupied: 9, occupancy_pct: 90.0, ppug_status: "WARN", variance_hours: -18.5 },
+          { station: "UC", beds_planned: 20, beds_occupied: 14, occupancy_pct: 70.0, ppug_status: "OK", variance_hours: 5.0 },
+          { station: "Ortho", beds_planned: 28, beds_occupied: 23, occupancy_pct: 82.1, ppug_status: "VIOLATION", variance_hours: -22.0 },
+          { station: "Kardiologie", beds_planned: 18, beds_occupied: 15, occupancy_pct: 83.3, ppug_status: "OK", variance_hours: -4.0 },
+          { station: "Neuro", beds_planned: 16, beds_occupied: 13, occupancy_pct: 81.2, ppug_status: "WARN", variance_hours: -9.5 },
+          { station: "Geriatrie", beds_planned: 22, beds_occupied: 20, occupancy_pct: 90.9, ppug_status: "OK", variance_hours: 2.5 },
+          { station: "Chirurgie", beds_planned: 24, beds_occupied: 17, occupancy_pct: 70.8, ppug_status: "OK", variance_hours: 6.0 }
+        ],
+        shift_mix: [
+          { label: "Frueh", value: 42 },
+          { label: "Spaet", value: 34 },
+          { label: "Nacht", value: 24 }
+        ]
+      };
+
+      const fmtNumber = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 });
+      const fmtInt = new Intl.NumberFormat("de-DE");
+
+      const elements = {
+        dataRange: document.getElementById("dataRange"),
+        rangeLabel: document.querySelector("[data-range-label]"),
+        trendSource: document.getElementById("trendSource"),
+        dataNote: document.getElementById("dataNote"),
+        heroBeds: document.getElementById("heroBeds"),
+        heroOccupancy: document.getElementById("heroOccupancy"),
+        heroVariance: document.getElementById("heroVariance"),
+        kpiBeds: document.getElementById("kpiBeds"),
+        kpiBedsSub: document.getElementById("kpiBedsSub"),
+        kpiBedsProgress: document.getElementById("kpiBedsProgress"),
+        kpiOccupancy: document.getElementById("kpiOccupancy"),
+        kpiOccupancySub: document.getElementById("kpiOccupancySub"),
+        kpiOccupancyProgress: document.getElementById("kpiOccupancyProgress"),
+        kpiViolations: document.getElementById("kpiViolations"),
+        kpiViolationsSub: document.getElementById("kpiViolationsSub"),
+        kpiViolationsProgress: document.getElementById("kpiViolationsProgress"),
+        kpiVariance: document.getElementById("kpiVariance"),
+        kpiVarianceSub: document.getElementById("kpiVarianceSub"),
+        kpiVarianceProgress: document.getElementById("kpiVarianceProgress"),
+        stationsTable: document.getElementById("stationsTable"),
+        statusList: document.getElementById("statusList"),
+        shiftEarly: document.getElementById("shiftEarly"),
+        shiftLate: document.getElementById("shiftLate"),
+        shiftNight: document.getElementById("shiftNight"),
+        spotlightStation: document.getElementById("spotlightStation"),
+        spotlightOccupancy: document.getElementById("spotlightOccupancy"),
+        spotlightStatus: document.getElementById("spotlightStatus"),
+        spotlightPlanned: document.getElementById("spotlightPlanned"),
+        spotlightOccupied: document.getElementById("spotlightOccupied"),
+        spotlightVariance: document.getElementById("spotlightVariance"),
+        spotlightVarianceLabel: document.getElementById("spotlightVarianceLabel")
+      };
+      const chartColors = {
+        accent: "#1c6bff",
+        accent2: "#ff6b35",
+        accent3: "#17c3b2",
+        accent4: "#f6bd60",
+        danger: "#ef476f",
+        gray: "#d9e2ef"
+      };
+
+      const charts = {};
+      let currentStations = [];
+      let selectedStation = null;
+
+      function computeKpis(stations) {
+        const bedsPlanned = stations.reduce((sum, row) => sum + row.beds_planned, 0);
+        const bedsOccupied = stations.reduce((sum, row) => sum + row.beds_occupied, 0);
+        const occupancy = bedsPlanned ? (bedsOccupied / bedsPlanned) * 100 : 0;
+        const variance = stations.reduce((sum, row) => sum + row.variance_hours, 0);
+        const violations = stations.filter((row) => row.ppug_status === "VIOLATION").length;
+        return { bedsPlanned, bedsOccupied, occupancy, variance, violations };
+      }
+
+      function buildStatusCounts(stations) {
+        return stations.reduce(
+          (acc, row) => {
+            acc[row.ppug_status] += 1;
+            return acc;
+          },
+          { OK: 0, WARN: 0, VIOLATION: 0 }
+        );
+      }
+
+      function renderKpis(data) {
+        const kpis = computeKpis(data.stations);
+        elements.heroBeds.textContent = fmtInt.format(kpis.bedsOccupied);
+        elements.heroOccupancy.textContent = fmtNumber.format(kpis.occupancy) + " %";
+        elements.heroVariance.textContent = fmtNumber.format(kpis.variance);
+
+        elements.kpiBeds.textContent = fmtInt.format(kpis.bedsOccupied);
+        elements.kpiBedsSub.textContent = "Planbetten: " + fmtInt.format(kpis.bedsPlanned);
+        elements.kpiBedsProgress.style.width = Math.min(100, kpis.occupancy).toFixed(1) + "%";
+
+        const trendDelta = data.trend.length > 1 ? data.trend[data.trend.length - 1].occupancy_pct - data.trend[0].occupancy_pct : 0;
+        elements.kpiOccupancy.textContent = fmtNumber.format(kpis.occupancy) + " %";
+        elements.kpiOccupancySub.textContent = "Trend: " + (trendDelta >= 0 ? "+" : "") + fmtNumber.format(trendDelta) + " %";
+        elements.kpiOccupancyProgress.style.width = Math.min(100, kpis.occupancy).toFixed(1) + "%";
+
+        elements.kpiViolations.textContent = fmtInt.format(kpis.violations);
+        elements.kpiViolationsSub.textContent = "Stationen in Pruefung";
+        elements.kpiViolationsProgress.style.width = Math.min(100, (kpis.violations / data.stations.length) * 100).toFixed(1) + "%";
+
+        elements.kpiVariance.textContent = fmtNumber.format(kpis.variance);
+        elements.kpiVarianceSub.textContent = kpis.variance >= 0 ? "Ueberdeckung" : "Unterdeckung";
+        elements.kpiVarianceProgress.style.width = Math.min(100, Math.abs(kpis.variance) * 2.5).toFixed(1) + "%";
+      }
+      function statusBadge(status) {
+        const span = document.createElement("span");
+        span.className = "badge " + (status === "OK" ? "ok" : status === "WARN" ? "warn" : "bad");
+        span.textContent = status === "OK" ? "OK" : status === "WARN" ? "Warn" : "Risiko";
+        return span;
+      }
+
+      function renderTable(stations) {
+        elements.stationsTable.innerHTML = "";
+        stations.forEach((row) => {
+          const tr = document.createElement("tr");
+          tr.dataset.station = row.station;
+          tr.innerHTML = `
+            <td><strong>${row.station}</strong></td>
+            <td>${fmtInt.format(row.beds_planned)}</td>
+            <td>${fmtInt.format(row.beds_occupied)}</td>
+            <td><strong>${fmtNumber.format(row.occupancy_pct)}%</strong></td>
+            <td class="status-cell"></td>
+            <td style="color:${row.variance_hours >= 0 ? chartColors.accent3 : chartColors.danger}; font-weight:700;">
+              ${fmtNumber.format(row.variance_hours)}
+            </td>
+          `;
+          tr.querySelector(".status-cell").appendChild(statusBadge(row.ppug_status));
+          tr.addEventListener("click", () => selectStation(row.station));
+          elements.stationsTable.appendChild(tr);
+        });
+      }
+
+      function selectStation(stationName) {
+        const station = currentStations.find((row) => row.station === stationName) || currentStations[0];
+        if (!station) return;
+        selectedStation = station;
+        Array.from(elements.stationsTable.querySelectorAll("tr")).forEach((row) => {
+          row.classList.toggle("active", row.dataset.station === station.station);
+        });
+        elements.spotlightStation.textContent = station.station;
+        elements.spotlightOccupancy.textContent = fmtNumber.format(station.occupancy_pct) + "%";
+        elements.spotlightStatus.textContent = station.ppug_status;
+        elements.spotlightPlanned.textContent = fmtInt.format(station.beds_planned);
+        elements.spotlightOccupied.textContent = fmtInt.format(station.beds_occupied);
+        elements.spotlightVariance.textContent = fmtNumber.format(station.variance_hours);
+        elements.spotlightVarianceLabel.textContent = station.variance_hours >= 0 ? "Ueberdeckung" : "Unterdeckung";
+      }
+
+      function renderStatusList(statusCounts) {
+        elements.statusList.innerHTML = "";
+        const items = [
+          { label: "OK", value: statusCounts.OK, className: "status-ok" },
+          { label: "Warn", value: statusCounts.WARN, className: "status-warn" },
+          { label: "Risiko", value: statusCounts.VIOLATION, className: "status-bad" }
+        ];
+        items.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "status-item";
+          row.innerHTML = `<span>${item.label}</span><span class="status-pill ${item.className}">${fmtInt.format(item.value)}</span>`;
+          elements.statusList.appendChild(row);
+        });
+      }
+
+      function setShiftMix(shiftMix) {
+        const find = (label) => shiftMix.find((entry) => entry.label === label)?.value || 0;
+        elements.shiftEarly.textContent = fmtInt.format(find("Frueh")) + "%";
+        elements.shiftLate.textContent = fmtInt.format(find("Spaet")) + "%";
+        elements.shiftNight.textContent = fmtInt.format(find("Nacht")) + "%";
+      }
+      function initCharts(data) {
+        const trendCtx = document.getElementById("trendChart");
+        charts.trend = new Chart(trendCtx, {
+          type: "line",
+          data: {
+            labels: data.trend.map((row) => row.date),
+            datasets: [
+              {
+                label: "Auslastung %",
+                data: data.trend.map((row) => row.occupancy_pct),
+                borderColor: chartColors.accent,
+                backgroundColor: "rgba(28,107,255,0.1)",
+                tension: 0.3,
+                fill: true,
+                yAxisID: "y"
+              },
+              {
+                label: "Ist-Stunden",
+                data: data.trend.map((row) => row.staffed_hours),
+                borderColor: chartColors.accent3,
+                tension: 0.3,
+                yAxisID: "y1"
+              },
+              {
+                label: "Soll-Stunden",
+                data: data.trend.map((row) => row.required_hours),
+                borderColor: chartColors.accent2,
+                borderDash: [6, 4],
+                tension: 0.3,
+                yAxisID: "y1"
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "top", labels: { boxWidth: 12 } }
+            },
+            scales: {
+              y: { beginAtZero: true, ticks: { callback: (value) => value + "%" } },
+              y1: { beginAtZero: true, position: "right", grid: { drawOnChartArea: false } }
+            }
+          }
+        });
+
+        const topCtx = document.getElementById("topStationsChart");
+        charts.topStations = new Chart(topCtx, {
+          type: "bar",
+          data: {
+            labels: data.stations.map((row) => row.station),
+            datasets: [
+              {
+                label: "Auslastung %",
+                data: data.stations.map((row) => row.occupancy_pct),
+                backgroundColor: data.stations.map((row) =>
+                  selectedStation && row.station === selectedStation.station ? chartColors.accent2 : chartColors.accent
+                ),
+                borderRadius: 8
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            onClick: (evt, activeEls) => {
+              if (activeEls.length > 0) {
+                const index = activeEls[0].index;
+                selectStation(currentStations[index].station);
+                updateTopChart();
+              }
+            },
+            scales: {
+              y: { beginAtZero: true, ticks: { callback: (value) => value + "%" } }
+            },
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+
+        const statusCtx = document.getElementById("statusChart");
+        const statusCounts = buildStatusCounts(data.stations);
+        charts.status = new Chart(statusCtx, {
+          type: "doughnut",
+          data: {
+            labels: ["OK", "Warn", "Risiko"],
+            datasets: [
+              {
+                data: [statusCounts.OK, statusCounts.WARN, statusCounts.VIOLATION],
+                backgroundColor: [chartColors.accent3, chartColors.accent4, chartColors.danger],
+                borderWidth: 0
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: "bottom" } },
+            cutout: "62%"
+          }
+        });
+
+        const shiftCtx = document.getElementById("shiftChart");
+        charts.shift = new Chart(shiftCtx, {
+          type: "pie",
+          data: {
+            labels: data.shift_mix.map((entry) => entry.label),
+            datasets: [
+              {
+                data: data.shift_mix.map((entry) => entry.value),
+                backgroundColor: [chartColors.accent, chartColors.accent2, chartColors.accent4],
+                borderWidth: 0
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: "bottom" } }
+          }
+        });
+      }
+
+      function updateTopChart() {
+        if (!charts.topStations) return;
+        charts.topStations.data.datasets[0].backgroundColor = currentStations.map((row) =>
+          selectedStation && row.station === selectedStation.station ? chartColors.accent2 : chartColors.accent
+        );
+        charts.topStations.update();
+      }
+
+      function updateCharts(data) {
+        if (!charts.trend) {
+          initCharts(data);
+          return;
+        }
+        charts.trend.data.labels = data.trend.map((row) => row.date);
+        charts.trend.data.datasets[0].data = data.trend.map((row) => row.occupancy_pct);
+        charts.trend.data.datasets[1].data = data.trend.map((row) => row.staffed_hours);
+        charts.trend.data.datasets[2].data = data.trend.map((row) => row.required_hours);
+        charts.trend.update();
+
+        charts.topStations.data.labels = data.stations.map((row) => row.station);
+        charts.topStations.data.datasets[0].data = data.stations.map((row) => row.occupancy_pct);
+        updateTopChart();
+
+        const statusCounts = buildStatusCounts(data.stations);
+        charts.status.data.datasets[0].data = [statusCounts.OK, statusCounts.WARN, statusCounts.VIOLATION];
+        charts.status.update();
+
+        charts.shift.data.labels = data.shift_mix.map((entry) => entry.label);
+        charts.shift.data.datasets[0].data = data.shift_mix.map((entry) => entry.value);
+        charts.shift.update();
+      }
+      function applyData(data) {
+        currentStations = [...data.stations].sort((a, b) => b.occupancy_pct - a.occupancy_pct);
+        renderKpis({ ...data, stations: currentStations });
+        renderTable(currentStations);
+        selectStation(currentStations[0].station);
+        const statusCounts = buildStatusCounts(currentStations);
+        renderStatusList(statusCounts);
+        setShiftMix(data.shift_mix);
+        updateCharts({ ...data, stations: currentStations });
+        if (elements.dataRange) {
+          elements.dataRange.textContent = "Zeitraum: " + data.meta.range_label;
+        }
+        if (elements.rangeLabel) {
+          elements.rangeLabel.textContent = data.meta.range_label;
+        }
+        elements.trendSource.textContent = "Quelle: " + (data.meta.source || "demo");
+        elements.dataNote.textContent = "Datenquelle: " + (data.meta.source || "demo") + ". Zuletzt aktualisiert: " + data.meta.updated_at;
+      }
+
+      async function loadInsights() {
+        const apiBase = document.body.dataset.apiBase || "";
+        const endpoint = apiBase + "/api/insights";
+        try {
+          const response = await fetch(endpoint, { headers: { Accept: "application/json" } });
+          if (!response.ok) {
+            throw new Error("API error");
+          }
+          const payload = await response.json();
+          if (!payload || !payload.stations || !payload.trend) {
+            throw new Error("Invalid payload");
+          }
+          const safePayload = {
+            ...payload,
+            meta: payload.meta || demoData.meta,
+            shift_mix: payload.shift_mix || demoData.shift_mix
+          };
+          applyData(safePayload);
+        } catch (err) {
+          applyData(demoData);
+        }
+      }
+
+      document.getElementById("refreshButton").addEventListener("click", () => loadInsights());
+      loadInsights();
+      // SCRIPT-END
+      </script>
+
+    <script>
+      (() => {
+        const tabButtons = Array.from(document.querySelectorAll('[data-tab-btn]'));
+        const tabSections = Array.from(document.querySelectorAll('[data-tabs]'));
+        const setActiveTab = (tab) => {
+          tabButtons.forEach((btn) => {
+            const active = btn.dataset.tabBtn === tab;
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+          });
+          tabSections.forEach((sec) => {
+            const tabs = (sec.dataset.tabs || '').split(/\s+/).filter(Boolean);
+            sec.classList.toggle('section-hidden', !tabs.includes(tab));
+          });
+        };
+
+        if (tabButtons.length) {
+          tabButtons.forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tabBtn)));
+          setActiveTab('insights');
+        }
+
+    const rangeLabel = document.querySelector('[data-range-label]');
+    const headerRange = document.getElementById('dataRange');
+    const rangeButtons = Array.from(document.querySelectorAll('.timeslicer-btn'));
+    const startInput = document.querySelector('[data-range-start]');
+    const endInput = document.querySelector('[data-range-end]');
+
+    const formatDate = (value) => {
+      if (!value) return '';
+      const parts = value.split('-');
+      if (parts.length !== 3) return value;
+      return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    };
+    const setRangeLabel = (label) => {
+      if (!label) return;
+      if (rangeLabel) rangeLabel.textContent = label;
+      if (headerRange) headerRange.textContent = `Zeitraum: ${label}`;
+    };
+
+    if (rangeButtons.length) {
+      rangeButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          rangeButtons.forEach((item) => item.classList.toggle('active', item === btn));
+          const label = btn.dataset.label || btn.textContent.trim();
+          setRangeLabel(label);
+        });
+      });
+    }
+
+    const applyCustomRange = () => {
+      if (startInput && endInput && startInput.value && endInput.value) {
+        rangeButtons.forEach((item) => item.classList.remove('active'));
+        setRangeLabel(`${formatDate(startInput.value)} - ${formatDate(endInput.value)}`);
+      }
+    };
+    if (startInput) startInput.addEventListener('change', applyCustomRange);
+    if (endInput) endInput.addEventListener('change', applyCustomRange);
+  })();
+</script>
+  </template>
+
+<script>
+  const __pageContent = document.getElementById("page-content")?.innerHTML || "";
+  const __pageStyle = document.getElementById("page-style")?.textContent || "";
+  const __pageTitle = document.title || "";
+
+  fetch("./layout.html")
+    .then((r) => r.text())
+    .then((html) => {
+      document.open();
+      document.write(html);
+      document.close();
+
+      window.addEventListener("DOMContentLoaded", () => {
+        if (__pageStyle) {
+          const style = document.createElement("style");
+          style.setAttribute("data-page-style", "true");
+          style.textContent = __pageStyle;
+          document.head.appendChild(style);
+        }
+
+        if (__pageTitle) {
+          document.title = __pageTitle;
+          const headerTitle = document.querySelector(".topbar-left h1");
+          if (headerTitle) {
+            headerTitle.textContent = __pageTitle;
+          }
+        }
+
+        const slot = document.getElementById("app-main") || document.querySelector("main");
+        if (slot) {
+          slot.innerHTML = __pageContent;
+
+          const scripts = Array.from(slot.querySelectorAll("script"));
+          const runScripts = (index) => {
+            if (index >= scripts.length) return;
+            const oldScript = scripts[index];
+            const script = document.createElement("script");
+            Array.from(oldScript.attributes).forEach((attr) => {
+              script.setAttribute(attr.name, attr.value);
+            });
+            script.async = false;
+            if (oldScript.textContent) {
+              script.textContent = oldScript.textContent;
+            }
+            const next = () => runScripts(index + 1);
+            if (script.src) {
+              script.onload = next;
+              script.onerror = next;
+            }
+            oldScript.replaceWith(script);
+            if (!script.src) {
+              next();
+            }
+          };
+          runScripts(0);
+        }
+
+        const current = (location.pathname.split("/").pop() || "").toLowerCase();
+        document.querySelectorAll(".nav a[href]").forEach((a) => a.classList.remove("active"));
+        document.querySelectorAll(".nav a[href]").forEach((a) => {
+          const href = (a.getAttribute("href") || "").split("?")[0].split("#")[0].toLowerCase();
+          if (href && href === current) {
+            a.classList.add("active");
+          }
+        });
+      });
+    });
+</script>
+</body>
+</html>

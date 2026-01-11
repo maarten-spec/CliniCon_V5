@@ -1,0 +1,343 @@
+﻿<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinicon - Maptool</title>
+  <style id="page-style">
+.maptool-app{
+      padding:24px;
+      display:grid;
+      gap:20px;
+    }
+    .tool-wrap{
+      display:grid;
+      gap:18px;
+    }
+    .tool-card h3{
+      margin:0 0 8px;
+      font-family:var(--font-display);
+      font-size:1.2rem;
+    }
+    .tool-card p{
+      margin:0 0 14px;
+      color:var(--muted);
+      max-width:760px;
+    }
+    textarea{
+      width:100%;
+      min-height:140px;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      font:inherit;
+      resize:vertical;
+      background:#fff;
+      box-shadow:0 8px 18px rgba(15,23,42,0.05);
+    }
+    .row{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:none;
+      border-radius:12px;
+      padding:10px 16px;
+      font-weight:700;
+      cursor:pointer;
+      background:linear-gradient(135deg, var(--accent), #458cff);
+      color:#fff;
+      transition:.18s ease transform, .18s ease box-shadow;
+      box-shadow:0 10px 22px rgba(28,107,255,0.25);
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn.secondary{
+      background:#fff;
+      color:var(--ink);
+      border:1px solid var(--line);
+      box-shadow:0 8px 16px rgba(15,23,42,0.08);
+    }
+    .btn.secondary:hover{background:var(--surface-2)}
+
+    .table-card{padding:0; overflow:auto;}
+    table{width:100%; border-collapse:collapse;}
+    th,td{padding:12px; text-align:left; border-bottom:1px solid var(--line); font-size:.95rem;}
+    th{background:var(--surface-2); font-weight:700;}
+    td.blue{ background:rgba(28,107,255,0.12); color:#1e3a8a; font-weight:700; }
+    #map{
+      height:600px;
+      width:100%;
+      border-radius:14px;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow-soft);
+    }
+    @media (max-width: 900px){
+
+.maptool-app{padding:20px;}
+      #map{height:480px;}
+    }
+@media (max-width: 900px){
+
+}
+    @media (max-width: 600px){
+}
+@media (max-width: 900px){
+}
+  </style>
+</head>
+<body>
+  <template id="page-content">
+<section class="tool-wrap">
+      <article class="tool-card card">
+        <h3>Adressen eingeben</h3>
+        <p>Eine Adresse oder Postleitzahl pro Zeile. Klick auf &quot;Vergleich starten&quot; berechnet die Entfernung zu St. Vinzenz (Dinslaken) und St. Josef (Moers) und zeichnet die Route zum jeweils n&auml;heren Haus.</p>
+
+        <textarea id="addresses" placeholder="z. B.&#10;46535&#10;47051 Duisburg&#10;47119 Ruhrort&#10;..."></textarea>
+        <div class="row">
+          <button class="btn" type="button" onclick="processAddresses()">Vergleich starten</button>
+          <button class="btn secondary" type="button" onclick="resetMap()">Zur&uuml;cksetzen</button>
+        </div>
+
+        <div class="card table-card">
+          <table id="resultsTable" aria-live="polite">
+            <thead>
+              <tr>
+                <th>Adresse</th>
+                <th>Entfernung St. Vinzenz (km)</th>
+                <th>Entfernung St. Josef (km)</th>
+                <th>N&auml;herer Standort</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="map"></div>
+      </article>
+    </section>
+
+<script>
+    const DESTINATIONS = [
+      { name: "St. Vinzenz", address: "Doktor-Otto-Seidel-Strasse 31-33, 46535 Dinslaken", color: "#1c6bff" },
+      { name: "St. Josef", address: "Asberger Str. 4, 47441 Moers", color: "#ef476f" }
+    ];
+
+    let map;
+    let geocoder;
+    let directionsService;
+    let markers = [];
+    let polylines = [];
+
+    function initMap(){
+      try{
+        map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 9,
+          center: { lat: 51.45, lng: 6.75 },
+          styles: [
+            { elementType: "geometry", stylers: [{ color: "#f5f5f5" }] },
+            { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+            { elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
+            { elementType: "labels.text.stroke", stylers: [{ color: "#f5f5f5" }] },
+            { featureType: "poi", stylers: [{ visibility: "off" }] },
+            { featureType: "transit", stylers: [{ visibility: "off" }] }
+          ]
+        });
+        geocoder = new google.maps.Geocoder();
+        directionsService = new google.maps.DirectionsService();
+        console.log("[Clinicon] Map bereit.");
+      }catch(e){
+        console.error(e);
+        alert("Google Maps konnte nicht geladen werden. Pruefe den API-Key oder Browser-Plugins.");
+      }
+    }
+
+    function resetMap(){
+      markers.forEach((m) => m.setMap(null));
+      markers = [];
+      polylines.forEach((p) => p.setMap(null));
+      polylines = [];
+      const tbody = document.querySelector("#resultsTable tbody");
+      if (tbody) tbody.innerHTML = "";
+    }
+
+    function geocodeMany(lines){
+      return new Promise((resolve) => {
+        const out = [];
+        const list = lines.slice();
+        const step = () => {
+          if (!list.length) {
+            resolve(out.filter((x) => x.location));
+            return;
+          }
+          const input = list.shift();
+          geocoder.geocode({ address: input }, (res, status) => {
+            if (status === "OK" && res[0]) out.push({ input, location: res[0].geometry.location });
+            setTimeout(step, 80);
+          });
+        };
+        step();
+      });
+    }
+
+    function directionsDistanceKm(origin, destinationAddress){
+      return new Promise((resolve, reject) => {
+        directionsService.route({
+          origin,
+          destination: destinationAddress,
+          travelMode: google.maps.TravelMode.DRIVING
+        }, (res, status) => {
+          if (status === "OK" && res.routes?.[0]?.legs?.[0]) {
+            resolve({
+              km: res.routes[0].legs[0].distance.value / 1000,
+              path: res.routes[0].overview_path
+            });
+          } else {
+            reject(status);
+          }
+        });
+      });
+    }
+
+    async function processAddresses(){
+      const raw = document.getElementById("addresses")?.value || "";
+      const lines = raw.split("\n").map((s) => s.trim()).filter(Boolean);
+      const tbody = document.querySelector("#resultsTable tbody");
+      if (!tbody) return;
+
+      resetMap();
+      if (!lines.length) return;
+
+      const origins = await geocodeMany(lines);
+
+      for (const o of origins) {
+        try {
+          const [vin, jos] = await Promise.all([
+            directionsDistanceKm(o.location, DESTINATIONS[0].address),
+            directionsDistanceKm(o.location, DESTINATIONS[1].address)
+          ]);
+
+          const nearerIdx = vin.km <= jos.km ? 0 : 1;
+          const nearer = DESTINATIONS[nearerIdx];
+          const nearerRes = nearerIdx === 0 ? vin : jos;
+
+          const m = new google.maps.Marker({ position: o.location, map, title: o.input });
+          markers.push(m);
+
+          const poly = new google.maps.Polyline({
+            path: nearerRes.path,
+            strokeColor: nearer.color,
+            strokeOpacity: 0.9,
+            strokeWeight: 4,
+            map
+          });
+          polylines.push(poly);
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${escapeHtml(o.input)}</td>
+            <td class="${vin.km <= jos.km ? "blue" : ""}">${vin.km.toFixed(1)}</td>
+            <td class="${jos.km < vin.km ? "blue" : ""}">${jos.km.toFixed(1)}</td>
+            <td>${nearer.name}</td>`;
+          tbody.appendChild(tr);
+
+          await sleep(120);
+        } catch (e) {
+          console.warn("[Clinicon] Routenberechnung fehlgeschlagen fuer:", o.input, e);
+        }
+      }
+    }
+
+    function escapeHtml(s){
+      return s.replace(/[&<>"']/g, (m) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      }[m]));
+    }
+    function sleep(ms){return new Promise((r) => setTimeout(r, ms));}
+
+    window.initMap = initMap;
+    window.processAddresses = processAddresses;
+    window.resetMap = resetMap;
+  </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkaI-hie594rfUJeXFcDOf8zoyBhr9toM&callback=initMap"></script>
+  </template>
+
+  <script>
+    const __pageContent = document.getElementById("page-content")?.innerHTML || "";
+    const __pageStyle = document.getElementById("page-style")?.textContent || "";
+    const __pageTitle = document.title || "";
+
+    fetch("./layout.html")
+      .then((r) => r.text())
+      .then((html) => {
+        document.open();
+        document.write(html);
+        document.close();
+
+        window.addEventListener("DOMContentLoaded", () => {
+          if (__pageStyle) {
+            const style = document.createElement("style");
+            style.setAttribute("data-page-style", "true");
+            style.textContent = __pageStyle;
+            document.head.appendChild(style);
+          }
+
+          if (__pageTitle) {
+            document.title = __pageTitle;
+            const headerTitle = document.querySelector(".topbar-left h1");
+            if (headerTitle) {
+              headerTitle.textContent = __pageTitle;
+            }
+          }
+
+          const slot = document.getElementById("app-main") || document.querySelector("main");
+          if (slot) {
+            slot.innerHTML = __pageContent;
+
+            const scripts = Array.from(slot.querySelectorAll("script"));
+            const runScripts = (index) => {
+              if (index >= scripts.length) return;
+              const oldScript = scripts[index];
+              const script = document.createElement("script");
+              Array.from(oldScript.attributes).forEach((attr) => {
+                script.setAttribute(attr.name, attr.value);
+              });
+              script.async = false;
+              if (oldScript.textContent) {
+                script.textContent = oldScript.textContent;
+              }
+              const next = () => runScripts(index + 1);
+              if (script.src) {
+                script.onload = next;
+                script.onerror = next;
+              }
+              oldScript.replaceWith(script);
+              if (!script.src) {
+                next();
+              }
+            };
+            runScripts(0);
+          }
+
+          const current = (location.pathname.split("/").pop() || "").toLowerCase();
+          document.querySelectorAll(".nav a[href]").forEach((a) => a.classList.remove("active"));
+          document.querySelectorAll(".nav a[href]").forEach((a) => {
+            const href = (a.getAttribute("href") || "").split("?")[0].split("#")[0].toLowerCase();
+            if (href && href === current) {
+              a.classList.add("active");
+            }
+          });
+        });
+      });
+  </script>
+</body>
+</html>
+

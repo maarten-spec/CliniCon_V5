@@ -1,0 +1,2267 @@
+﻿<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinicon - Stellenplan Insights</title>
+  <style id="page-style">
+:root{--bg:#f4f7fb;--panel:#fff;--muted:#6b7280;--text:#0f172a;--line:#e6e9ef;--accent:#1f4b82;--accent-strong:#12355c;--shadow:0 12px 36px rgba(15,23,42,.12);}
+main{padding:24px;display:flex;flex-direction:column;gap:20px;width:100%;max-width:none;margin:0 auto;}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;box-shadow:var(--shadow);width:100%;}
+    .hero{display:flex;flex-direction:column;gap:16px;padding:26px;background:linear-gradient(120deg,#f3f7ff 0%,#e8f1ff 40%,#f3f7ff 100%);border:1px solid #d9e4ff;width:100%;max-width:none;margin:0;box-sizing:border-box;border-radius:20px;box-shadow:0 18px 45px rgba(15,23,42,0.18);}
+    .hero-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start;}
+    .pill{display:inline-flex;gap:8px;padding:9px 14px;border-radius:14px;background:linear-gradient(135deg,#1f4b82,#12355c);color:#fff;font-weight:800;box-shadow:0 12px 24px rgba(18,53,92,.25);}
+    h1{margin:0;font-size:1.9rem;}
+    .badge-bar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    .badge-rect{padding:10px 14px;border:1px solid #d8e3f5;border-radius:12px;background:#fff;font-weight:800;color:#0f172a;box-shadow:0 6px 16px rgba(15,23,42,0.08);}
+    .kpi-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+    .kpi{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fff;box-shadow:0 10px 24px rgba(15,23,42,0.1);display:grid;gap:6px;align-items:center;text-align:center;}
+    .kpi span{color:var(--muted);font-size:0.9rem;}.kpi strong{font-size:1.35rem;}
+    .tabbar{display:flex;flex-wrap:wrap;gap:10px;padding:12px;border-radius:18px;background:linear-gradient(135deg, rgba(255,255,255,0.92), rgba(235,244,255,0.85));border:1px solid rgba(28,107,255,0.18);box-shadow:0 14px 28px rgba(28,107,255,0.12);}
+    .tabbar button{border:1px solid transparent;background:rgba(255,255,255,0.9);color:var(--ink);padding:10px 16px;border-radius:999px;font-weight:600;cursor:pointer;font-family:var(--font-base);letter-spacing:.01em;transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;}
+    .tabbar button:hover{transform:translateY(-1px);border-color:rgba(28,107,255,0.25);background:rgba(28,107,255,0.12);box-shadow:0 10px 18px rgba(28,107,255,0.18);}
+    .tabbar button.active{background:linear-gradient(135deg, var(--accent), #458cff);color:#fff;border-color:transparent;box-shadow:0 14px 26px rgba(28,107,255,0.28);}
+    .tabbar button:focus{outline:none;box-shadow:0 0 0 3px rgba(28,107,255,0.18);}
+    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-top:10px;margin-bottom:6px;}
+    .controls label{display:flex;flex-direction:column;gap:4px;font-weight:700;color:var(--text);}
+    .controls select,.controls input{padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff;min-width:140px;}
+    .controls button{padding:10px 14px;border-radius:10px;border:1px solid transparent;background:linear-gradient(135deg,#1f4b82,#12355c);color:#fff;font-weight:700;cursor:pointer;}
+    .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));align-items:stretch;}
+    .tile{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;box-shadow:0 8px 18px rgba(15,23,42,0.06);display:grid;gap:6px;align-items:center;justify-items:center;text-align:center;}
+    .tile span{color:var(--muted);} .tile strong{font-size:1.28rem;}
+    .chart-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));}
+    .chart{display:grid;gap:10px;background:linear-gradient(180deg,#f8fafc,#eef2f7);border:1px solid var(--line);border-radius:14px;padding:12px;}
+    .chart-meta{display:flex;gap:8px;align-items:center;color:var(--muted);font-weight:700;}
+    .chart-bars{display:flex;gap:6px;align-items:flex-end;min-height:160px;}
+    .chart-bar{flex:1;background:linear-gradient(180deg,#1f4b82,#12355c);border-radius:6px 6px 3px 3px;min-width:10px;}
+    .chart-bar.secondary{background:linear-gradient(180deg,#f9be00,#d99b00);} .chart-bar.tertiary{background:linear-gradient(180deg,#0ea5e9,#0284c7);}
+    .line-wide{width:100%;height:320px;}
+    .chart-axis{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;font-size:0.78rem;color:var(--muted);text-align:center;margin-top:6px;}
+    .line-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:0.9rem;color:var(--muted);}
+    .line-legend span{display:inline-flex;align-items:center;gap:6px;}
+    .line-dot{width:12px;height:12px;border-radius:999px;display:inline-block;}
+    .heatmap{display:grid;gap:6px;} .heatmap-head,.heatmap-row{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;} .heatmap-head div{text-align:center;font-size:0.8rem;color:#475569;} .heatmap-cell{height:28px;border-radius:4px;border:1px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#0f172a;}
+    .ratio-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:12px;}
+    .ratio-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:linear-gradient(180deg,#fff,#f8fafc);box-shadow:0 8px 18px rgba(15,23,42,0.06);display:grid;gap:8px;}
+    .ratio-card .ratio-header{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;}
+    .ratio-card .ratio-name{font-weight:700;}
+    .ratio-card .ratio-meta{color:var(--muted);font-size:0.88rem;text-align:right;display:grid;gap:2px;}
+    .ratio-bar{height:14px;border-radius:999px;background:#e5e7eb;overflow:hidden;display:flex;box-shadow:inset 0 0 0 1px rgba(15,23,42,0.04);}
+    .ratio-bar span{display:block;height:100%;font-size:0.75rem;color:#fff;text-align:center;line-height:14px;}
+    .ratio-bar .pfk{background:linear-gradient(135deg,#22c55e,#16a34a);}
+    .ratio-bar .pfa{background:linear-gradient(135deg,#3b82f6,#1d4ed8);}
+    .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:0.9rem;color:var(--muted);} .legend span{display:inline-flex;align-items:center;gap:6px;} .dot{width:12px;height:12px;border-radius:999px;display:inline-block;}
+    .qual-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));}
+    .qual-panel{display:flex;flex-direction:column;gap:8px;}
+    .qual-table-wrap{border:1px solid var(--line);border-radius:10px;overflow:auto;}
+    .qual-table-wrap th,.qual-table-wrap td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:.95rem;}
+    .qual-table-wrap th{background:linear-gradient(135deg,#f7faff,#e8f1ff);font-weight:800;}
+    .qual-table-wrap tr:nth-child(even) td{background:#fafbfc;}
+    .qual-table-wrap tr.is-total td{font-weight:800;background:#f8fafc;}
+    .hint{color:var(--muted);font-size:.95rem;}
+    .cockpit-grid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:6px;}
+    .cockpit-tile{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;box-shadow:0 8px 18px rgba(15,23,42,0.06);display:grid;gap:4px;}
+    .cockpit-tile span{color:#475569;font-size:0.9rem;} .cockpit-tile strong{font-size:1.3rem;}
+    /* Neue Insights-Styles (helle Variante) */
+    .insights-section{border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 12px 28px rgba(15,23,42,0.08);padding:16px;}
+    .insights-section+.insights-section{margin-top:12px;}
+    .insights-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;}
+    .insights-head .title{display:flex;align-items:center;gap:8px;font-weight:700;}
+    .insights-tag{font-size:0.75rem;padding:3px 8px;border-radius:999px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-weight:700;box-shadow:0 6px 16px rgba(22,163,74,0.2);}
+    .insights-sub{color:var(--muted);font-size:0.92rem;margin:2px 0 0;}
+    .pill-row-new{display:flex;flex-wrap:wrap;gap:8px;}
+    .pill-new{border-radius:12px;padding:10px 12px;display:flex;gap:8px;align-items:center;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#f8fafc);box-shadow:0 8px 18px rgba(15,23,42,0.06);}
+    .pill-new .label{color:var(--muted);font-size:0.9rem;}
+    .pill-new .value{font-weight:700;}
+    .pill-new .badge{padding:2px 8px;border-radius:999px;border:1px solid var(--line);font-size:0.78rem;}
+    .badge.ok{color:#16a34a;border-color:#16a34a;}
+    .badge.warn{color:#d97706;border-color:#d97706;}
+    .badge.danger{color:#b91c1c;border-color:#b91c1c;}
+    .donut-grid{display:flex;flex-wrap:wrap;gap:12px;}
+    .donut-card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;box-shadow:0 10px 22px rgba(15,23,42,0.07);display:flex;gap:10px;align-items:center;min-width:240px;}
+    .donut{position:relative;width:82px;height:82px;border-radius:50%;background:conic-gradient(#22c55e var(--pfk-angle,180deg), #3b82f6 var(--pfk-angle,180deg) 360deg);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 10px #fff;}
+    .donut::after{content:"";position:absolute;inset:22%;border-radius:50%;background:#fff;}
+    .donut span{position:relative;font-weight:700;color:#0f172a;}
+    .donut-legend{display:grid;gap:4px;font-size:0.9rem;color:var(--muted);}
+    .donut-legend .row{display:flex;align-items:center;gap:6px;}
+    .donut-dot{width:10px;height:10px;border-radius:999px;display:inline-block;}
+    .donut-dot.pfk{background:#22c55e;}
+    .donut-dot.pfa{background:#3b82f6;}
+    .spark-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;}
+    .spark-card{border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 10px 22px rgba(15,23,42,0.08);padding:12px;display:grid;gap:6px;}
+    .spark-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:0.9rem;}
+    .sparkline{width:100%;height:40px;}
+    .capacity-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+    .capacity-card{border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 10px 22px rgba(15,23,42,0.08);padding:12px;min-width:200px;}
+    .thermo{width:22px;height:110px;border-radius:999px;background:linear-gradient(180deg,#e2e8f0,#cbd5e1);border:1px solid var(--line);padding:4px;display:flex;flex-direction:column-reverse;overflow:hidden;}
+    .thermo-fill{width:100%;border-radius:999px;background:linear-gradient(180deg,#22c55e,#facc15,#ef4444);}
+    .bubble-row{display:flex;flex-wrap:wrap;gap:10px;}
+    .bubble{border-radius:50%;border:2px solid var(--line);background:linear-gradient(180deg,#fff,#f8fafc);box-shadow:0 10px 22px rgba(15,23,42,0.08);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;min-width:60px;min-height:60px;}
+    .bubble-label{color:var(--muted);font-size:0.8rem;}
+    .line-card{border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 10px 22px rgba(15,23,42,0.08);padding:12px;}
+    .line-chart-svg{width:100%;height:90px;}
+    .scenario-panel{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff;box-shadow:0 8px 18px rgba(15,23,42,0.06);display:grid;gap:10px;}
+    .scenario-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;}
+    .scenario-totals{display:flex;gap:12px;flex-wrap:wrap;font-weight:700;color:#0f172a;}
+    .scenario-totals span{font-weight:600;}
+    .scenario-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(60px,1fr));gap:6px;}
+    .scenario-inputs label{display:grid;gap:4px;font-size:0.84rem;color:var(--muted);}
+    .scenario-inputs input{padding:6px;border:1px solid var(--line);border-radius:10px;font:inherit;min-width:0;}
+    .scenario-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:0.9rem;}
+    .scenario-controls input[type="range"]{width:180px;}
+    .pyramid{display:flex;flex-direction:column;gap:6px;}
+    .pyramid-level{display:flex;justify-content:center;}
+    .pyramid-box{border:1px dashed var(--line);border-radius:999px;padding:8px 16px;background:#f8fafc;}
+    .glass-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;}
+    .glass-card{border:1px solid rgba(148,163,184,0.5);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(248,250,252,0.85));box-shadow:0 10px 24px rgba(15,23,42,0.06);padding:12px;}
+    .glass-card-title{font-weight:700;}
+    .glass-card-value{font-size:1.2rem;font-weight:700;color:#1f4b82;}
+    .glass-card-label{color:var(--muted);font-size:0.9rem;}
+    /* Clinicon Insights master theming */
+body[data-app-page="stellenplan-insights"] .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);box-shadow:var(--shadow-soft);}
+body[data-app-page="stellenplan-insights"] main h1{font-family:var(--font-display);letter-spacing:.01em;}
+body[data-app-page="stellenplan-insights"] .badge-rect{border-radius:var(--radius-sm);border:1px solid rgba(28,107,255,0.18);background:rgba(255,255,255,0.8);box-shadow:var(--shadow-soft);}
+body[data-app-page="stellenplan-insights"] .tabbar{background:rgba(255,255,255,0.7);border-radius:var(--radius-md);border:1px solid var(--line);box-shadow:var(--shadow-soft);}
+body[data-app-page="stellenplan-insights"] .tabbar button.active{background:linear-gradient(135deg, var(--accent), #458cff);color:#fff;border-color:transparent;box-shadow:0 12px 24px rgba(28,107,255,0.25);}
+body[data-app-page="stellenplan-insights"] .chart{box-shadow:var(--shadow-soft);}
+    .section-hidden{display:none!important;}
+    @media(max-width:720px){body[data-app-page="stellenplan-insights"] main{padding:18px;}.controls input,.controls select{min-width:140px;}}
+@media (max-width: 900px){
+
+}
+    @media (max-width: 600px){
+}
+  
+
+    .timeslicer-shell{
+      padding:4px 0 18px;
+    }
+    .app-timeslicer.timeslicer-modern{
+      padding:0;
+    }
+    .timeslicer-modern .timeslicer-card{
+      border-radius:22px;
+      border:1px solid rgba(99,147,255,0.22);
+      background:linear-gradient(135deg, rgba(255,255,255,0.98), rgba(236,244,255,0.92));
+      box-shadow:0 16px 32px rgba(33,111,191,0.12);
+      padding:14px 16px;
+      gap:12px;
+    }
+    .timeslicer-modern .timeslicer-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .timeslicer-modern .timeslicer-title{
+      font-size:0.74rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:#1f3b6b;
+      font-weight:700;
+    }
+    .timeslicer-modern .timeslicer-sub{
+      font-size:0.88rem;
+      color:rgba(30,41,59,0.6);
+    }
+    .timeslicer-modern .timeslicer-pill{
+      background:rgba(76,156,255,0.12);
+      border:1px solid rgba(76,156,255,0.24);
+      color:#1f4b82;
+      box-shadow:none;
+    }
+    .timeslicer-modern .timeslicer-controls{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px 14px;
+      flex-wrap:wrap;
+    }
+    .timeslicer-modern .timeslicer-buttons{
+      display:flex;
+      gap:6px;
+      padding:4px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.88);
+      border:1px solid rgba(148,163,184,0.24);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.85);
+    }
+    .timeslicer-modern .timeslicer-btn{
+      border:1px solid transparent;
+      background:transparent;
+      padding:7px 14px;
+      border-radius:999px;
+      font-weight:600;
+      color:#1e293b;
+      font-size:0.88rem;
+      line-height:1;
+      box-shadow:none;
+    }
+    .timeslicer-modern .timeslicer-btn:hover{
+      background:rgba(79,156,255,0.14);
+      border-color:rgba(79,156,255,0.18);
+      box-shadow:none;
+      transform:translateY(-1px);
+    }
+    .timeslicer-modern .timeslicer-btn.active{
+      background:linear-gradient(135deg, #3b82f6, #22c1b8);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 12px 22px rgba(59,130,246,0.26);
+    }
+    .timeslicer-modern .timeslicer-custom{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:nowrap;
+      background:rgba(255,255,255,0.96);
+      border:1px solid rgba(148,163,184,0.26);
+      padding:6px 8px;
+      border-radius:12px;
+      color:rgba(30,41,59,0.7);
+    }
+    .timeslicer-modern .timeslicer-custom label{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
+      font-size:0.86rem;
+      color:#1f2937;
+    }
+    .timeslicer-modern .timeslicer-custom input{
+      border:1px solid rgba(148,163,184,0.35);
+      background:#f8fafc;
+      padding:6px 10px;
+      border-radius:10px;
+      font:inherit;
+      color:#0f172a;
+      min-width:120px;
+      height:34px;
+    }
+    .timeslicer-modern .timeslicer-custom input:focus{
+      outline:none;
+      border-color:rgba(59,130,246,0.5);
+      box-shadow:0 0 0 3px rgba(59,130,246,0.16);
+    }
+    .timeslicer-divider{
+      color:rgba(30,41,59,0.45);
+      font-weight:600;
+    }
+    @media (max-width: 900px){
+      .timeslicer-modern .timeslicer-controls{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .timeslicer-modern .timeslicer-custom{
+        width:100%;
+        justify-content:space-between;
+      }
+    }
+
+/* INSIGHTS-TAB-START */
+
+.insights-tab{position:relative;isolation:isolate;}
+
+  .insights-tab{
+    --bg:#f6f2ea;
+    --bg-ink:#0d1433;
+    --bg-grad:radial-gradient(1200px 680px at 90% -10%, rgba(255,110,64,0.18), transparent 60%),
+      radial-gradient(1000px 520px at -10% 0%, rgba(24,196,190,0.18), transparent 58%),
+      linear-gradient(180deg, #fff7ee 0%, #f4f6fb 100%);
+    --surface:#ffffff;
+    --surface-2:#f1f5fb;
+    --surface-3:#fdf6ef;
+    --ink:#0d1433;
+    --muted:#5f6f88;
+    --line:rgba(13,20,51,0.1);
+    --accent:#1c6bff;
+    --accent-2:#ff6b35;
+    --accent-3:#17c3b2;
+    --accent-4:#f6bd60;
+    --accent-5:#f46036;
+    --success:#2fbf71;
+    --warning:#ff9f1c;
+    --danger:#ef476f;
+    --shadow:0 20px 46px rgba(12, 20, 45, 0.12);
+    --shadow-soft:0 12px 26px rgba(18, 28, 58, 0.08);
+    --radius-lg:20px;
+    --radius-md:16px;
+    --radius-sm:12px;
+    --font-base:"Manrope","Segoe UI",sans-serif;
+    --font-display:"Space Grotesk","Manrope",sans-serif;
+  }
+  .insights-tab *{box-sizing:border-box}
+  .insights-tab{height:100%}
+  .insights-tab{
+    margin:0;
+    font-family:var(--font-base);
+    background:var(--bg);
+    color:var(--ink);
+  }
+  .insights-tab::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:var(--bg-grad);
+    z-index:-2;
+  }
+  .insights-tab::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(380px 380px at 8% 90%, rgba(28,107,255,0.08), transparent 60%),
+      radial-gradient(280px 280px at 92% 92%, rgba(246,189,96,0.12), transparent 55%);
+    z-index:-1;
+  }
+
+.insights-tab header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    padding:22px 28px;
+    background:rgba(255,255,255,0.9);
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    z-index:2;
+    backdrop-filter:blur(8px);
+  }
+
+.insights-tab .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:.86rem;
+    background:var(--surface-3);
+    border:1px solid rgba(246,189,96,0.35);
+    color:#9a5b1f;
+    font-weight:600;
+  }
+  .insights-tab .button{
+    border:none;
+    padding:10px 14px;
+    border-radius:12px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .insights-tab .button.primary{
+    background:linear-gradient(135deg, var(--accent-2), var(--accent-5));
+    color:#fff;
+    box-shadow:0 12px 24px rgba(255,107,53,0.35);
+  }
+  .insights-tab .button.secondary{
+    background:#fff;
+    border:1px solid var(--line);
+    color:var(--ink);
+  }
+  .insights-tab{
+    padding:28px;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+  }
+  .insights-tab .hero,
+  .insights-hero{
+    background:linear-gradient(120deg, rgba(28,107,255,0.14), rgba(23,195,178,0.18));
+    border:1px solid rgba(28,107,255,0.2);
+    border-radius:var(--radius-lg);
+    padding:24px;
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+    box-shadow:var(--shadow);
+  }
+  .insights-tab .hero h2,
+  .insights-hero h2{
+    margin:0 0 10px;
+    font-size:1.6rem;
+    font-family:var(--font-display);
+  }
+  .insights-tab .hero p,
+  .insights-hero p{
+    margin:0;
+    color:#1f2a44;
+    max-width:520px;
+  }
+  .insights-tab .hero-cards,
+  .insights-hero .hero-cards{
+    display:grid;
+    gap:12px;
+  }
+  .insights-tab .hero-card,
+  .insights-hero .hero-card{
+    background:rgba(255,255,255,0.8);
+    border:1px solid rgba(28,107,255,0.18);
+    border-radius:var(--radius-md);
+    padding:12px 14px;
+  }
+  .insights-tab .hero-card strong,
+  .insights-hero .hero-card strong{
+    display:block;
+    font-size:1.25rem;
+    font-family:var(--font-display);
+  }
+  .insights-tab .hero-card span,
+  .insights-hero .hero-card span{
+    color:var(--muted);
+    font-size:.85rem;
+  }
+  .insights-tab .kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    gap:14px;
+  }
+  .insights-tab .kpi-card{
+    background:var(--surface);
+    border-radius:var(--radius-md);
+    padding:16px;
+    border:1px solid var(--line);
+    box-shadow:var(--shadow-soft);
+    position:relative;
+    overflow:hidden;
+  }
+  .insights-tab .kpi-card::after{
+    content:"";
+    position:absolute;
+    inset:auto -40% -50% auto;
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    opacity:.12;
+    background:var(--accent);
+  }
+  .insights-tab .kpi-card h4{
+    margin:0;
+    font-size:.9rem;
+    color:var(--muted);
+    font-weight:600;
+    letter-spacing:.02em;
+  }
+  .insights-tab .kpi-value{
+    font-size:1.8rem;
+    font-family:var(--font-display);
+    margin-top:6px;
+  }
+  .insights-tab .kpi-sub{
+    margin-top:6px;
+    font-size:.85rem;
+    color:var(--muted);
+  }
+  .insights-tab .kpi-progress{
+    margin-top:12px;
+    height:8px;
+    border-radius:999px;
+    background:#eef2ff;
+    overflow:hidden;
+  }
+  .insights-tab .kpi-progress span{
+    display:block;
+    height:100%;
+    width:0%;
+    border-radius:999px;
+    background:linear-gradient(90deg, var(--accent), var(--accent-3));
+    transition:width .4s ease;
+  }
+  .insights-tab .kpi-tone-orange .kpi-progress span{background:linear-gradient(90deg, var(--accent-2), var(--accent-4))}
+  .insights-tab .kpi-tone-teal .kpi-progress span{background:linear-gradient(90deg, var(--accent-3), #6ee7d4)}
+  .insights-tab .kpi-tone-red .kpi-progress span{background:linear-gradient(90deg, var(--danger), #ff8fab)}
+  .insights-tab .grid-two{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:14px;
+  }
+  .insights-tab .grid-three{
+    display:grid;
+    grid-template-columns:1.2fr 1fr 1fr;
+    gap:14px;
+  }
+  .insights-tab .card{
+    background:var(--surface);
+    border-radius:var(--radius-md);
+    padding:18px;
+    border:1px solid var(--line);
+    box-shadow:var(--shadow-soft);
+  }
+  .insights-tab .card h3{
+    margin:0 0 12px;
+    font-family:var(--font-display);
+    font-size:1.1rem;
+  }
+  .insights-tab .card-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .insights-tab .card-sub{
+    font-size:.82rem;
+    color:var(--muted);
+  }
+  .insights-tab .chart-wrap{height:300px;}
+  .insights-tab .chart-wrap.small{height:220px;}
+  .insights-tab .status-list{
+    display:grid;
+    gap:8px;
+    margin-top:10px;
+  }
+  .insights-tab .status-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:.9rem;
+    color:var(--muted);
+  }
+  .insights-tab .status-pill{
+    padding:4px 10px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:.75rem;
+  }
+  .insights-tab .status-ok{background:rgba(47,191,113,0.15); color:#168a4a;}
+  .insights-tab .status-warn{background:rgba(255,159,28,0.2); color:#b45309;}
+  .insights-tab .status-bad{background:rgba(239,71,111,0.2); color:#b91c1c;}
+  .insights-tab .table-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:14px;
+    align-items:start;
+  }
+  .insights-tab table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.88rem;
+  }
+  .insights-tab thead th{
+    text-align:left;
+    padding:10px 8px;
+    background:var(--surface-2);
+    border-bottom:1px solid var(--line);
+    color:#1d2a46;
+  }
+  .insights-tab tbody td{
+    padding:10px 8px;
+    border-bottom:1px solid var(--line);
+  }
+  .insights-tab tbody tr{
+    cursor:pointer;
+    transition:background .18s ease;
+  }
+  .insights-tab tbody tr:hover{
+    background:#f6f8ff;
+  }
+  .insights-tab tbody tr.active{
+    background:rgba(28,107,255,0.12);
+  }
+  .insights-tab .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:.75rem;
+  }
+  .insights-tab .badge.ok{background:rgba(47,191,113,0.15); color:#168a4a;}
+  .insights-tab .badge.warn{background:rgba(255,159,28,0.2); color:#b45309;}
+  .insights-tab .badge.bad{background:rgba(239,71,111,0.2); color:#b91c1c;}
+  .insights-tab .spotlight{
+    display:grid;
+    gap:12px;
+  }
+  .insights-tab .spotlight h4{
+    margin:0;
+    font-size:1rem;
+    font-family:var(--font-display);
+  }
+  .insights-tab .spotlight .value{
+    font-size:1.6rem;
+    font-family:var(--font-display);
+  }
+  .insights-tab .spotlight-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .insights-tab .spotlight-tile{
+    background:var(--surface-2);
+    border-radius:12px;
+    padding:12px;
+    border:1px solid var(--line);
+  }
+  .insights-tab .spotlight-tile span{
+    display:block;
+    font-size:.78rem;
+    color:var(--muted);
+  }
+  .insights-tab .spotlight-tile strong{
+    font-size:1.15rem;
+  }
+  .insights-tab .data-note{
+    font-size:.8rem;
+    color:var(--muted);
+  }
+  @media (max-width: 1200px){
+    .insights-tab .kpi-grid{grid-template-columns:repeat(2, minmax(0,1fr))}
+    .insights-tab .grid-two{grid-template-columns:1fr}
+    .insights-tab .grid-three{grid-template-columns:1fr}
+    .insights-tab .table-grid{grid-template-columns:1fr}
+    .insights-tab .hero,
+    .insights-hero{grid-template-columns:1fr}
+  }
+  @media (max-width: 900px){
+
+}
+  @media (max-width: 600px){
+    .insights-tab header{flex-direction:column; align-items:flex-start}
+    .insights-tab{padding:20px}
+    .insights-tab .kpi-grid{grid-template-columns:1fr}
+  }
+@media (max-width: 900px){
+}
+  </style>
+</head>
+<body>
+  <template id="page-content">
+        <section class="hero insights-hero" data-tabs="insights">
+          <div>
+            <h2>Live-Visualisierung f&uuml;r den Stellenplan</h2>
+            <p>Dieses Cockpit kombiniert Auslastung, PPUG-Status und Personalabweichung in einem interaktiven &Uuml;berblick. Die Daten werden aktuell aus einem Demo-Datensatz geladen und sind bereit f&uuml;r die D1-Anbindung.</p>
+          </div>
+          <div class="hero-cards">
+            <div class="hero-card">
+              <strong id="heroBeds">--</strong>
+              <span>Belegte Betten gesamt</span>
+            </div>
+            <div class="hero-card">
+              <strong id="heroOccupancy">--</strong>
+              <span>Auslastung &uuml;ber alle Stationen</span>
+            </div>
+            <div class="hero-card">
+              <strong id="heroVariance">--</strong>
+              <span>Personalabweichung (Std)</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="tabbar">
+            <button class="active" type="button" data-tab-btn="insights">Insights</button>
+            <button type="button" data-tab-btn="dashboard">Dashboards</button>
+            <button type="button" data-tab-btn="charts">Charts</button>
+            <button type="button" data-tab-btn="ziel">Ziel</button>
+            <button type="button" data-tab-btn="qual">Qualifikation</button>
+            <button type="button" data-tab-btn="parameter">Parameter</button>
+          </div>
+        </section>
+
+        <div class="timeslicer-shell" data-tabs="insights dashboard charts ziel qual parameter">
+          <div class="app-timeslicer timeslicer-modern" data-timeslicer>
+            <div class="timeslicer-card">
+              <div class="timeslicer-head">
+                <div>
+                  <div class="timeslicer-title">Zeitfenster</div>
+                  <div class="timeslicer-sub">Filtert Kennzahlen und Reportings.</div>
+                </div>
+                <span class="timeslicer-pill" data-range-label>7 Tage</span>
+              </div>
+              <div class="timeslicer-controls">
+                <div class="timeslicer-buttons">
+                  <button class="timeslicer-btn active" type="button" data-range="7d" data-label="7 Tage">7 Tage</button>
+                  <button class="timeslicer-btn" type="button" data-range="30d" data-label="30 Tage">30 Tage</button>
+                  <button class="timeslicer-btn" type="button" data-range="quarter" data-label="Quartal">Quartal</button>
+                  <button class="timeslicer-btn" type="button" data-range="year" data-label="Jahr">Jahr</button>
+                </div>
+                <div class="timeslicer-custom">
+                  <label>Von <input type="date" data-range-start /></label>
+                  <span class="timeslicer-divider">-</span>
+                  <label>Bis <input type="date" data-range-end /></label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="insights-tab" data-tabs="insights">
+        <section class="kpi-grid">
+          <div class="kpi-card kpi-tone-teal">
+            <h4>Belegte Betten</h4>
+            <div class="kpi-value" id="kpiBeds">--</div>
+            <div class="kpi-sub" id="kpiBedsSub">Planbetten: --</div>
+            <div class="kpi-progress"><span id="kpiBedsProgress"></span></div>
+          </div>
+          <div class="kpi-card">
+            <h4>Auslastung</h4>
+            <div class="kpi-value" id="kpiOccupancy">--</div>
+            <div class="kpi-sub" id="kpiOccupancySub">Trend: --</div>
+            <div class="kpi-progress"><span id="kpiOccupancyProgress"></span></div>
+          </div>
+          <div class="kpi-card kpi-tone-orange">
+            <h4>PPUG Verst&ouml;&szlig;e</h4>
+            <div class="kpi-value" id="kpiViolations">--</div>
+            <div class="kpi-sub" id="kpiViolationsSub">Stationen in Pr&uuml;fung</div>
+            <div class="kpi-progress"><span id="kpiViolationsProgress"></span></div>
+          </div>
+          <div class="kpi-card kpi-tone-red">
+            <h4>Personalabweichung</h4>
+            <div class="kpi-value" id="kpiVariance">--</div>
+            <div class="kpi-sub" id="kpiVarianceSub">Ueber/Unterdeckung</div>
+            <div class="kpi-progress"><span id="kpiVarianceProgress"></span></div>
+          </div>
+        </section>
+        <section class="grid-two">
+          <div class="card">
+            <div class="card-header">
+              <h3>Trend: Auslastung &amp; Stunden</h3>
+              <span class="card-sub" id="trendSource">Quelle: Demo</span>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Top Stationen (Auslastung)</h3>
+              <span class="card-sub">Klickbar</span>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="topStationsChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid-three">
+          <div class="card">
+            <div class="card-header">
+              <h3>PPUG Statusmix</h3>
+              <span class="card-sub">Alle Stationen</span>
+            </div>
+            <div class="chart-wrap small">
+              <canvas id="statusChart"></canvas>
+            </div>
+            <div class="status-list" id="statusList"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Schichtmix</h3>
+              <span class="card-sub">Ist-Stunden</span>
+            </div>
+            <div class="chart-wrap small">
+              <canvas id="shiftChart"></canvas>
+            </div>
+            <div class="status-list">
+              <div class="status-item"><span>Fr&uuml;h</span><span id="shiftEarly">--</span></div>
+              <div class="status-item"><span>Sp&auml;t</span><span id="shiftLate">--</span></div>
+              <div class="status-item"><span>Nacht</span><span id="shiftNight">--</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>KPI Schnellcheck</h3>
+              <span class="card-sub">Risikoklassen</span>
+            </div>
+            <div class="status-list">
+              <div class="status-item">
+                <span>Stationsabdeckung</span>
+                <span class="status-pill status-ok" id="kpiCoverage">OK</span>
+              </div>
+              <div class="status-item">
+                <span>Schichtbalance</span>
+                <span class="status-pill status-warn" id="kpiShiftBalance">Warnung</span>
+              </div>
+              <div class="status-item">
+                <span>PPUG Risiko</span>
+                <span class="status-pill status-bad" id="kpiRisk">Hoch</span>
+              </div>
+            </div>
+            <p class="data-note" id="dataNote">Datenquelle: Demo-Datensatz.</p>
+          </div>
+        </section>
+        <section class="table-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3>Stations&uuml;bersicht</h3>
+              <span class="card-sub">Klicke eine Station f&uuml;r Details</span>
+            </div>
+            <div style="overflow-x:auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Station</th>
+                    <th>Planbetten</th>
+                    <th>Belegt</th>
+                    <th>Auslastung</th>
+                    <th>PPUG</th>
+                    <th>Abw. Std</th>
+                  </tr>
+                </thead>
+                <tbody id="stationsTable"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card spotlight">
+            <div>
+              <div class="card-sub">Spotlight</div>
+              <h4 id="spotlightStation">--</h4>
+            </div>
+            <div class="spotlight-row">
+              <div class="spotlight-tile">
+                <span>Auslastung</span>
+                <strong id="spotlightOccupancy">--</strong>
+              </div>
+              <div class="spotlight-tile">
+                <span>PPUG Status</span>
+                <strong id="spotlightStatus">--</strong>
+              </div>
+              <div class="spotlight-tile">
+                <span>Planbetten</span>
+                <strong id="spotlightPlanned">--</strong>
+              </div>
+              <div class="spotlight-tile">
+                <span>Belegt</span>
+                <strong id="spotlightOccupied">--</strong>
+              </div>
+            </div>
+            <div class="spotlight-tile">
+              <span>Personalabweichung</span>
+              <div class="value" id="spotlightVariance">--</div>
+              <span id="spotlightVarianceLabel">--</span>
+            </div>
+            <p class="data-note">Hinweis: Im n&auml;chsten Schritt folgt die Anbindung an den Stellenplan-Import.</p>
+          </div>
+        </section>
+      
+      </div>
+      <div data-tabs="dashboard">
+        <div class="controls">
+          <label>Station
+            <select id="deptSelect"></select>
+          </label>
+          <label>Jahr
+            <select id="yearSelect"></select>
+          </label>
+          <label>Szenario Delta (VK/Monat)
+            <input id="scenarioInput" type="number" step="0.1" value="0" />
+          </label>
+          <label>Zielwert (VK/Monat)
+            <input id="globalTarget" type="number" step="0.1" value="2" />
+          </label>
+          <button id="btnRefresh" type="button">Neu laden</button>
+        </div>
+        <div class="grid" style="margin-top:12px;">
+          <div class="tile"><span>VK Gesamt</span><strong id="kpiTotal">-</strong></div>
+          <div class="tile"><span>Forecast +12M</span><strong id="kpiForecast">-</strong></div>
+          <div class="tile"><span>Peak-Monat</span><strong id="kpiPeak">-</strong></div>
+        </div>
+        <div class="chart">
+          <div class="chart-meta">Verh&auml;ltnis Pflegefachkraft / -assistenz</div>
+          <div id="heatmapRatios" class="ratio-grid"></div>
+        </div>
+        <div class="chart" style="margin-top:12px;">
+          <div class="chart-meta">Gesamt (Ist / Forecast / Szenario)</div>
+          <svg id="dashLineChart" class="line-wide" preserveAspectRatio="none"></svg>
+          <div class="chart-axis"><div>Jan</div><div>Feb</div><div>Mrz</div><div>Apr</div><div>Mai</div><div>Jun</div><div>Jul</div><div>Aug</div><div>Sep</div><div>Okt</div><div>Nov</div><div>Dez</div></div>
+        </div>
+        <div class="scenario-panel">
+        <div class="scenario-head">
+          <strong>Szenario-Anpassung je Monat</strong>
+          <div class="scenario-totals">Gesamt Szenario: <span id="scenarioTotal">-</span></div>
+        </div>
+        <div class="scenario-inputs" id="scenarioInputs"></div>
+        <div class="scenario-controls">
+            <label style="display:flex;gap:6px;align-items:center;">Krankheitsausfall aktiv
+              <input type="checkbox" id="sinToggle" checked />
+            </label>
+            <label style="display:flex;gap:6px;align-items:center;">Krankheitsausfall (%)
+              <input type="range" id="sinAmp" min="0" max="50" value="10" />
+              <span id="sinAmpLabel">10 %</span>
+            </label>
+        </div>
+      </div>
+        <!-- Neue Insights-Elemente -->
+        <div class="insights-section">
+          <div class="insights-head">
+            <div>
+              <div class="title">Verh&auml;ltnis Pflegefachkraft / Assistenz <span class="insights-tag">PFK / PFA / VK</span></div>
+              <p class="insights-sub">VK-Werte, Prozentverteilung und Gesamt je Station.</p>
+            </div>
+          </div>
+          <div id="ratioGridNew" class="ratio-grid"></div>
+        </div>
+
+        <div class="insights-section">
+          <div class="insights-head">
+            <div>
+              <div class="title">Glow KPI-Pills</div>
+              <p class="insights-sub">Gesamt-Kennzahlen aus deinen Stellenplandaten.</p>
+            </div>
+          </div>
+          <div id="pillRowNew" class="pill-row-new"></div>
+        </div>
+
+        <div class="insights-section">
+          <div class="insights-head">
+            <div>
+              <div class="title">Donut-Verteilung PFK / PFA</div>
+              <p class="insights-sub">Verteilung PFK/PFA je Station (Top 3).</p>
+            </div>
+          </div>
+          <div id="donutRowNew" class="donut-grid"></div>
+        </div>
+
+        <div class="insights-section">
+          <div class="insights-head">
+            <div>
+              <div class="title">Station-Trends (Sparkline)</div>
+              <p class="insights-sub">Mini-Trends je Station (Monate Janâ€“Dez).</p>
+            </div>
+          </div>
+          <div id="sparkGrid" class="spark-grid"></div>
+        </div>
+
+        <div class="insights-section">
+          <div class="insights-head">
+            <div class="title">Capacity Thermometer</div>
+            <p class="insights-sub">Deckungsgrad vs. globaler Zielwert.</p>
+          </div>
+          <div id="capacityRow" class="capacity-row"></div>
+        </div>
+
+        <div class="insights-section">
+          <div class="insights-head">
+            <div class="title">Cluster-Bubbles</div>
+            <p class="insights-sub">Stationsvolumen (VK) als Blasen.</p>
+          </div>
+          <div id="bubbleRowNew" class="bubble-row"></div>
+        </div>
+
+        <div class="insights-section">
+          <div class="insights-head">
+            <div class="title">Glow Line Chart</div>
+            <p class="insights-sub">VK-Verlauf (Ist &amp; Forecast).</p>
+          </div>
+          <div class="line-card">
+            <svg id="lineChartSvg" class="line-chart-svg" preserveAspectRatio="none"></svg>
+          </div>
+        </div>
+
+        <div class="insights-section">
+          <div class="insights-head">
+            <div class="title">PyramidenÃ¼bersicht</div>
+            <p class="insights-sub">Strukturierte Ansicht deiner Bereiche.</p>
+          </div>
+          <div class="pyramid">
+            <div class="pyramid-level"><div class="pyramid-box">Intensivstationen</div></div>
+            <div class="pyramid-level"><div class="pyramid-box">IMC / Ãœberwachung</div></div>
+            <div class="pyramid-level"><div class="pyramid-box">Normalstationen</div></div>
+            <div class="pyramid-level"><div class="pyramid-box">Funktionsbereiche / OP / Endoskopie</div></div>
+          </div>
+        </div>
+
+        <div class="insights-section">
+          <div class="insights-head">
+            <div class="title">Glass Panels</div>
+            <p class="insights-sub">KPIs im Glas-/Neon-Stil.</p>
+          </div>
+          <div id="glassGrid" class="glass-grid"></div>
+        </div>
+        <div id="status" class="hint" style="margin-top:10px;"></div>
+      </div>
+    </section>
+
+    <section class="card" data-tabs="charts">
+      <h3 style="margin-top:0;">Verlauf gesamt</h3>
+      <div class="controls">
+        <label>Station
+          <select id="chartsDeptSelect"></select>
+        </label>
+        <label>Jahr
+          <select id="chartsYearSelect"></select>
+        </label>
+      </div>
+      <div class="chart" style="margin-top:12px;">
+        <div class="chart-meta">Balken Jan-Dez (Ist)</div>
+        <svg id="groupedChart" width="100%" height="320" preserveAspectRatio="none"></svg>
+        <div class="chart-axis"><div>Jan</div><div>Feb</div><div>Mrz</div><div>Apr</div><div>Mai</div><div>Jun</div><div>Jul</div><div>Aug</div><div>Sep</div><div>Okt</div><div>Nov</div><div>Dez</div></div>
+      </div>
+      <div class="chart" style="margin-top:12px;">
+        <div class="chart-meta">Monate (Ist vs Forecast)</div>
+        <svg id="bubbleChart" width="100%" height="220" preserveAspectRatio="none"></svg>
+        <div class="legend">
+          <span><span class="dot" style="background:#1f4b82;"></span> Ist</span>
+          <span><span class="dot" style="background:#f9be00;"></span> Forecast</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" data-tabs="ziel">
+      <h3 style="margin-top:0;">Monate (Ist + Forecast)</h3>
+      <div class="hint">Kombinierte Werte (Haupt + Zusatz). Forecast: einfache Trendgerade.</div>
+      <div style="overflow:auto;">
+        <table id="monthsTable"></table>
+      </div>
+    </section>
+
+    <section class="card qual-card" data-tabs="qual">
+      <div class="qual-head" style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:flex-start;">
+        <div>
+          <h3 style="margin-top:0;">Qualifikationen &amp; Abdeckung</h3>
+          <p class="hint" style="margin:6px 0 6px;">Daten aus <strong>stellenplan_employees</strong> (Mandant &amp; Jahr siehe Badges).</p>
+          <ul id="hints" class="hint-list"></ul>
+        </div>
+        <div class="badge-bar">
+          <span class="badge-rect">Mandant: <span id="qualSiteLabel">-</span></span>
+          <span class="badge-rect">Abteilung: <span id="qualDeptLabel">-</span></span>
+          <span class="badge-rect">Jahr: <span id="qualYearLabel">-</span></span>
+        </div>
+      </div>
+      <div class="filter-bar" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+        <label>Qualifikation filtern
+          <select id="qualFilter">
+            <option value="__all__">Alle</option>
+          </select>
+        </label>
+      </div>
+      <div class="cockpit-grid" id="qualSummaryTiles"></div>
+      <div class="qual-grid">
+        <div class="qual-panel">
+          <h4 style="margin:0;">Aktuelle Abteilung</h4>
+          <div class="qual-table-wrap">
+            <table id="qualDeptTable"></table>
+          </div>
+        </div>
+        <div class="qual-panel">
+          <h4 style="margin:0;">Stationen &amp; Haus</h4>
+          <div class="qual-table-wrap">
+            <table id="qualSummaryTable"></table>
+          </div>
+        </div>
+      </div>
+      <div class="qual-panel">
+        <h4 style="margin:0;">Alle Mitarbeitenden mit Qualifikationen (hausweit)</h4>
+        <div class="qual-table-wrap">
+          <table id="qualPeopleTable"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" data-tabs="parameter">
+      <h3 style="margin-top:0;">Parameter (Wirtschaftsplan VK)</h3>
+      <p class="hint">VK-Gesamtwert (Dienstart 01) und nachgelagerte Verteilung je Station. Werte werden in der Parameter-Tabelle f&uuml;r den Standort/Jahr gespeichert.</p>
+      <div class="glass-grid" style="margin-bottom:12px;">
+        <div class="glass-card">
+          <div class="glass-card-title">Wirtschaftsplan Gesamt (Dienstart 01)</div>
+          <div class="glass-card-value" id="planTotalValue">-</div>
+          <div class="glass-card-label">Gesamt-VK f&uuml;r das ausgew&auml;hlte Jahr/Standort.</div>
+        </div>
+      </div>
+      <div class="controls" style="margin-bottom:10px;">
+        <label>Jahr
+          <select id="planYearSelect"></select>
+        </label>
+        <label>Wirtschaftsplan VK gesamt
+          <input id="planTotalInput" type="number" step="0.01" value="0" />
+        </label>
+        <button type="button" id="planSaveBtn">Speichern</button>
+      </div>
+      <div style="overflow:auto;">
+        <table id="planTable" style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th style="text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);">Station</th>
+              <th style="text-align:right;padding:10px 8px;border-bottom:1px solid var(--line);">Wirtschaftsplan VK</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="planSummary" class="hint" style="margin-top:10px;"></div>
+    </section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL_STORAGE='clinicon_supabase_url';
+    const SUPABASE_KEY_STORAGE='clinicon_supabase_key';
+    const MONTHS=['Jan','Feb','Mrz','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+    const DEPT_ORDER=['Station 1','Station 2','Station 3','Station 4','Station 5','Station 6','Station 7','Endoskopie','OP','Sozialdienst','Pflegedienstleitung'];
+    const TABLE_EMP_BASE='stellenplan_employees';
+    const DEFAULT_SUPABASE_URL='https://fqilehnixnsujefyrdcy.supabase.co';
+    const DEFAULT_SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxaWxlaG5peG5zdWplZnlyZGN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MjIyNzUsImV4cCI6MjA3OTQ5ODI3NX0.Ml1J-YsID7_CXX7LbLZM4ayhWpV08FBSZc3rgVuwqt4';
+    const SUPABASE_URL=(window.SUPABASE_URL||localStorage.getItem(SUPABASE_URL_STORAGE)||DEFAULT_SUPABASE_URL).trim();
+    const SUPABASE_ANON_KEY=(window.SUPABASE_ANON_KEY||localStorage.getItem(SUPABASE_KEY_STORAGE)||DEFAULT_SUPABASE_KEY).trim();
+    const supabaseClient=(typeof window.supabase!=='undefined'&&SUPABASE_URL&&SUPABASE_ANON_KEY)?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+    const SITE_LABEL=(sessionStorage.getItem('cliniconSite')||'').trim();
+    const SITE_CODE=SITE_LABEL.toLowerCase().replace(/[^a-z0-9_]/g,'');
+    const HAS_SITE=Boolean(SITE_CODE);
+    const tableName=(base)=>SITE_CODE?`${base}_${SITE_CODE}`:base;
+
+    const els={
+      tabButtons:Array.from(document.querySelectorAll('[data-tab-btn]')),
+      tabSections:Array.from(document.querySelectorAll('[data-tabs]')),
+      deptSelect:document.getElementById('deptSelect'),
+      yearSelect:document.getElementById('yearSelect'),
+      scenarioInput:document.getElementById('scenarioInput'),
+      globalTarget:document.getElementById('globalTarget'),
+      btnRefresh:document.getElementById('btnRefresh'),
+      kpiTotal:document.getElementById('kpiTotal'),
+      kpiForecast:document.getElementById('kpiForecast'),
+      kpiPeak:document.getElementById('kpiPeak'),
+      heroTotal:document.getElementById('heroTotal'),
+      heroPeople:document.getElementById('heroPeople'),
+      heroPeak:document.getElementById('heroPeak'),
+      heroSiteLabel:document.getElementById('heroSiteLabel'),
+      heroYearLabel:document.getElementById('heroYearLabel'),
+      heroDeptLabel:document.getElementById('heroDeptLabel'),
+      dashLineChart:document.getElementById('dashLineChart'),
+      chartsDeptSelect:document.getElementById('chartsDeptSelect'),
+      chartsYearSelect:document.getElementById('chartsYearSelect'),
+      groupedChart:document.getElementById('groupedChart'),
+      bubbleChart:document.getElementById('bubbleChart'),
+      heatmapRatios:document.getElementById('heatmapRatios'),
+      qualFilter:document.getElementById('qualFilter'),
+      qualDeptTable:document.getElementById('qualDeptTable'),
+      qualSummaryTable:document.getElementById('qualSummaryTable'),
+      qualPeopleTable:document.getElementById('qualPeopleTable'),
+      qualDeptLabel:document.getElementById('qualDeptLabel'),
+      qualYearLabel:document.getElementById('qualYearLabel'),
+      qualSiteLabel:document.getElementById('qualSiteLabel'),
+      qualSummaryTiles:document.getElementById('qualSummaryTiles'),
+      monthsTable:document.getElementById('monthsTable'),
+      status:document.getElementById('status'),
+      hints:document.getElementById('hints'),
+      ratioGridNew:document.getElementById('ratioGridNew'),
+      pillRowNew:document.getElementById('pillRowNew'),
+      donutRowNew:document.getElementById('donutRowNew'),
+      sparkGrid:document.getElementById('sparkGrid'),
+      capacityRow:document.getElementById('capacityRow'),
+      bubbleRowNew:document.getElementById('bubbleRowNew'),
+      lineChartSvg:document.getElementById('lineChartSvg'),
+      glassGrid:document.getElementById('glassGrid'),
+      planTable:document.getElementById('planTable'),
+      planTotalInput:document.getElementById('planTotalInput'),
+      planTotalValue:document.getElementById('planTotalValue'),
+      planSaveBtn:document.getElementById('planSaveBtn'),
+      planYearSelect:document.getElementById('planYearSelect'),
+      planSummary:document.getElementById('planSummary'),
+      scenarioInputs:document.getElementById('scenarioInputs'),
+      scenarioTotal:document.getElementById('scenarioTotal'),
+      sinAmp:document.getElementById('sinAmp'),
+      sinAmpLabel:document.getElementById('sinAmpLabel'),
+      sinToggle:document.getElementById('sinToggle'),
+    };
+
+    const state={dept:'__all__',year:null,allEntries:[],currentTab:'insights',targets:{},selectedStation:'__all__'};
+    const PARAM_TABLE = SITE_CODE ? `parameter_${SITE_CODE}` : null;
+    let planTotalVal = 0;
+    let planMap = {};
+    let planDepts = [];
+    let forecastCache = [];
+    let scenarioDeltas = Array(12).fill(0);
+    function getPlanValue(dept){return Number(planMap[dept]||0);}
+
+    function setActiveTab(tab){state.currentTab=tab;(els.tabButtons||[]).forEach(btn=>{const a=btn.dataset.tabBtn===tab;btn.classList.toggle('active',a);btn.setAttribute('aria-pressed',a?'true':'false');});(els.tabSections||[]).forEach(sec=>{const tabs=(sec.dataset.tabs||'').split(/\s+/).filter(Boolean);sec.classList.toggle('section-hidden',!tabs.includes(tab));});}
+    function sortDepts(ds){const order=new Map();DEPT_ORDER.forEach((d,i)=>order.set(d,i));return ds.sort((a,b)=>{const ia=order.has(a)?order.get(a):999;const ib=order.has(b)?order.get(b):999; if(ia!==ib) return ia-ib; return a.localeCompare(b,'de');});}
+    function fmt(n){const num=Number(n||0);return num.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});}
+    function setStatus(msg,ok=true){if(!els.status)return;els.status.textContent=msg;els.status.style.color=ok?'#16a34a':'#b91c1c';}
+    function parseMonths(arr){if(Array.isArray(arr))return arr.map(v=>Number(v)||0); if(typeof arr==='string'){const c=arr.replace(/[{}]/g,''); if(!c)return Array(12).fill(0); return c.split(',').map(v=>Number(v)||0);} return Array(12).fill(0);}
+    function normalizeQuals(t){return (t||'').split(',').map(s=>s.trim()).filter(Boolean);}
+    function isExtraRow(row){const pn=(row.personal_number||row.personalNumber||'').toString().toUpperCase();return pn.startsWith('EX-');}
+    function heatColor(diff){if(diff<=-0.5)return '#f87171'; if(diff<-0.1)return '#fde68a'; if(diff<=0.1)return '#bbf7d0'; return '#22c55e';}
+    function linearForecast(data,count=12){const vals=(data||[]).map(v=>Number(v)||0);const n=vals.length;if(!n)return Array(count).fill(0);const xMean=(n-1)/2;const yMean=vals.reduce((a,v)=>a+v,0)/n;let num=0,den=0;vals.forEach((v,i)=>{num+=(i-xMean)*(v-yMean);den+=(i-xMean)*(i-xMean);});const slope=den?num/den:0;const intercept=yMean - slope*xMean;const out=[];const total=Math.max(count,n);for(let i=0;i<total;i++){out.push(Math.max(0,intercept + slope*i));}return out.slice(0,count);}
+    function applyScenario(arr,delta){const d=Number(delta)||0;return (arr||[]).map(v=>Math.max(0,(Number(v)||0)+d));}
+    const avgMonths=arr=>{const list=parseMonths(arr||[]);const sum=list.reduce((a,b)=>a+b,0);return list.length?sum/list.length:0;};
+
+    function buildDeptMetrics(entries){
+      const filtered=(entries||[]).filter(e=>e.include!==false && e.dept);
+      const map=new Map();
+      filtered.forEach(e=>{
+        const avg=avgMonths(e.months||e.values||[]);
+        const qs=normalizeQuals(e.qual).map(q=>q.toLowerCase());
+        const isPfa=qs.some(q=>q.includes('pflegefachassistenz'));
+        const isPfk=qs.some(q=>q.includes('pflegefachkraft'));
+        if(!map.has(e.dept)) map.set(e.dept,{dept:e.dept,pfk:0,pfa:0,months:Array(12).fill(0)});
+        const row=map.get(e.dept);
+        const months=parseMonths(e.months||e.values||[]);
+        months.forEach((v,i)=>row.months[i]+=v||0);
+        if(isPfk && isPfa){row.pfk+=avg/2;row.pfa+=avg/2;}
+        else if(isPfa){row.pfa+=avg;}
+        else{row.pfk+=avg;}
+      });
+      return Array.from(map.values()).map(r=>({...r,total:(r.pfk||0)+(r.pfa||0)})).filter(r=>r.total>0).sort((a,b)=>b.total-a.total);
+    }
+
+    function updateDeptOptions(depts){
+      if(!els.deptSelect)return;
+      const prev=els.deptSelect.value||state.dept||'__all__';
+      const opts=['__all__',...sortDepts(depts)];
+      const html=opts.map(v=>`<option value="${v}" ${v===prev?'selected':''}>${v==='__all__'?'Alle Stationen':v}</option>`).join('');
+      els.deptSelect.innerHTML=html;
+      if(els.chartsDeptSelect)els.chartsDeptSelect.innerHTML=html;
+      state.dept=opts.includes(prev)?prev:'__all__';
+      els.deptSelect.value=state.dept;
+      if(els.chartsDeptSelect)els.chartsDeptSelect.value=state.dept;
+      if(els.heroDeptLabel){
+        els.heroDeptLabel.textContent=state.dept==='__all__'?'Alle':state.dept;
+      }
+    }
+
+    function updateQualFilterOptions(){if(!els.qualFilter)return;const prev=els.qualFilter.value;const set=new Set();(state.allEntries||[]).forEach(e=>normalizeQuals(e.qual).forEach(q=>q&&set.add(q)));const opts=['__all__',...Array.from(set).sort((a,b)=>a.localeCompare(b,'de'))];els.qualFilter.innerHTML=opts.map(v=>`<option value="${v}" ${v===prev?'selected':''}>${v==='__all__'?'Alle':v}</option>`).join('');}
+
+    function renderHeatmap(entries){
+      const valid=(entries||[]).filter(e=>e.include!==false && e.dept);
+      const avgMonths=arr=>{const list=parseMonths(arr||[]);return list.length?list.reduce((a,b)=>a+b,0)/list.length:0;};
+      const byDept=new Map();
+      valid.forEach(e=>{
+        const avg=avgMonths(e.months||e.values||[]);
+        const qs=normalizeQuals(e.qual).map(q=>q.toLowerCase());
+        const isPfa=qs.some(q=>q.includes('pflegefachassistenz'));
+        const isPfk=qs.some(q=>q.includes('pflegefachkraft'));
+        if(!byDept.has(e.dept)) byDept.set(e.dept,{dept:e.dept,pfk:0,pfa:0});
+        const row=byDept.get(e.dept);
+        if(isPfk && isPfa){row.pfk+=avg/2; row.pfa+=avg/2;}
+        else if(isPfa){row.pfa+=avg;}
+        else{row.pfk+=avg;}
+      });
+      let ratioData=Array.from(byDept.values()).map(r=>({...r,total:(r.pfk||0)+(r.pfa||0)})).filter(r=>r.total>0);
+      if(state.dept && state.dept!=='__all__') ratioData=ratioData.filter(r=>r.dept===state.dept);
+      ratioData.sort((a,b)=>sortDepts([a.dept,b.dept])[0]===a.dept?-1:1);
+      if(state.dept==='__all__'&&ratioData.length){
+        const allPfk=ratioData.reduce((a,r)=>a+r.pfk,0);
+        const allPfa=ratioData.reduce((a,r)=>a+r.pfa,0);
+        ratioData.push({dept:'Gesamt Haus',pfk:allPfk,pfa:allPfa,total:allPfk+allPfa});
+      }
+      if(els.heatmapRatios){
+        if(!ratioData.length){
+          els.heatmapRatios.innerHTML='<div class="hint">Keine Daten</div>';
+        }else{
+          const cards=ratioData.map(r=>{
+            const pfkPct=r.total>0?(r.pfk/r.total)*100:0;
+            const pfaPct=r.total>0?(r.pfa/r.total)*100:0;
+            const pfkW=`${Math.max(4,pfkPct)}%`;
+            const pfaW=`${Math.max(4,pfaPct)}%`;
+            return `<div class="ratio-card">
+                <strong>${r.dept}</strong>
+                <div style="font-size:0.9rem;color:${'var(--muted)'};">PFK: ${fmt(r.pfk)} | PFA: ${fmt(r.pfa)} | VK: ${fmt(r.total)}</div>
+                <div class="ratio-bar"><span class="pfk" style="width:${pfkW};"></span><span class="pfa" style="width:${pfaW};"></span></div>
+                <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:${'var(--muted)'};margin-top:4px;">
+                  <span>PFK ${pfkPct.toFixed(1)}%</span>
+                  <span>PFA ${pfaPct.toFixed(1)}%</span>
+                </div>
+              </div>`;
+          }).join('');
+          els.heatmapRatios.innerHTML=cards;
+        }
+      }
+    }
+
+    function renderRatioCards(metrics){
+      if(!els.ratioGridNew) return;
+      if(!metrics.length){els.ratioGridNew.innerHTML='<div class="hint">Keine Daten</div>';return;}
+      els.ratioGridNew.innerHTML=metrics.map(r=>{
+        const pfkPct=r.total>0?(r.pfk/r.total)*100:0;
+        const pfaPct=r.total>0?(r.pfa/r.total)*100:0;
+        return `<div class="ratio-card">
+          <div class="ratio-header">
+            <div class="ratio-name">${r.dept}</div>
+            <div class="ratio-meta">
+              <span><strong>${fmt(r.total)}</strong> VK gesamt</span>
+              <span>${pfkPct.toFixed(0)} % PFK Â· ${pfaPct.toFixed(0)} % PFA</span>
+            </div>
+          </div>
+          <div class="ratio-bar">
+            <span class="pfk" style="width:${Math.max(4,pfkPct)}%;">${pfkPct>12?pfkPct.toFixed(0)+'% PFK':''}</span>
+            <span class="pfa" style="width:${Math.max(4,pfaPct)}%;">${pfaPct>12?pfaPct.toFixed(0)+'% PFA':''}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;color:${'var(--muted)'};font-size:0.9rem;">
+            <span><strong>${r.pfk.toFixed(1)}</strong> VK PFK</span>
+            <span><strong>${r.pfa.toFixed(1)}</strong> VK PFA</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderDonuts(metrics){
+      if(!els.donutRowNew) return;
+      const top=metrics.slice(0,3);
+      if(!top.length){els.donutRowNew.innerHTML='<div class="hint">Keine Daten</div>';return;}
+      els.donutRowNew.innerHTML=top.map(m=>{
+        const pfkPct=m.total>0?(m.pfk/m.total)*100:0;
+        const pfaPct=100-pfkPct;
+        return `<div class="donut-card">
+          <div class="donut" style="--pfk-angle:${pfkPct*3.6}deg;"><span>${pfkPct.toFixed(0)}%</span></div>
+          <div class="donut-legend">
+            <div><strong>${m.dept}</strong></div>
+            <div class="row"><span class="donut-dot pfk"></span><span>PFK: ${m.pfk.toFixed(1)} VK (${pfkPct.toFixed(0)} %)</span></div>
+            <div class="row"><span class="donut-dot pfa"></span><span>PFA: ${m.pfa.toFixed(1)} VK (${pfaPct.toFixed(0)} %)</span></div>
+            <div style="color:var(--muted);">Gesamt: ${m.total.toFixed(1)} VK</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderPillsNew(metrics){
+      if(!els.pillRowNew) return;
+      const totalPFK=metrics.reduce((a,m)=>a+m.pfk,0);
+      const totalPFA=metrics.reduce((a,m)=>a+m.pfa,0);
+      const totalVK=totalPFK+totalPFA;
+      const pfkQuote=totalVK>0?(totalPFK/totalVK)*100:0;
+      const target=Number(els.globalTarget?.value||2)||2;
+      const avgPerDept=metrics.length?totalVK/metrics.length:0;
+      const coverage=target>0? (avgPerDept/target)*100 :0;
+      const pills=[
+        {label:'VK gesamt Pflege',value:`${fmt(totalVK)} VK`,state:'ok'},
+        {label:'PFK-Quote',value:`${pfkQuote.toFixed(1)} %`,state:pfkQuote>=70?'ok':pfkQuote>=60?'warn':'danger'},
+        {label:'Deckungsgrad Ã˜/Dept',value:`${coverage.toFixed(0)} %`,state:coverage>=90?'ok':coverage>=75?'warn':'danger'},
+        {label:'PFK VK',value:`${fmt(totalPFK)} VK`,state:'ok'},
+        {label:'PFA VK',value:`${fmt(totalPFA)} VK`,state:'warn'}
+      ];
+      els.pillRowNew.innerHTML=pills.map(p=>`<div class="pill-new">
+        <span class="label">${p.label}</span>
+        <span class="value">${p.value}</span>
+        <span class="badge ${p.state}">${p.state==='ok'?'OK':p.state==='warn'?'Achtung':'Alarm'}</span>
+      </div>`).join('');
+    }
+
+    function renderSparklines(metrics){
+      if(!els.sparkGrid) return;
+      const top=metrics.slice(0,3);
+      if(!top.length){els.sparkGrid.innerHTML='<div class="hint">Keine Daten</div>';return;}
+      const cards=top.map(m=>{
+        const max=Math.max(...m.months,1);
+        const pts=m.months.map((v,i)=>`${(i/11)*100},${30-(v/max)*30}`).join(' ');
+        const pfkPct=m.total>0?(m.pfk/m.total)*100:0;
+        return `<div class="spark-card">
+          <div class="spark-meta"><span>${m.dept}</span><span>${fmt(m.total)} VK</span></div>
+          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <polyline fill="none" stroke="#1f4b82" stroke-width="1.8" points="${pts}" />
+          </svg>
+          <div class="spark-meta"><span>PFK-Anteil</span><span>${pfkPct.toFixed(0)} %</span></div>
+        </div>`;
+      }).join('');
+      els.sparkGrid.innerHTML=cards;
+    }
+
+    function renderCapacity(metrics){
+      if(!els.capacityRow) return;
+      const target=Number(els.globalTarget?.value||2)||2;
+      if(!metrics.length){els.capacityRow.innerHTML='<div class="hint">Keine Daten</div>';return;}
+      const cards=metrics.slice(0,3).map(m=>{
+        const coverage=target>0?(m.total/target)*100:0;
+        const height=Math.max(0,Math.min(100,coverage));
+        const status=coverage>=100?'ok':coverage>=80?'warn':'danger';
+        const statusLabel=status==='ok'?'stabil':status==='warn'?'kritisch':'Handlungsbedarf';
+        const color=status==='ok'?'#16a34a':status==='warn'?'#d97706':'#b91c1c';
+        return `<div class="capacity-card">
+          <div class="capacity-label" style="font-weight:700;">${m.dept}</div>
+          <div style="display:flex;gap:10px;align-items:flex-end;">
+            <div class="thermo"><div class="thermo-fill" style="height:${height}%;"></div></div>
+            <div style="color:var(--muted);font-size:0.9rem;">
+              Deckungsgrad: <strong>${coverage.toFixed(0)} %</strong><br/>
+              Ziel (VK/Monat): <strong>${target}</strong><br/>
+              Bewertung: <span style="color:${color};">${statusLabel}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+      els.capacityRow.innerHTML=cards;
+    }
+
+    function renderBubbles(metrics){
+      if(!els.bubbleRowNew) return;
+      if(!metrics.length){els.bubbleRowNew.innerHTML='<div class="hint">Keine Daten</div>';return;}
+      const max=Math.max(...metrics.map(m=>m.total),1);
+      const bubbles=metrics.slice(0,6).map(m=>{
+        const size=50 + (m.total/max)*50;
+        return `<div class="bubble" style="width:${size}px;height:${size}px;">
+          <div>${m.dept}</div>
+          <div style="font-weight:700;">${m.total.toFixed(1)}</div>
+          <div class="bubble-label">VK</div>
+        </div>`;
+      }).join('');
+      els.bubbleRowNew.innerHTML=bubbles;
+    }
+
+    function renderLineChartSvg(actual,forecast){
+      if(!els.lineChartSvg) return;
+      if(!actual.length){els.lineChartSvg.innerHTML='';return;}
+      const width=100,height=40;
+      const max=Math.max(...actual,...forecast,1);
+      const pts=array=>array.map((v,i)=>`${(i/(array.length-1||1))*width},${height- (v/max)*30 -5}`).join(' ');
+      const lineActual=`<polyline fill="none" stroke="#22c55e" stroke-width="1.6" points="${pts(actual)}" />`;
+      const lineForecast=forecast.length?`<polyline fill="none" stroke="#38bdf8" stroke-dasharray="2 2" stroke-width="1.4" points="${pts(forecast)}" />`:'';
+      els.lineChartSvg.setAttribute('viewBox',`0 0 ${width} ${height}`);
+      els.lineChartSvg.innerHTML=lineActual+lineForecast;
+    }
+    function renderDashLines(actual,forecast,scenario){
+      const svg=els.dashLineChart;
+      if(!svg)return;
+      const width=svg.clientWidth||svg.parentElement.clientWidth||900;
+      const height=320;
+      const pad={top:20,right:20,bottom:30,left:40};
+      const innerW=Math.max(1,width-pad.left-pad.right);
+      const innerH=Math.max(1,height-pad.top-pad.bottom);
+      const n=12;
+      const series=[actual||[],forecast||[],scenario||[]];
+      const max=Math.max(...series.flat().map(v=>Number(v)||0),1);
+      const x=i=>pad.left + (i/(n-1||1))*innerW;
+      const y=v=>pad.top + innerH - (Math.max(0,v)/max)*innerH;
+      const buildLine=arr=>arr.map((v,i)=>`${x(i)},${y(Number(v)||0)}`).join(' ');
+      const colors=['#1f4b82','#f9be00','#0ea5e9'];
+      const lines=series.map((arr,idx)=>{
+        if(!arr.length) return '';
+        return `<polyline fill="none" stroke="${colors[idx]}" stroke-width="2.2" points="${buildLine(arr)}" />`;
+      }).join('');
+      svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
+      svg.innerHTML=lines;
+    }
+
+    function renderGlassCards(metrics){
+      if(!els.glassGrid) return;
+      const totalPFK=metrics.reduce((a,m)=>a+m.pfk,0);
+      const totalPFA=metrics.reduce((a,m)=>a+m.pfa,0);
+      const totalVK=totalPFK+totalPFA;
+      const pfkQuote=totalVK>0?(totalPFK/totalVK)*100:0;
+      const cards=[
+        {title:'VK gesamt Pflege',value:`${fmt(totalVK)} VK`,label:'Alle Stationen summiert.'},
+        {title:'PFK-Quote',value:`${pfkQuote.toFixed(1)} %`,label:'Zielkorridor 70â€“80 %.'},
+        {title:'PFK VK',value:`${fmt(totalPFK)} VK`,label:'PflegefachkrÃ¤fte gesamt.'},
+        {title:'PFA VK',value:`${fmt(totalPFA)} VK`,label:'Pflegeassistenz gesamt.'},
+      ];
+      els.glassGrid.innerHTML=cards.map(c=>`<div class="glass-card">
+        <div class="glass-card-title">${c.title}</div>
+        <div class="glass-card-value">${c.value}</div>
+        <div class="glass-card-label">${c.label}</div>
+      </div>`).join('');
+    }
+
+    async function savePlanTotal(){
+      if(!supabaseClient || !PARAM_TABLE){setStatus('Supabase/Param-Tabelle nicht verf&uuml;gbar.', false);return;}
+      const year = Number(els.planYearSelect?.value || state.year);
+      const value = parseFloat(els.planTotalInput?.value||'0')||0;
+      const { error } = await supabaseClient
+        .from(PARAM_TABLE)
+        .upsert({ dept:'Dienstart 01', year, wirtschaftsplan_vk:value }, { onConflict:'dept,year' });
+      if(error){setStatus(error.message,false);return;}
+      planTotalVal = value;
+      if(els.planTotalValue) els.planTotalValue.textContent = fmt(value)+' VK';
+      setStatus('Wirtschaftsplan gespeichert.', true);
+      renderPlanSummary();
+    }
+
+    async function loadPlanTotal(){
+      if(!supabaseClient || !PARAM_TABLE){
+        if(els.planTotalValue) els.planTotalValue.textContent='-';
+        return;
+      }
+      const { data, error } = await supabaseClient
+        .from(PARAM_TABLE)
+        .select('wirtschaftsplan_vk')
+        .eq('dept','Dienstart 01')
+        .eq('year', state.year)
+        .limit(1)
+        .maybeSingle();
+      if(error){setStatus(error.message,false);return;}
+      const val = data?.wirtschaftsplan_vk ?? 0;
+      planTotalVal = val;
+      if(els.planTotalValue) els.planTotalValue.textContent = fmt(val)+' VK';
+      if(els.planTotalInput) els.planTotalInput.value = val;
+      renderPlanSummary();
+    }
+
+    function renderPlanEditor(depts){
+      if(!els.planTable) return;
+      const body=els.planTable.querySelector('tbody');
+      const list=depts&&depts.length?depts:[];
+      planDepts = list;
+      if(!list.length){body.innerHTML='<tr><td colspan="2">Keine Stationen gefunden.</td></tr>';return;}
+      const rows=list.map(dept=>{
+        const plan=getPlanValue(dept);
+        return `<tr>
+          <td style="padding:8px 8px;border-bottom:1px solid var(--line);">${dept}</td>
+          <td style="padding:8px 8px;border-bottom:1px solid var(--line);text-align:right;">
+            <input type="number" step="0.01" data-plan-dept="${dept.replace(/"/g,'&quot;')}" value="${plan.toFixed(2)}" style="width:120px;padding:8px;border-radius:10px;border:1px solid var(--line);" />
+          </td>
+        </tr>`;
+      }).join('');
+      body.innerHTML=rows;
+      renderPlanSummary(list);
+    }
+
+    function renderPlanSummary(depts=[]){
+      if(!els.planSummary) return;
+      const sum = (depts||[]).reduce((acc,d)=>acc + getPlanValue(d),0);
+      const rest = planTotalVal - sum;
+      els.planSummary.textContent = `Vergeben: ${fmt(sum)} VK Â· Rest: ${fmt(rest)} VK`;
+    }
+
+    function initScenarioInputs(){
+      if(!els.scenarioInputs) return;
+      els.scenarioInputs.innerHTML = MONTHS.map((m,i)=>`<label>${m}<input type="number" step="0.1" data-scen-month="${i}" value="${(scenarioDeltas[i]||0).toFixed(1)}" /></label>`).join('');
+      els.scenarioInputs.querySelectorAll('input[data-scen-month]').forEach(inp=>{
+        inp.addEventListener('input', ()=>{
+          const idx=Number(inp.dataset.scenMonth);
+          const val=parseFloat(inp.value)||0;
+          scenarioDeltas[idx]=val;
+          recalcScenario();
+        });
+      });
+      if(els.sinAmp) els.sinAmp.addEventListener('input', ()=>{
+        els.sinAmpLabel.textContent = `${els.sinAmp.value} %`;
+        recalcScenario();
+      });
+      if(els.sinToggle) els.sinToggle.addEventListener('change', recalcScenario);
+    }
+
+    function recalcScenario(actualMonths, forecastMonths){
+      const actual = Array.isArray(actualMonths) ? actualMonths : aggregateMonths(state.allEntries,state.dept);
+      const baseForecast = Array.isArray(forecastMonths) && forecastMonths.length
+        ? forecastMonths
+        : (forecastCache.length ? forecastCache : linearForecast(actual,12));
+      const ampPct = els.sinAmp ? Number(els.sinAmp.value)||0 : 0;
+      const useSin = els.sinToggle ? els.sinToggle.checked : false;
+      const sinBonus = new Array(12).fill(0).map((_,i)=>{
+        if(!useSin) return 0;
+        // peak around Dec/Jan
+        const phase = (i/12)*Math.PI*2;
+        return Math.sin(phase - Math.PI/2);
+      });
+      const maxSin = Math.max(...sinBonus.map(v=>Math.abs(v)))||1;
+      const normalizedSin = sinBonus.map(v=>v/maxSin);
+      // Krankheitsausfall wirkt als Reduktion (unterhalb Ist/Forecast)
+      const sinScaled = normalizedSin.map((v,i)=> -Math.abs(v) * (ampPct/100) * (baseForecast[i]||0));
+      const globalDelta = Number(els.scenarioInput?.value||0);
+      let runningAdd = 0;
+      const scenario = baseForecast.map((v,i)=>{
+        runningAdd += Number(scenarioDeltas[i])||0; // ZugÃ¤nge wirken fortlaufend in Folgemonaten
+        const val = (Number(v)||0) + globalDelta + runningAdd + sinScaled[i];
+        return Math.max(0,val);
+      });
+      if(els.scenarioTotal){
+        const avg = scenario.reduce((a,b)=>a+b,0) / (scenario.length || 1);
+        els.scenarioTotal.textContent = `${fmt(avg)} Ã˜ VK`;
+      }
+      renderDashLines(actual, baseForecast, scenario);
+    }
+
+    async function loadPlanValues(){
+      if(!supabaseClient || !PARAM_TABLE){planMap={};return;}
+      const { data, error } = await supabaseClient
+        .from(PARAM_TABLE)
+        .select('dept, wirtschaftsplan_vk')
+        .eq('year', state.year);
+      if(error){setStatus(error.message,false);return;}
+      planMap = {};
+      (data||[]).forEach(row => {
+        if(row.dept && row.dept !== 'Dienstart 01'){
+          planMap[row.dept] = Number(row.wirtschaftsplan_vk)||0;
+        }
+      });
+      renderPlanSummary(planDepts);
+    }
+
+    async function setPlanValueDb(dept,value){
+      if(!supabaseClient || !PARAM_TABLE) return;
+      const { error } = await supabaseClient
+        .from(PARAM_TABLE)
+        .upsert({ dept, year: state.year, wirtschaftsplan_vk:value }, { onConflict:'dept,year' });
+      if(error){setStatus(error.message,false);}
+    }
+
+    function renderDashLines(actual,forecast,scenario){
+      const svg=els.dashLineChart;
+      if(!svg)return;
+      const width=svg.clientWidth||svg.parentElement.clientWidth||900;
+      const height=320;
+      const pad={top:20,right:20,bottom:30,left:40};
+      const innerW=Math.max(1,width-pad.left-pad.right);
+      const innerH=Math.max(1,height-pad.top-pad.bottom);
+      const n=12;
+      const series=[actual||[],forecast||[],scenario||[]];
+      const max=Math.max(...series.flat().map(v=>Number(v)||0),1);
+      const x=(i)=>pad.left + (i/(n-1||1))*innerW;
+      const y=(v)=>pad.top + innerH - (Math.max(0,v)/max)*innerH;
+      const buildLine=(arr)=>arr.map((v,i)=>`${x(i)},${y(Number(v)||0)}`).join(' ');
+      const colors=['#1f4b82','#f9be00','#0ea5e9'];
+      const lines=series.map((arr,idx)=>{
+        if(!arr.length) return '';
+        return `<polyline fill="none" stroke="${colors[idx]}" stroke-width="2.2" points="${buildLine(arr)}" />`;
+      }).join('');
+      // Y-Achsen-Skala links/rechts mit VK-Werten
+      const tickCount=5;
+      const ticks=Array.from({length:tickCount},(_,i)=>max*(i/(tickCount-1)));
+      const tickLines=ticks.map(v=>{
+        const yy=y(v);
+        return `
+          <line x1="${pad.left-6}" y1="${yy}" x2="${pad.left}" y2="${yy}" stroke="#cbd5e1" stroke-width="1" />
+          <text x="${pad.left-8}" y="${yy+4}" font-size="11" fill="#475569" text-anchor="end">${fmt(v)}</text>
+          <line x1="${width-pad.right}" y1="${yy}" x2="${width-pad.right+6}" y2="${yy}" stroke="#cbd5e1" stroke-width="1" />
+          <text x="${width-pad.right+8}" y="${yy+4}" font-size="11" fill="#475569" text-anchor="start">${fmt(v)}</text>`;
+      }).join('');
+      svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
+      svg.innerHTML=`<g>${tickLines}</g>${lines}`;
+    }
+    function renderGroupedBars(actual){const svg=els.groupedChart;if(!svg)return;const width=svg.clientWidth||svg.parentElement.clientWidth||900;const height=320;const pad={top:20,right:16,bottom:30,left:32};const innerW=Math.max(1,width-pad.left-pad.right);const innerH=Math.max(1,height-pad.top-pad.bottom);const n=12;const max=Math.max(...actual,1);const colW=innerW/n;const barW=Math.max(12,colW*0.5);let bars='';for(let i=0;i<n;i++){const x0=pad.left+colW*i;const val=actual[i]||0;const h=Math.max(4,(val/max)*innerH);const x=x0+(colW-barW)/2;const y=pad.top+innerH-h;bars+=`<rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="4" fill="#1f4b82"><title>${MONTHS[i]}: ${fmt(val)}</title></rect>`;}svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.innerHTML=bars;}
+    function renderBubbleChart(actual,forecast){if(!els.bubbleChart)return;const svg=els.bubbleChart;const width=svg.clientWidth||svg.parentElement.clientWidth||600;const height=220;svg.setAttribute('viewBox',`0 0 ${width} ${height}`);const max=Math.max(...actual,...forecast,1);const colWidth=width/Math.max(1,actual.length);let circles='';actual.forEach((v,i)=>{const x=i*colWidth+colWidth/2;const y=height-(v/max)*(height-40)-20;const r=Math.max(6,Math.sqrt(Math.abs(v))*1.5);circles+=`<circle cx="${x}" cy="${y}" r="${r}" fill="#1f4b82" fill-opacity="0.65"><title>${MONTHS[i]} Ist: ${fmt(v)}</title></circle>`;});forecast.forEach((v,i)=>{const x=i*colWidth+colWidth/2+6;const y=height-(v/max)*(height-40)-20;const r=Math.max(6,Math.sqrt(Math.abs(v))*1.5);circles+=`<circle cx="${x}" cy="${y}" r="${r}" fill="#f9be00" fill-opacity="0.55"><title>${MONTHS[i]} Forecast: ${fmt(v)}</title></circle>`;});svg.innerHTML=circles;}
+    function renderTable(actual,forecast,scenario,cA,cF,cS){const hasS=Array.isArray(scenario)&&scenario.length;const rows=[];rows.push(`<tr><th>Monat</th><th>Ist</th><th>Forecast</th><th>Szenario</th><th>Ist kum.</th><th>Forecast kum.</th><th>Szenario kum.</th></tr>`);MONTHS.forEach((m,i)=>{rows.push(`<tr><td>${m}</td><td>${fmt(actual[i]||0)}</td><td>${fmt(forecast[i]||0)}</td><td>${hasS?fmt(scenario[i]||0):'-'}</td><td>${fmt(cA[i]||0)}</td><td>${fmt(cF[i]||0)}</td><td>${hasS?fmt(cS[i]||0):'-'}</td></tr>`);});els.monthsTable.innerHTML=rows.join('');}
+    function renderHintsList(actual,forecast){const hints=[];const total=actual.reduce((a,b)=>a+b,0);const peak=Math.max(...actual,0);const idx=actual.indexOf(peak);if(peak>0&&idx>=0)hints.push(`Peak: ${MONTHS[idx]} mit ${fmt(peak)} VK.`);const avgF=forecast.reduce((a,b)=>a+b,0)/forecast.length||0;if(avgF<total/12)hints.push('Trend fallend: Forecast unter dem aktuellen Monatsmittel.');if(avgF>total/12)hints.push('Trend steigend: Forecast Ã¼ber dem aktuellen Monatsmittel.');return hints;}
+    function renderQualTiles(entries){if(!els.qualSummaryTiles)return;const active=entries.filter(e=>e.include!==false);const counts={};active.forEach(item=>normalizeQuals(item.qual).forEach(q=>{counts[q]=(counts[q]||0)+1;}));const totalQuals=Object.keys(counts).length;const totalPeople=active.length;const praxis=Object.entries(counts).filter(([q])=>q.toLowerCase().includes('praxisanleitung')).reduce((a,[,c])=>a+c,0);const hygiene=Object.entries(counts).filter(([q])=>q.toLowerCase().includes('hygiene')).reduce((a,[,c])=>a+c,0);els.qualSummaryTiles.innerHTML=[{label:'Mitarbeitende aktiv',value:totalPeople},{label:'Unterschiedliche Qualifikationen',value:totalQuals},{label:'Praxisanleitung',value:praxis},{label:'Hygiene',value:hygiene}].map(t=>`<div class="cockpit-tile"><span>${t.label}</span><strong>${t.value}</strong></div>`).join('');}
+    function renderQualTables(currentEntries,allEntries,filterQual='__all__'){if(els.qualDeptLabel)els.qualDeptLabel.textContent=state.dept||'-';if(els.qualYearLabel)els.qualYearLabel.textContent=state.year||'-';if(els.qualSiteLabel)els.qualSiteLabel.textContent=SITE_LABEL||'-';const build=list=>list.filter(e=>e.include!==false).map(e=>({dept:e.dept||state.dept||'-',name:(e.name||'').trim()||(e.personalNumber||'Unbenannt'),personalNumber:e.personalNumber||'',qualList:normalizeQuals(e.qual),type:e.type||'Mitarbeiter',months:e.months||e.values||[]}));const cur=build(currentEntries);const all=build(allEntries);const filtCur=filterQual==='__all__'?cur:cur.filter(e=>e.qualList.includes(filterQual));const filtAll=filterQual==='__all__'?all:all.filter(e=>e.qualList.includes(filterQual));if(els.qualDeptTable){if(!filtCur.length)els.qualDeptTable.innerHTML='<tr><td>Keine Qualifikationen erfasst.</td></tr>';else{const head='<tr><th>Name</th><th>Qualifikationen</th><th>Typ</th></tr>';const body=filtCur.map(r=>{const label=r.personalNumber?`${r.name} (${r.personalNumber})`:r.name;return `<tr><td>${label}</td><td>${r.qualList.join(', ')}</td><td>${r.type}</td></tr>`;}).join('');els.qualDeptTable.innerHTML=`<thead>${head}</thead><tbody>${body}</tbody>`;}}if(els.qualSummaryTable){if(!filtAll.length)els.qualSummaryTable.innerHTML='<tr><td>Keine Qualifikationen erfasst.</td></tr>';else{const by={};filtAll.forEach(r=>r.qualList.forEach(q=>{const k=`${q}|||${r.dept}`;by[k]=(by[k]||0)+1;}));const totals={};Object.entries(by).forEach(([k,c])=>{const [q]=k.split('|||');totals[q]=(totals[q]||0)+c;});const rows=[...Object.entries(by).map(([k,c])=>{const [q,d]=k.split('|||');return {q,d,c,isTotal:false};}).sort((a,b)=>a.q.localeCompare(b.q,'de')||a.d.localeCompare(b.d,'de')),...Object.entries(totals).map(([q,c])=>({q,d:'Gesamt Haus',c,isTotal:true}))];const head='<tr><th>Qualifikation</th><th>Abteilung</th><th>Anzahl</th></tr>';const body=rows.map(r=>`<tr${r.isTotal?' class="is-total"':''}><td>${r.q}</td><td>${r.d}</td><td style="text-align:right;">${r.c}</td></tr>`).join('');els.qualSummaryTable.innerHTML=`<thead>${head}</thead><tbody>${body}</tbody>`;}}if(els.qualPeopleTable){if(!filtAll.length)els.qualPeopleTable.innerHTML='<tr><td>Keine Qualifikationen erfasst.</td></tr>';else{const rows=filtAll.sort((a,b)=>a.dept.localeCompare(b.dept,'de')||a.name.localeCompare(b.name,'de'));const head='<tr><th>Mitarbeiter:in</th><th>Abteilung</th><th>Qualifikationen</th><th>Typ</th></tr>';const body=rows.map(r=>{const label=r.personalNumber?`${r.name} (${r.personalNumber})`:r.name;return `<tr><td>${label}</td><td>${r.dept}</td><td>${r.qualList.join(', ')}</td><td>${r.type}</td></tr>`;}).join('');els.qualPeopleTable.innerHTML=`<thead>${head}</thead><tbody>${body}</tbody>`;}}renderQualTiles(filtAll);}
+
+    async function loadMeta(){
+      if(!supabaseClient){setStatus('Supabase nicht konfiguriert.',false);return;}
+      if(!HAS_SITE){setStatus('Kein Standortcode gefunden. Bitte zuerst einloggen.',false);return;}
+      const {data:years,error}=await supabaseClient.from(tableName(TABLE_EMP_BASE)).select('year').not('year','is',null).order('year');
+      if(error)throw new Error(error.message);
+      const list=[...new Set((years||[]).map(y=>y.year).filter(Boolean))];
+      const yearHtml=list.length?list.map(y=>`<option value="${y}">${y}</option>`).join(''):`<option value="${new Date().getFullYear()}">${new Date().getFullYear()}</option>`;
+      els.yearSelect.innerHTML=yearHtml;
+      if(els.chartsYearSelect)els.chartsYearSelect.innerHTML=yearHtml;
+      if(els.planYearSelect) els.planYearSelect.innerHTML = yearHtml;
+      state.year=list[0]||new Date().getFullYear();
+      els.yearSelect.value=state.year;
+      if(els.chartsYearSelect)els.chartsYearSelect.value=state.year;
+      if(els.planYearSelect) els.planYearSelect.value = state.year;
+      if(els.heroYearLabel){
+        els.heroYearLabel.textContent=state.year;
+      }
+      if(els.heroSiteLabel){
+        els.heroSiteLabel.textContent=SITE_LABEL||'-';
+      }
+    }
+
+    function aggregateMonths(entries,deptFilter='__all__'){const months=Array(12).fill(0);entries.filter(e=>e.include!==false&&(deptFilter==='__all__'||e.dept===deptFilter)).forEach(e=>parseMonths(e.months||e.values||[]).forEach((v,i)=>months[i]+=v||0));return months;}
+
+    async function loadData(){
+      const activeFilter=els.qualFilter?els.qualFilter.value:'__all__';
+      if(!supabaseClient){setStatus('Supabase nicht konfiguriert.',false);return;}
+      if(!HAS_SITE){setStatus('Kein Standortcode gefunden. Bitte zuerst einloggen.',false);return;}
+      setStatus('Lade Daten ...',true);
+
+      const {data:allEmps,error}=await supabaseClient
+        .from(tableName(TABLE_EMP_BASE))
+        .select('dept, year, personal_number, name, months, values, qual, include')
+        .eq('year',state.year);
+      if(error){setStatus(error.message||'Laden fehlgeschlagen.',false);return;}
+
+      state.allEntries=(allEmps||[]).map(e=>({
+        dept:e.dept,
+        year:e.year,
+        personalNumber:e.personal_number||'',
+        name:e.name||e.personal_number||'Mitarbeiter:in',
+        qual:e.qual||'',
+        include:e.include!==false,
+        months:parseMonths(e.months??e.values??[]),
+        type:isExtraRow(e)?'Zusatz':'Mitarbeiter'
+      }));
+
+      const depts=Array.from(new Set(state.allEntries.map(e=>e.dept).filter(Boolean)));
+      updateDeptOptions(depts);
+      updateQualFilterOptions();
+      await loadPlanValues();
+      renderPlanEditor(depts);
+      await loadPlanTotal();
+
+      const dept=state.dept;
+      const activeEntries=state.allEntries.filter(e=>e.include!==false&&(dept==='__all__'||e.dept===dept));
+      const combined=aggregateMonths(state.allEntries,dept);
+      const forecast=linearForecast(combined,12);
+      // Cache for scenario baseline
+      forecastCache = forecast.slice();
+      const total=combined.reduce((a,b)=>a+b,0);
+      const scenarioDelta=Number(els.scenarioInput?.value||0);
+      const scenario=applyScenario(forecast,scenarioDelta);
+      const cumA=combined.reduce((acc,v,i)=>{acc.push((acc[i-1]||0)+v);return acc;},[]);
+      const cumF=forecast.reduce((acc,v,i)=>{acc.push((acc[i-1]||0)+v);return acc;},[]);
+      const cumS=scenario.reduce((acc,v,i)=>{acc.push((acc[i-1]||0)+v);return acc;},[]);
+      const peak=Math.max(...combined,0);
+      const peakIdx=combined.indexOf(peak);
+
+      els.kpiTotal.textContent=fmt(total);
+      els.kpiForecast.textContent=fmt(forecast.reduce((a,b)=>a+b,0));
+      els.kpiPeak.textContent=peak>0?`${MONTHS[peakIdx]} (${fmt(peak)})`:'-';
+      if(els.heroTotal){
+        els.heroTotal.textContent=fmt(total);
+      }
+      if(els.heroPeople){
+        els.heroPeople.textContent=activeEntries.length;
+      }
+      if(els.heroPeak){
+        els.heroPeak.textContent=peak>0?`${MONTHS[peakIdx]} (${fmt(peak)})`:'-';
+      }
+
+      renderTable(combined,forecast,scenarioDelta!==0?scenario:null,cumA,cumF,cumS);
+      recalcScenario(combined, forecast);
+      renderGroupedBars(combined);
+      renderBubbleChart(combined,forecast);
+      const scopedEntries=state.dept==='__all__'?state.allEntries:state.allEntries.filter(e=>e.dept===state.dept);
+      const metrics=buildDeptMetrics(scopedEntries);
+      renderRatioCards(metrics);
+      renderDonuts(metrics);
+      renderPillsNew(metrics);
+      renderSparklines(metrics);
+      renderCapacity(metrics);
+      renderBubbles(metrics);
+      renderLineChartSvg(combined,forecast);
+      renderGlassCards(metrics);
+      renderHeatmap(state.allEntries);
+
+      const hints=[...renderHintsList(combined,forecast),...computeQualAlerts(state.allEntries)];
+      if(els.hints){els.hints.innerHTML=hints.length?hints.map(h=>`<li>${h}</li>`).join(''):'<li>Keine Hinweise.</li>';}
+
+      renderQualTables(activeEntries,state.allEntries,activeFilter);
+      setStatus('Fertig.');
+    }
+
+    function computeQualAlerts(entries){const alerts=[];const active=(entries||[]).filter(e=>e.include!==false);const by=active.reduce((acc,e)=>{(acc[e.dept]=acc[e.dept]||[]).push(e);return acc;},{});Object.entries(by).forEach(([dept,list])=>{const total=list.length||1;const count=kw=>list.filter(e=>normalizeQuals(e.qual).some(q=>q.toLowerCase().includes(kw))).length;const praxis=count('praxisanleitung');const hygiene=count('hygiene');const anae=count('anÃ¤sthesie')+count('anaesthesie')+count('intensiv');const notfall=count('notfall');const qA=anae/total;const qN=notfall/total;if(praxis<=1)alerts.push(`Station ${dept}: Nur ${praxis} Praxisanleiter:in erfasst (FrÃ¼hwarnung).`);if(hygiene<=2)alerts.push(`Station ${dept}: Nur ${hygiene} Hygienefachkraft/FachkrÃ¤fte erfasst (FrÃ¼hwarnung).`);if(qA<0.5)alerts.push(`Station ${dept}: Fachweiterbildung AnÃ¤sthesie/Intensiv unter 50% (${Math.round(qA*100)}%).`);if(qN<0.5)alerts.push(`Station ${dept}: Fachweiterbildung Notfallpflege unter 50% (${Math.round(qN*100)}%).`);});return alerts;}
+
+    function syncDept(val){state.dept=val;if(els.deptSelect)els.deptSelect.value=val;if(els.chartsDeptSelect)els.chartsDeptSelect.value=val;}
+    function syncYear(val){state.year=Number(val);if(els.yearSelect)els.yearSelect.value=state.year;if(els.chartsYearSelect)els.chartsYearSelect.value=state.year;}
+    function bindEvents(){
+      els.deptSelect.addEventListener('change',()=>{syncDept(els.deptSelect.value);loadData().catch(err=>setStatus(err.message,false));});
+      if(els.chartsDeptSelect)els.chartsDeptSelect.addEventListener('change',()=>{syncDept(els.chartsDeptSelect.value);loadData().catch(err=>setStatus(err.message,false));});
+      els.yearSelect.addEventListener('change',()=>{syncYear(els.yearSelect.value);loadData().catch(err=>setStatus(err.message,false));});
+      if(els.chartsYearSelect)els.chartsYearSelect.addEventListener('change',()=>{syncYear(els.chartsYearSelect.value);loadData().catch(err=>setStatus(err.message,false));});
+      els.btnRefresh.addEventListener('click',()=>{loadData().catch(err=>setStatus(err.message,false));});
+      els.scenarioInput.addEventListener('input',()=>{loadData().catch(err=>setStatus(err.message,false));});
+      els.globalTarget.addEventListener('input',()=>{renderHeatmap(state.allEntries);});
+      if(els.qualFilter){els.qualFilter.addEventListener('change',()=>{const v=els.qualFilter.value;renderQualTables(state.allEntries.filter(e=>state.dept==='__all__'||e.dept===state.dept),state.allEntries,v);});}
+      els.tabButtons.forEach(btn=>btn.addEventListener('click',()=>setActiveTab(btn.dataset.tabBtn)));
+      if(els.planTable){
+        els.planTable.addEventListener('input',event=>{
+          const target=event.target;
+          if(!(target instanceof HTMLInputElement)) return;
+          const dept=target.dataset.planDept||'';
+          const val=parseFloat(target.value);
+          const num=Number.isFinite(val)?val:0;
+          planMap[dept]=num;
+          setPlanValueDb(dept,num);
+          const depts=Array.from(els.planTable.querySelectorAll('input[data-plan-dept]')).map(i=>i.dataset.planDept||'');
+          renderPlanSummary(depts);
+        });
+      }
+      if(els.planSaveBtn){
+        els.planSaveBtn.addEventListener('click', ()=>{savePlanTotal().catch(err=>setStatus(err.message,false));});
+      }
+      if(els.planYearSelect){
+        els.planYearSelect.addEventListener('change', ()=>{
+          syncYear(els.planYearSelect.value);
+          loadData().catch(err=>setStatus(err.message,false));
+        });
+      }
+      initScenarioInputs();
+    }
+
+    (async function init(){setActiveTab(state.currentTab||'dashboard');bindEvents();if(!supabaseClient){setStatus('Supabase nicht konfiguriert. Bitte URL/Key setzen.',false);return;}if(!HAS_SITE){setStatus('Kein Standortcode gefunden. Bitte zuerst einloggen.',false);return;}if(els.heroSiteLabel){els.heroSiteLabel.textContent=SITE_LABEL||'-';}if(els.qualSiteLabel){els.qualSiteLabel.textContent=SITE_LABEL||'-';}try{await loadMeta();await loadData();}catch(err){setStatus(err.message,false);}})();
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  // CLINICON-INSIGHTS-MERGE
+  (() => {
+// SCRIPT-START
+  const demoData = {
+    meta: {
+      updated_at: "2026-01-05 09:30",
+      range_label: "01.01.2026 - 05.01.2026",
+      source: "demo"
+    },
+    trend: [
+      { date: "2026-01-01", occupancy_pct: 78, staffed_hours: 320, required_hours: 340 },
+      { date: "2026-01-02", occupancy_pct: 81, staffed_hours: 330, required_hours: 342 },
+      { date: "2026-01-03", occupancy_pct: 84, staffed_hours: 315, required_hours: 340 },
+      { date: "2026-01-04", occupancy_pct: 83, staffed_hours: 326, required_hours: 339 },
+      { date: "2026-01-05", occupancy_pct: 87, staffed_hours: 336, required_hours: 340 }
+    ],
+    stations: [
+      { station: "ITS", beds_planned: 13, beds_occupied: 12, occupancy_pct: 92.3, ppug_status: "OK", variance_hours: -8.0 },
+      { station: "IMC", beds_planned: 10, beds_occupied: 9, occupancy_pct: 90.0, ppug_status: "WARN", variance_hours: -18.5 },
+      { station: "UC", beds_planned: 20, beds_occupied: 14, occupancy_pct: 70.0, ppug_status: "OK", variance_hours: 5.0 },
+      { station: "Ortho", beds_planned: 28, beds_occupied: 23, occupancy_pct: 82.1, ppug_status: "VIOLATION", variance_hours: -22.0 },
+      { station: "Kardiologie", beds_planned: 18, beds_occupied: 15, occupancy_pct: 83.3, ppug_status: "OK", variance_hours: -4.0 },
+      { station: "Neuro", beds_planned: 16, beds_occupied: 13, occupancy_pct: 81.2, ppug_status: "WARN", variance_hours: -9.5 },
+      { station: "Geriatrie", beds_planned: 22, beds_occupied: 20, occupancy_pct: 90.9, ppug_status: "OK", variance_hours: 2.5 },
+      { station: "Chirurgie", beds_planned: 24, beds_occupied: 17, occupancy_pct: 70.8, ppug_status: "OK", variance_hours: 6.0 }
+    ],
+    shift_mix: [
+      { label: "Frueh", value: 42 },
+      { label: "Spaet", value: 34 },
+      { label: "Nacht", value: 24 }
+    ]
+  };
+
+  const fmtNumber = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 });
+  const fmtInt = new Intl.NumberFormat("de-DE");
+
+  const elements = {
+      dataRange: document.getElementById("dataRange"),
+      rangeLabel: document.querySelector("[data-range-label]"),
+    trendSource: document.getElementById("trendSource"),
+    dataNote: document.getElementById("dataNote"),
+    heroBeds: document.getElementById("heroBeds"),
+    heroOccupancy: document.getElementById("heroOccupancy"),
+    heroVariance: document.getElementById("heroVariance"),
+    kpiBeds: document.getElementById("kpiBeds"),
+    kpiBedsSub: document.getElementById("kpiBedsSub"),
+    kpiBedsProgress: document.getElementById("kpiBedsProgress"),
+    kpiOccupancy: document.getElementById("kpiOccupancy"),
+    kpiOccupancySub: document.getElementById("kpiOccupancySub"),
+    kpiOccupancyProgress: document.getElementById("kpiOccupancyProgress"),
+    kpiViolations: document.getElementById("kpiViolations"),
+    kpiViolationsSub: document.getElementById("kpiViolationsSub"),
+    kpiViolationsProgress: document.getElementById("kpiViolationsProgress"),
+    kpiVariance: document.getElementById("kpiVariance"),
+    kpiVarianceSub: document.getElementById("kpiVarianceSub"),
+    kpiVarianceProgress: document.getElementById("kpiVarianceProgress"),
+    stationsTable: document.getElementById("stationsTable"),
+    statusList: document.getElementById("statusList"),
+    shiftEarly: document.getElementById("shiftEarly"),
+    shiftLate: document.getElementById("shiftLate"),
+    shiftNight: document.getElementById("shiftNight"),
+    spotlightStation: document.getElementById("spotlightStation"),
+    spotlightOccupancy: document.getElementById("spotlightOccupancy"),
+    spotlightStatus: document.getElementById("spotlightStatus"),
+    spotlightPlanned: document.getElementById("spotlightPlanned"),
+    spotlightOccupied: document.getElementById("spotlightOccupied"),
+    spotlightVariance: document.getElementById("spotlightVariance"),
+    spotlightVarianceLabel: document.getElementById("spotlightVarianceLabel")
+  };
+  const chartColors = {
+    accent: "#1c6bff",
+    accent2: "#ff6b35",
+    accent3: "#17c3b2",
+    accent4: "#f6bd60",
+    danger: "#ef476f",
+    gray: "#d9e2ef"
+  };
+
+  const charts = {};
+  let currentStations = [];
+  let selectedStation = null;
+
+  function computeKpis(stations) {
+    const bedsPlanned = stations.reduce((sum, row) => sum + row.beds_planned, 0);
+    const bedsOccupied = stations.reduce((sum, row) => sum + row.beds_occupied, 0);
+    const occupancy = bedsPlanned ? (bedsOccupied / bedsPlanned) * 100 : 0;
+    const variance = stations.reduce((sum, row) => sum + row.variance_hours, 0);
+    const violations = stations.filter((row) => row.ppug_status === "VIOLATION").length;
+    return { bedsPlanned, bedsOccupied, occupancy, variance, violations };
+  }
+
+  function buildStatusCounts(stations) {
+    return stations.reduce(
+      (acc, row) => {
+        acc[row.ppug_status] += 1;
+        return acc;
+      },
+      { OK: 0, WARN: 0, VIOLATION: 0 }
+    );
+  }
+
+  function renderKpis(data) {
+    const kpis = computeKpis(data.stations);
+    elements.heroBeds.textContent = fmtInt.format(kpis.bedsOccupied);
+    elements.heroOccupancy.textContent = fmtNumber.format(kpis.occupancy) + " %";
+    elements.heroVariance.textContent = fmtNumber.format(kpis.variance);
+
+    elements.kpiBeds.textContent = fmtInt.format(kpis.bedsOccupied);
+    elements.kpiBedsSub.textContent = "Planbetten: " + fmtInt.format(kpis.bedsPlanned);
+    elements.kpiBedsProgress.style.width = Math.min(100, kpis.occupancy).toFixed(1) + "%";
+
+    const trendDelta = data.trend.length > 1 ? data.trend[data.trend.length - 1].occupancy_pct - data.trend[0].occupancy_pct : 0;
+    elements.kpiOccupancy.textContent = fmtNumber.format(kpis.occupancy) + " %";
+    elements.kpiOccupancySub.textContent = "Trend: " + (trendDelta >= 0 ? "+" : "") + fmtNumber.format(trendDelta) + " %";
+    elements.kpiOccupancyProgress.style.width = Math.min(100, kpis.occupancy).toFixed(1) + "%";
+
+    elements.kpiViolations.textContent = fmtInt.format(kpis.violations);
+    elements.kpiViolationsSub.textContent = "Stationen in Pruefung";
+    elements.kpiViolationsProgress.style.width = Math.min(100, (kpis.violations / data.stations.length) * 100).toFixed(1) + "%";
+
+    elements.kpiVariance.textContent = fmtNumber.format(kpis.variance);
+    elements.kpiVarianceSub.textContent = kpis.variance >= 0 ? "Ueberdeckung" : "Unterdeckung";
+    elements.kpiVarianceProgress.style.width = Math.min(100, Math.abs(kpis.variance) * 2.5).toFixed(1) + "%";
+  }
+  function statusBadge(status) {
+    const span = document.createElement("span");
+    span.className = "badge " + (status === "OK" ? "ok" : status === "WARN" ? "warn" : "bad");
+    span.textContent = status === "OK" ? "OK" : status === "WARN" ? "Warn" : "Risiko";
+    return span;
+  }
+
+  function renderTable(stations) {
+    elements.stationsTable.innerHTML = "";
+    stations.forEach((row) => {
+      const tr = document.createElement("tr");
+      tr.dataset.station = row.station;
+      tr.innerHTML = `
+        <td><strong>${row.station}</strong></td>
+        <td>${fmtInt.format(row.beds_planned)}</td>
+        <td>${fmtInt.format(row.beds_occupied)}</td>
+        <td><strong>${fmtNumber.format(row.occupancy_pct)}%</strong></td>
+        <td class="status-cell"></td>
+        <td style="color:${row.variance_hours >= 0 ? chartColors.accent3 : chartColors.danger}; font-weight:700;">
+          ${fmtNumber.format(row.variance_hours)}
+        </td>
+      `;
+      tr.querySelector(".status-cell").appendChild(statusBadge(row.ppug_status));
+      tr.addEventListener("click", () => selectStation(row.station));
+      elements.stationsTable.appendChild(tr);
+    });
+  }
+
+  function selectStation(stationName) {
+    const station = currentStations.find((row) => row.station === stationName) || currentStations[0];
+    if (!station) return;
+    selectedStation = station;
+    Array.from(elements.stationsTable.querySelectorAll("tr")).forEach((row) => {
+      row.classList.toggle("active", row.dataset.station === station.station);
+    });
+    elements.spotlightStation.textContent = station.station;
+    elements.spotlightOccupancy.textContent = fmtNumber.format(station.occupancy_pct) + "%";
+    elements.spotlightStatus.textContent = station.ppug_status;
+    elements.spotlightPlanned.textContent = fmtInt.format(station.beds_planned);
+    elements.spotlightOccupied.textContent = fmtInt.format(station.beds_occupied);
+    elements.spotlightVariance.textContent = fmtNumber.format(station.variance_hours);
+    elements.spotlightVarianceLabel.textContent = station.variance_hours >= 0 ? "Ueberdeckung" : "Unterdeckung";
+  }
+
+  function renderStatusList(statusCounts) {
+    elements.statusList.innerHTML = "";
+    const items = [
+      { label: "OK", value: statusCounts.OK, className: "status-ok" },
+      { label: "Warn", value: statusCounts.WARN, className: "status-warn" },
+      { label: "Risiko", value: statusCounts.VIOLATION, className: "status-bad" }
+    ];
+    items.forEach((item) => {
+      const row = document.createElement("div");
+      row.className = "status-item";
+      row.innerHTML = `<span>${item.label}</span><span class="status-pill ${item.className}">${fmtInt.format(item.value)}</span>`;
+      elements.statusList.appendChild(row);
+    });
+  }
+
+  function setShiftMix(shiftMix) {
+    const find = (label) => shiftMix.find((entry) => entry.label === label)?.value || 0;
+    elements.shiftEarly.textContent = fmtInt.format(find("Frueh")) + "%";
+    elements.shiftLate.textContent = fmtInt.format(find("Spaet")) + "%";
+    elements.shiftNight.textContent = fmtInt.format(find("Nacht")) + "%";
+  }
+  function initCharts(data) {
+    const trendCtx = document.getElementById("trendChart");
+    charts.trend = new Chart(trendCtx, {
+      type: "line",
+      data: {
+        labels: data.trend.map((row) => row.date),
+        datasets: [
+          {
+            label: "Auslastung %",
+            data: data.trend.map((row) => row.occupancy_pct),
+            borderColor: chartColors.accent,
+            backgroundColor: "rgba(28,107,255,0.1)",
+            tension: 0.3,
+            fill: true,
+            yAxisID: "y"
+          },
+          {
+            label: "Ist-Stunden",
+            data: data.trend.map((row) => row.staffed_hours),
+            borderColor: chartColors.accent3,
+            tension: 0.3,
+            yAxisID: "y1"
+          },
+          {
+            label: "Soll-Stunden",
+            data: data.trend.map((row) => row.required_hours),
+            borderColor: chartColors.accent2,
+            borderDash: [6, 4],
+            tension: 0.3,
+            yAxisID: "y1"
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "top", labels: { boxWidth: 12 } }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: (value) => value + "%" } },
+          y1: { beginAtZero: true, position: "right", grid: { drawOnChartArea: false } }
+        }
+      }
+    });
+
+    const topCtx = document.getElementById("topStationsChart");
+    charts.topStations = new Chart(topCtx, {
+      type: "bar",
+      data: {
+        labels: data.stations.map((row) => row.station),
+        datasets: [
+          {
+            label: "Auslastung %",
+            data: data.stations.map((row) => row.occupancy_pct),
+            backgroundColor: data.stations.map((row) =>
+              selectedStation && row.station === selectedStation.station ? chartColors.accent2 : chartColors.accent
+            ),
+            borderRadius: 8
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        onClick: (evt, activeEls) => {
+          if (activeEls.length > 0) {
+            const index = activeEls[0].index;
+            selectStation(currentStations[index].station);
+            updateTopChart();
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: (value) => value + "%" } }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+
+    const statusCtx = document.getElementById("statusChart");
+    const statusCounts = buildStatusCounts(data.stations);
+    charts.status = new Chart(statusCtx, {
+      type: "doughnut",
+      data: {
+        labels: ["OK", "Warn", "Risiko"],
+        datasets: [
+          {
+            data: [statusCounts.OK, statusCounts.WARN, statusCounts.VIOLATION],
+            backgroundColor: [chartColors.accent3, chartColors.accent4, chartColors.danger],
+            borderWidth: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } },
+        cutout: "62%"
+      }
+    });
+
+    const shiftCtx = document.getElementById("shiftChart");
+    charts.shift = new Chart(shiftCtx, {
+      type: "pie",
+      data: {
+        labels: data.shift_mix.map((entry) => entry.label),
+        datasets: [
+          {
+            data: data.shift_mix.map((entry) => entry.value),
+            backgroundColor: [chartColors.accent, chartColors.accent2, chartColors.accent4],
+            borderWidth: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } }
+      }
+    });
+  }
+
+  function updateTopChart() {
+    if (!charts.topStations) return;
+    charts.topStations.data.datasets[0].backgroundColor = currentStations.map((row) =>
+      selectedStation && row.station === selectedStation.station ? chartColors.accent2 : chartColors.accent
+    );
+    charts.topStations.update();
+  }
+
+  function updateCharts(data) {
+    if (!charts.trend) {
+      initCharts(data);
+      return;
+    }
+    charts.trend.data.labels = data.trend.map((row) => row.date);
+    charts.trend.data.datasets[0].data = data.trend.map((row) => row.occupancy_pct);
+    charts.trend.data.datasets[1].data = data.trend.map((row) => row.staffed_hours);
+    charts.trend.data.datasets[2].data = data.trend.map((row) => row.required_hours);
+    charts.trend.update();
+
+    charts.topStations.data.labels = data.stations.map((row) => row.station);
+    charts.topStations.data.datasets[0].data = data.stations.map((row) => row.occupancy_pct);
+    updateTopChart();
+
+    const statusCounts = buildStatusCounts(data.stations);
+    charts.status.data.datasets[0].data = [statusCounts.OK, statusCounts.WARN, statusCounts.VIOLATION];
+    charts.status.update();
+
+    charts.shift.data.labels = data.shift_mix.map((entry) => entry.label);
+    charts.shift.data.datasets[0].data = data.shift_mix.map((entry) => entry.value);
+    charts.shift.update();
+  }
+  function applyData(data) {
+    currentStations = [...data.stations].sort((a, b) => b.occupancy_pct - a.occupancy_pct);
+    renderKpis({ ...data, stations: currentStations });
+    renderTable(currentStations);
+    selectStation(currentStations[0].station);
+    const statusCounts = buildStatusCounts(currentStations);
+    renderStatusList(statusCounts);
+    setShiftMix(data.shift_mix);
+    updateCharts({ ...data, stations: currentStations });
+    if (elements.dataRange) {
+      elements.dataRange.textContent = "Zeitraum: " + data.meta.range_label;
+    }
+    if (elements.rangeLabel) {
+      elements.rangeLabel.textContent = data.meta.range_label;
+    }
+    elements.trendSource.textContent = "Quelle: " + (data.meta.source || "demo");
+    elements.dataNote.textContent = "Datenquelle: " + (data.meta.source || "demo") + ". Zuletzt aktualisiert: " + data.meta.updated_at;
+  }
+
+  async function loadInsights() {
+    const apiBase = document.body.dataset.apiBase || "";
+    const endpoint = apiBase + "/api/insights";
+    try {
+      const response = await fetch(endpoint, { headers: { Accept: "application/json" } });
+      if (!response.ok) {
+        throw new Error("API error");
+      }
+      const payload = await response.json();
+      if (!payload || !payload.stations || !payload.trend) {
+        throw new Error("Invalid payload");
+      }
+      const safePayload = {
+        ...payload,
+        meta: payload.meta || demoData.meta,
+        shift_mix: payload.shift_mix || demoData.shift_mix
+      };
+      applyData(safePayload);
+    } catch (err) {
+      applyData(demoData);
+    }
+  }
+
+  const refreshButton = document.getElementById("refreshButton");
+  if (refreshButton) {
+    refreshButton.addEventListener("click", () => loadInsights());
+  }
+  loadInsights();
+  // SCRIPT-END
+  })();
+</script>
+<script>
+  (() => {
+    const rangeLabel = document.querySelector('[data-range-label]');
+    const headerRange = document.getElementById('dataRange');
+    const rangeButtons = Array.from(document.querySelectorAll('.timeslicer-btn'));
+    const startInput = document.querySelector('[data-range-start]');
+    const endInput = document.querySelector('[data-range-end]');
+
+    const formatDate = (value) => {
+      if (!value) return '';
+      const parts = value.split('-');
+      if (parts.length !== 3) return value;
+      return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    };
+    const setRangeLabel = (label) => {
+      if (!label) return;
+      if (rangeLabel) rangeLabel.textContent = label;
+      if (headerRange) headerRange.textContent = `Zeitraum: ${label}`;
+    };
+
+    if (rangeButtons.length) {
+      rangeButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          rangeButtons.forEach((item) => item.classList.toggle('active', item === btn));
+          const label = btn.dataset.label || btn.textContent.trim();
+          setRangeLabel(label);
+        });
+      });
+    }
+
+    const applyCustomRange = () => {
+      if (startInput && endInput && startInput.value && endInput.value) {
+        rangeButtons.forEach((item) => item.classList.remove('active'));
+        setRangeLabel(`${formatDate(startInput.value)} - ${formatDate(endInput.value)}`);
+      }
+    };
+    if (startInput) startInput.addEventListener('change', applyCustomRange);
+    if (endInput) endInput.addEventListener('change', applyCustomRange);
+  })();
+</script>
+  </template>
+
+  <script>
+    const __pageContent = document.getElementById("page-content")?.innerHTML || "";
+    const __pageStyle = document.getElementById("page-style")?.textContent || "";
+    const __pageTitle = document.title || "";
+
+    fetch("./layout.html")
+      .then((r) => r.text())
+      .then((html) => {
+        document.open();
+        document.write(html);
+        document.close();
+
+        window.addEventListener("DOMContentLoaded", () => {
+          if (__pageStyle) {
+            const style = document.createElement("style");
+            style.setAttribute("data-page-style", "true");
+            style.textContent = __pageStyle;
+            document.head.appendChild(style);
+          }
+
+          if (__pageTitle) {
+            document.title = __pageTitle;
+            const headerTitle = document.querySelector(".topbar-left h1");
+            if (headerTitle) {
+              headerTitle.textContent = __pageTitle;
+            }
+          }
+
+          const slot = document.getElementById("app-main") || document.querySelector("main");
+          if (slot) {
+            slot.innerHTML = __pageContent;
+
+            const scripts = Array.from(slot.querySelectorAll("script"));
+            const runScripts = (index) => {
+              if (index >= scripts.length) return;
+              const oldScript = scripts[index];
+              const script = document.createElement("script");
+              Array.from(oldScript.attributes).forEach((attr) => {
+                script.setAttribute(attr.name, attr.value);
+              });
+              script.async = false;
+              if (oldScript.textContent) {
+                script.textContent = oldScript.textContent;
+              }
+              const next = () => runScripts(index + 1);
+              if (script.src) {
+                script.onload = next;
+                script.onerror = next;
+              }
+              oldScript.replaceWith(script);
+              if (!script.src) {
+                next();
+              }
+            };
+            runScripts(0);
+          }
+
+          const current = (location.pathname.split("/").pop() || "").toLowerCase();
+          document.querySelectorAll(".nav a[href]").forEach((a) => a.classList.remove("active"));
+          document.querySelectorAll(".nav a[href]").forEach((a) => {
+            const href = (a.getAttribute("href") || "").split("?")[0].split("#")[0].toLowerCase();
+            if (href && href === current) {
+              a.classList.add("active");
+            }
+          });
+        });
+      });
+  </script>
+</body>
+</html>
+
