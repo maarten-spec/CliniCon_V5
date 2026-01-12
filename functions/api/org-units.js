@@ -1,4 +1,4 @@
-﻿export async function onRequestGet({ env }) {
+export async function onRequestGet({ env }) {
   const rs = await env.DB.prepare(
     `SELECT id, code, name, einheitstyp, aktiv
      FROM organisationseinheit
