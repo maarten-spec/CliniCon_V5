@@ -84,6 +84,7 @@
     year: new Date().getFullYear(),
     data: {},
   };
+  let lastFocus = null;
 
   function setStatus(msg, isError = false) {
     if (!els.saveStatus) return;
@@ -127,6 +128,7 @@
       r.qual = r.qual || "";
       r.personalNumber = (r.personalNumber ?? "").toString();
       r.name = (r.name ?? "").toString();
+      ensureNameParts(r);
     }
     for (const x of state.data[k].extras) {
       if (!Array.isArray(x.values) || x.values.length !== 12) x.values = Array(12).fill(0);
@@ -139,8 +141,20 @@
     return state.data[k];
   }
 
+  function ensureNameParts(row) {
+    const raw = (row.name || "").trim();
+    const parts = raw ? raw.split(/\s+/) : [];
+    row.firstName = (row.firstName ?? parts.shift() ?? "").trim();
+    row.lastName = (row.lastName ?? parts.join(" ") ?? "").trim();
+    row.name = `${row.firstName} ${row.lastName}`.trim();
+  }
+
   function escapeHtml(s) {
     return String(s).replace(/[&<>\"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function syncName(row) {
+    row.name = `${row.firstName || ""} ${row.lastName || ""}`.trim();
   }
 
   function qualSelectHTML(value, idx, kind) {
@@ -164,35 +178,37 @@
       if (r.hiddenRow) tr.style.display = "none";
       const tds = [];
       tds.push(`
-        <td class="ctrl-col">
-          <input type="checkbox" class="sp-include" data-kind="emp" data-idx="${idx}" ${r.include ? "checked" : ""}>
-        </td>
-      `);
-      tds.push(`
         <td class="pnr-col">
           <input class="sp-pnr" data-kind="emp" data-idx="${idx}" value="${escapeHtml(r.personalNumber)}" placeholder="Personalnr.">
         </td>
       `);
       tds.push(`
         <td class="name-col">
-          <input class="sp-name" data-kind="emp" data-idx="${idx}" value="${escapeHtml(r.name)}" placeholder="Name">
+          <div class="name-pair">
+            <input class="name-input sp-name-first" data-kind="emp" data-idx="${idx}" value="${escapeHtml(r.firstName)}" placeholder="Vorname">
+            <input class="name-input sp-name-last" data-kind="emp" data-idx="${idx}" value="${escapeHtml(r.lastName)}" placeholder="Nachname">
+          </div>
         </td>
       `);
-      tds.push(`<td class="qual-col">${qualSelectHTML(r.qual, idx, "emp")}</td>`);
       for (let m = 0; m < 12; m++) {
         tds.push(`
           <td class="month-col">
-            <input type="number" step="0.01" min="0" max="2"
+            <input type="number" step="0.01" min="0" max="1"
               class="sp-vk"
               data-kind="emp" data-idx="${idx}" data-month="${m}"
               value="${String(clamp2(r.values[m] || 0))}">
           </td>
         `);
       }
+      const rowAvg = (r.values || []).reduce((a, b) => a + Number(b || 0), 0) / 12;
+      tds.push(`<td data-row-sum>${fmt(rowAvg)}</td>`);
+      tds.push(`<td class="qual-col">${qualSelectHTML(r.qual, idx, "emp")}</td>`);
       tds.push(`
         <td class="act-col">
-          <button class="sp-hide" data-kind="emp" data-idx="${idx}" title="Zeile ausblenden">Ausblenden</button>
-          <button class="sp-del" data-kind="emp" data-idx="${idx}" title="Zeile loeschen">Loeschen</button>
+          <div class="action-icons">
+            <button class="icon-btn action-copy" data-action="copy" data-kind="emp" data-idx="${idx}" type="button" title="Restliche Monate mit aktuellem Wert fÃ¼llen">&#10230;</button>
+            <span class="row-hint">Aktiv</span>
+          </div>
         </td>
       `);
       tr.innerHTML = tds.join("");
@@ -367,6 +383,10 @@
     }
   }
 
+  function setLastFocus(kind, idx, month) {
+    lastFocus = { kind, idx, month };
+  }
+
   function wireEvents() {
     if (els.deptSelect) {
       els.deptSelect.addEventListener("change", async () => {
@@ -424,18 +444,21 @@
       const plan = ensurePlan();
       const row = kind === "extra" ? plan.extras[idx] : plan.employees[idx];
       if (!row) return;
-      if (t.classList.contains("sp-include")) {
-        row.include = !!t.checked;
-      } else if (t.classList.contains("sp-pnr")) {
+      if (t.classList.contains("sp-pnr")) {
         row.personalNumber = String(t.value || "");
-      } else if (t.classList.contains("sp-name")) {
-        row.name = String(t.value || "");
+      } else if (t.classList.contains("sp-name-first")) {
+        row.firstName = String(t.value || "");
+        syncName(row);
+      } else if (t.classList.contains("sp-name-last")) {
+        row.lastName = String(t.value || "");
+        syncName(row);
       } else if (t.classList.contains("sp-category")) {
         row.category = String(t.value || "");
       } else if (t.classList.contains("sp-vk")) {
         const m = Number(t.dataset.month);
         const v = clamp2(t.value);
         if (m >= 0 && m < 12) row.values[m] = v;
+        setLastFocus(kind, idx, m);
       } else if (t.classList.contains("sp-qual")) {
         row.qual = String(t.value || "");
       }
@@ -451,6 +474,22 @@
       if (!Number.isFinite(idx)) return;
       const plan = ensurePlan();
       const list = kind === "extra" ? plan.extras : plan.employees;
+      const action = t.dataset.action;
+      if (action === "copy") {
+        const row = list[idx];
+        if (!row) return;
+        const startMonth = lastFocus && lastFocus.kind === kind && lastFocus.idx === idx && Number.isFinite(lastFocus.month)
+          ? lastFocus.month
+          : 0;
+        const sourceVal = row.values[startMonth] || 0;
+        for (let m = startMonth; m < 12; m++) {
+          row.values[m] = sourceVal;
+        }
+        saveStorage();
+        renderAll();
+        setStatus("Zeile fortgeführt¼hrt");
+        return;
+      }
       if (t.classList.contains("sp-del")) {
         list.splice(idx, 1);
         saveStorage();
