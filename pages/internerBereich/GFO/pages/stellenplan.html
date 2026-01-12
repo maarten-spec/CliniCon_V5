@@ -4,7 +4,533 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Clinicon - Stellenplan</title>
-  <link rel="stylesheet" href="/internerBereich/assets/app-shell.css" />
+  <style id="app-shell-style">
+  @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+  
+  :root{
+    --bg:#f6f2ea;
+    --bg-ink:#0d1433;
+    --bg-grad:radial-gradient(1200px 680px at 90% -10%, rgba(255,110,64,0.18), transparent 60%),
+      radial-gradient(1000px 520px at -10% 0%, rgba(24,196,190,0.18), transparent 58%),
+      linear-gradient(180deg, #fff7ee 0%, #f4f6fb 100%);
+    --surface:#ffffff;
+    --surface-2:#f1f5fb;
+    --surface-3:#fdf6ef;
+    --ink:#0d1433;
+    --muted:#5f6f88;
+    --line:rgba(13,20,51,0.1);
+    --accent:#1c6bff;
+    --accent-2:#ff6b35;
+    --accent-3:#17c3b2;
+    --accent-4:#f6bd60;
+    --accent-5:#f46036;
+    --success:#2fbf71;
+    --warning:#ff9f1c;
+    --danger:#ef476f;
+    --shadow:0 20px 46px rgba(12, 20, 45, 0.12);
+    --shadow-soft:0 12px 26px rgba(18, 28, 58, 0.08);
+    --radius-lg:20px;
+    --radius-md:16px;
+    --radius-sm:12px;
+    --font-base:"Manrope","Segoe UI",sans-serif;
+    --font-display:"Space Grotesk","Manrope",sans-serif;
+  
+    --panel:var(--surface);
+    --text:var(--ink);
+    --accent-strong:#1450d6;
+    --accent-weak:rgba(28,107,255,0.12);
+    --font-size-base:16px;
+    --line-height-base:1.6;
+  }
+  
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:var(--font-base);
+    font-size:var(--font-size-base);
+    line-height:var(--line-height-base);
+    background:var(--bg);
+    color:var(--ink);
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:var(--bg-grad);
+    z-index:-2;
+  }
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(380px 380px at 8% 90%, rgba(28,107,255,0.08), transparent 60%),
+      radial-gradient(280px 280px at 92% 92%, rgba(246,189,96,0.12), transparent 55%);
+    z-index:-1;
+  }
+  
+  .app-shell{
+    display:grid;
+    grid-template-columns:260px 1fr;
+    min-height:100dvh;
+  }
+  .app-side{
+    position:sticky;
+    top:0;
+    height:100dvh;
+    padding:20px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    border-right:1px solid var(--line);
+    background:rgba(255,255,255,0.86);
+    backdrop-filter:blur(12px);
+  }
+  .app-brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    border-radius:var(--radius-md);
+    background:linear-gradient(135deg, rgba(28,107,255,0.12), rgba(23,195,178,0.12));
+    border:1px solid rgba(28,107,255,0.16);
+    text-decoration:none;
+    color:var(--ink);
+  }
+  .app-brand-logo{
+    width:46px;
+    height:46px;
+    object-fit:contain;
+  }
+  .app-brand-text{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .app-brand-title{
+    font-family:var(--font-display);
+    font-size:1.05rem;
+    letter-spacing:.01em;
+  }
+  .app-brand-sub{
+    font-size:.7rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .app-nav{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .app-nav a{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-decoration:none;
+    color:var(--ink);
+    padding:12px 14px;
+    border-radius:var(--radius-sm);
+    border:1px solid transparent;
+    background:linear-gradient(180deg, #ffffff, #f7f9ff);
+    box-shadow:0 1px 0 rgba(14,20,43,0.05);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .app-nav a:hover{
+    transform:translateY(-1px);
+    border-color:rgba(28,107,255,0.25);
+    box-shadow:0 10px 20px rgba(28,107,255,0.15);
+  }
+  .app-nav a.active{
+    background:linear-gradient(135deg, var(--accent), #458cff);
+    color:#fff;
+    border-color:transparent;
+    box-shadow:0 14px 26px rgba(28,107,255,0.3);
+  }
+  .app-nav a span{
+    font-weight:500;
+    letter-spacing:.01em;
+  }
+  .app-nav a svg{width:22px; height:22px}
+  .app-side-footer{
+    margin-top:auto;
+    font-size:12px;
+    color:var(--muted);
+  }
+  
+  .app-body{
+    display:flex;
+    flex-direction:column;
+    min-height:100dvh;
+  }
+  .app-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    padding:22px 28px;
+    background:rgba(255,255,255,0.9);
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    z-index:3;
+    backdrop-filter:blur(8px);
+  }
+  .app-header-left h1{
+    margin:0;
+    font-size:1.8rem;
+    font-family:var(--font-display);
+    letter-spacing:.01em;
+  }
+  .app-header-left p{
+    margin:6px 0 0;
+    color:var(--muted);
+    font-size:.98rem;
+  }
+  .app-header-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+  .app-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .app-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:.86rem;
+    background:var(--surface-3);
+    border:1px solid rgba(246,189,96,0.35);
+    color:#9a5b1f;
+    font-weight:600;
+  }
+  .app-pill.app-pill-neutral{
+    background:var(--surface-2);
+    border-color:var(--line);
+    color:var(--ink);
+  }
+  .app-button{
+    border:none;
+    padding:10px 14px;
+    border-radius:12px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:var(--font-base);
+  }
+  .app-button.primary{
+    background:linear-gradient(135deg, var(--accent-2), var(--accent-5));
+    color:#fff;
+    box-shadow:0 12px 24px rgba(255,107,53,0.35);
+  }
+  .app-button.secondary{
+    background:#fff;
+    border:1px solid var(--line);
+    color:var(--ink);
+  }
+  
+  .app-timeslicer{
+    padding:18px 28px 0;
+  }
+  .timeslicer-card{
+    border:1px solid var(--line);
+    border-radius:var(--radius-md);
+    background:rgba(255,255,255,0.9);
+    backdrop-filter:blur(8px);
+    box-shadow:var(--shadow-soft);
+    padding:16px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .timeslicer-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .timeslicer-title{
+    font-family:var(--font-display);
+    font-size:1.1rem;
+  }
+  .timeslicer-sub{
+    color:var(--muted);
+    font-size:.9rem;
+  }
+  .timeslicer-pill{
+    padding:6px 12px;
+    border-radius:999px;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    font-weight:700;
+    font-size:.82rem;
+  }
+  .timeslicer-controls{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .timeslicer-buttons{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .timeslicer-btn{
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--ink);
+    padding:8px 12px;
+    border-radius:999px;
+    font-weight:600;
+    cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .timeslicer-btn:hover{
+    border-color:rgba(28,107,255,0.25);
+    box-shadow:0 8px 16px rgba(28,107,255,0.15);
+  }
+  .timeslicer-btn.active{
+    background:linear-gradient(135deg, var(--accent), #458cff);
+    color:#fff;
+    border-color:transparent;
+    box-shadow:0 12px 24px rgba(28,107,255,0.25);
+  }
+  .timeslicer-custom{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+    color:var(--muted);
+    font-size:.9rem;
+  }
+  .timeslicer-custom input{
+    padding:7px 10px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    font:inherit;
+    background:#fff;
+    color:var(--ink);
+  }
+  
+  .app-main{
+    flex:1;
+    width:100%;
+  }
+  .app-main .card{
+    background:var(--surface);
+    border-radius:var(--radius-md);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow-soft);
+  }
+  
+  /* Legacy shell layout (GFO pages) */
+  .shell{
+    display:grid;
+    grid-template-columns:240px 1fr;
+    min-height:100dvh;
+  }
+  .side{
+    position:sticky;
+    top:0;
+    height:100dvh;
+    padding:20px 16px;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:18px;
+    border-right:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(235,244,255,0.92));
+    backdrop-filter:blur(12px);
+    box-shadow:0 12px 28px rgba(15,23,42,0.06);
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:8px 10px;
+    width:100%;
+    border-radius:14px;
+    background:transparent;
+    border:none;
+    box-shadow:none;
+    text-decoration:none;
+  }
+  .brand img{
+    width:200px;
+    max-width:100%;
+    height:auto;
+    object-fit:contain;
+    filter:drop-shadow(0 10px 20px rgba(15,23,42,0.12)) saturate(0.9) brightness(1.05);
+    opacity:0.95;
+  }
+  .side-footer{
+    margin-top:auto;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .nav{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+    margin-top:8px;
+  }
+  .nav a{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-decoration:none;
+    color:var(--ink, var(--text));
+    width:100%;
+    padding:12px 16px;
+    border-radius:18px;
+    border:1px solid rgba(15,23,42,0.08);
+    background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246,249,255,0.96));
+    box-shadow:0 10px 20px rgba(15,23,42,0.06);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .nav a:hover{
+    transform:translateY(-1px);
+    border-color:rgba(28,107,255,0.28);
+    box-shadow:0 16px 30px rgba(28,107,255,0.18);
+  }
+  .nav a.active{
+    background:linear-gradient(135deg, var(--accent), #458cff);
+    color:#fff;
+    border-color:transparent;
+    box-shadow:0 18px 34px rgba(28,107,255,0.28);
+  }
+  .nav a span{
+    font-weight:500;
+    letter-spacing:.01em;
+  }
+  .nav a svg{
+    width:28px;
+    height:28px;
+    padding:6px;
+    border-radius:12px;
+    background:rgba(28,107,255,0.12);
+    color:#1f4b82;
+    flex-shrink:0;
+    box-shadow:inset 0 0 0 1px rgba(28,107,255,0.12);
+  }
+  .nav a.active svg{
+    background:rgba(255,255,255,0.25);
+    color:#fff;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.35);
+  }
+  .nav-group{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding:4px 0 0;
+  }
+  .nav-group-title{
+    padding-left:8px;
+    font-size:0.72rem;
+    text-transform:uppercase;
+    letter-spacing:.16em;
+    color:var(--muted);
+  }
+  .nav-sub{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin:0;
+    padding-left:0;
+  }
+  .nav-sub a{
+    border-radius:16px;
+    padding:10px 14px;
+  }
+  .nav-sub a svg{
+    width:24px;
+    height:24px;
+    padding:5px;
+    border-radius:10px;
+  }
+  header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding:20px 24px;
+    border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,0.9);
+    position:sticky;
+    top:0;
+    z-index:2;
+    backdrop-filter:blur(8px);
+  }
+  .topbar-left h1{
+    margin:0;
+    font-size:1.9rem;
+    font-family:var(--font-display);
+    letter-spacing:.01em;
+  }
+  .topbar-left p{
+    margin:6px 0 0;
+    color:var(--muted);
+    font-size:1rem;
+  }
+  .topbar-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .timestamp-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:.86rem;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    color:var(--muted);
+    font-weight:600;
+  }
+  @media (max-width: 960px){
+    .shell{grid-template-columns:1fr;}
+    .side{
+      position:relative;
+      height:auto;
+    }
+    header{position:relative;}
+  }
+  
+  @media (max-width: 1200px){
+    .app-shell{grid-template-columns:1fr;}
+    .app-side{
+      position:relative;
+      height:auto;
+      flex-direction:row;
+      flex-wrap:wrap;
+      justify-content:space-between;
+    }
+    .app-nav{flex-direction:row; flex-wrap:wrap;}
+  }
+  @media (max-width: 900px){
+    .app-header{flex-direction:column; align-items:flex-start;}
+    .app-timeslicer{padding:16px 20px 0;}
+  }
+  @media (max-width: 600px){
+    .app-header{padding:18px 20px;}
+    .timeslicer-card{padding:14px;}
+  }
+  </style>
   <style id="page-style">
 :root{
       --header:var(--surface-2);
@@ -207,9 +733,515 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
     </section>
 
 
-  <!-- Supabase frontend script moved to /internerBereich/assets/stellenplan.app.js -->
-
-  <script type="module" defer src="/internerBereich/assets/stellenplan.app.js"></script>
+  <script type="module" defer>
+  /* Clinicon Stellenplan - Frontend (D1 via /api/*)
+     Erwartete Elemente:
+     - select#deptSelect, input#yearInput
+     - button#btnSaveDb, button#btnAddRow, button#btnAddExtra
+     - table#planTable, table#extrasTable
+     - div/span#saveStatus, #sumYear, #avgMonth, #peakMonth
+  */
+  
+  (() => {
+    const $ = (sel) => document.querySelector(sel);
+    const fmt = (n) => (Number(n || 0)).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const clamp2 = (v) => Math.round((Number(v || 0) + Number.EPSILON) * 100) / 100;
+  
+    const API = {
+      async getOrgUnits() {
+        const r = await fetch("/api/org-units", { credentials: "same-origin" });
+        if (!r.ok) throw new Error("Organisationseinheiten laden fehlgeschlagen");
+        return r.json();
+      },
+      async getQualifikationen() {
+        const r = await fetch("/api/qualifikationen", { credentials: "same-origin" });
+        if (!r.ok) throw new Error("Qualifikationen laden fehlgeschlagen");
+        return r.json();
+      },
+      async loadPlan(orgCode, year) {
+        const r = await fetch(`/api/stellenplan?org=${encodeURIComponent(orgCode)}&year=${encodeURIComponent(year)}`, { credentials: "same-origin" });
+        if (!r.ok) throw new Error("Stellenplan laden fehlgeschlagen");
+        return r.json();
+      },
+      async savePlan(payload) {
+        const r = await fetch("/api/stellenplan/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify(payload),
+        });
+        if (!r.ok) throw new Error(await r.text());
+        return r.json();
+      },
+    };
+  
+    const els = {
+      deptSelect: $("#deptSelect"),
+      yearInput: $("#yearInput"),
+      planTable: $("#planTable"),
+      extrasTable: $("#extrasTable"),
+      btnSaveDb: $("#btnSaveDb"),
+      btnAddRow: $("#btnAddRow"),
+      btnAddExtra: $("#btnAddExtra"),
+      saveStatus: $("#saveStatus"),
+      sumYear: $("#sumYear"),
+      avgMonth: $("#avgMonth"),
+      peakMonth: $("#peakMonth"),
+    };
+  
+    const STORAGE_KEY = "clinicon_stellenplan_v1";
+    const FALLBACK_ORG_UNITS = [
+      { code: "STA1", name: "Station 1" },
+      { code: "STA2", name: "Station 2" },
+      { code: "STA3", name: "Station 3" },
+      { code: "STA4", name: "Station 4" },
+      { code: "STA5", name: "Station 5" },
+      { code: "OPS", name: "OP / Endoskopie" },
+      { code: "PDL", name: "Pflegedienstleitung" },
+    ];
+    const FALLBACK_QUAL_OPTIONS = [
+      "Pflegefachkraft",
+      "Pflegefachassistenz",
+      "Notfallpflege",
+      "Intensivpflege",
+      "Hygiene",
+      "Praxisanleitung",
+      "OP",
+      "Endoskopie",
+      "Onkologie",
+      "Palliativ",
+      "Wundmanagement",
+      "Dialyse",
+    ];
+    const state = {
+      orgUnits: [],
+      qualOptions: [],
+      dept: "",
+      year: new Date().getFullYear(),
+      data: {},
+    };
+  
+    function setStatus(msg, isError = false) {
+      if (!els.saveStatus) return;
+      els.saveStatus.textContent = msg || "";
+      els.saveStatus.style.opacity = msg ? "1" : "0";
+      els.saveStatus.style.color = isError ? "#b91c1c" : "";
+    }
+  
+    function loadStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") {
+          state.data = parsed.data || {};
+          state.dept = parsed.dept || state.dept;
+          state.year = parsed.year || state.year;
+        }
+      } catch (_) {}
+    }
+  
+    function saveStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ dept: state.dept, year: state.year, data: state.data }));
+      } catch (_) {}
+    }
+  
+    function key() {
+      return `${state.dept}-${state.year}`;
+    }
+  
+    function ensurePlan() {
+      const k = key();
+      if (!state.data[k]) {
+        state.data[k] = { employees: [], extras: [] };
+      }
+      for (const r of state.data[k].employees) {
+        if (!Array.isArray(r.values) || r.values.length !== 12) r.values = Array(12).fill(0);
+        if (typeof r.include !== "boolean") r.include = true;
+        if (typeof r.hiddenRow !== "boolean") r.hiddenRow = false;
+        r.qual = r.qual || "";
+        r.personalNumber = (r.personalNumber ?? "").toString();
+        r.name = (r.name ?? "").toString();
+      }
+      for (const x of state.data[k].extras) {
+        if (!Array.isArray(x.values) || x.values.length !== 12) x.values = Array(12).fill(0);
+        if (typeof x.include !== "boolean") x.include = true;
+        if (typeof x.hiddenRow !== "boolean") x.hiddenRow = false;
+        x.qual = x.qual || "";
+        x.personalNumber = (x.personalNumber ?? "").toString();
+        x.category = (x.category ?? "Zusatz").toString();
+      }
+      return state.data[k];
+    }
+  
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>\"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+    }
+  
+    function qualSelectHTML(value, idx, kind) {
+      const opts = ["<option value=\"\">-</option>"]
+        .concat(state.qualOptions.map(q => `<option value="${escapeHtml(q)}">${escapeHtml(q)}</option>`))
+        .join("");
+      return `<select class="sp-qual" data-kind="${kind}" data-idx="${idx}">${opts}</select>`;
+    }
+  
+    function renderPlanTable() {
+      const plan = ensurePlan();
+      const table = els.planTable;
+      if (!table) return;
+      const tbody = table.querySelector("tbody") || table.appendChild(document.createElement("tbody"));
+      tbody.innerHTML = "";
+  
+      plan.employees.forEach((r, idx) => {
+        const tr = document.createElement("tr");
+        tr.dataset.kind = "emp";
+        tr.dataset.idx = String(idx);
+        if (r.hiddenRow) tr.style.display = "none";
+        const tds = [];
+        tds.push(`
+          <td class="ctrl-col">
+            <input type="checkbox" class="sp-include" data-kind="emp" data-idx="${idx}" ${r.include ? "checked" : ""}>
+          </td>
+        `);
+        tds.push(`
+          <td class="pnr-col">
+            <input class="sp-pnr" data-kind="emp" data-idx="${idx}" value="${escapeHtml(r.personalNumber)}" placeholder="Personalnr.">
+          </td>
+        `);
+        tds.push(`
+          <td class="name-col">
+            <input class="sp-name" data-kind="emp" data-idx="${idx}" value="${escapeHtml(r.name)}" placeholder="Name">
+          </td>
+        `);
+        tds.push(`<td class="qual-col">${qualSelectHTML(r.qual, idx, "emp")}</td>`);
+        for (let m = 0; m < 12; m++) {
+          tds.push(`
+            <td class="month-col">
+              <input type="number" step="0.01" min="0" max="2"
+                class="sp-vk"
+                data-kind="emp" data-idx="${idx}" data-month="${m}"
+                value="${String(clamp2(r.values[m] || 0))}">
+            </td>
+          `);
+        }
+        tds.push(`
+          <td class="act-col">
+            <button class="sp-hide" data-kind="emp" data-idx="${idx}" title="Zeile ausblenden">Ausblenden</button>
+            <button class="sp-del" data-kind="emp" data-idx="${idx}" title="Zeile loeschen">Loeschen</button>
+          </td>
+        `);
+        tr.innerHTML = tds.join("");
+        tbody.appendChild(tr);
+        const sel = tr.querySelector("select.sp-qual");
+        if (sel) sel.value = r.qual || "";
+      });
+    }
+  
+    function renderExtrasTable() {
+      const plan = ensurePlan();
+      const table = els.extrasTable;
+      if (!table) return;
+      const tbody = table.querySelector("tbody") || table.appendChild(document.createElement("tbody"));
+      tbody.innerHTML = "";
+  
+      plan.extras.forEach((x, idx) => {
+        const tr = document.createElement("tr");
+        tr.dataset.kind = "extra";
+        tr.dataset.idx = String(idx);
+        if (x.hiddenRow) tr.style.display = "none";
+        const tds = [];
+        tds.push(`
+          <td class="ctrl-col">
+            <input type="checkbox" class="sp-include" data-kind="extra" data-idx="${idx}" ${x.include ? "checked" : ""}>
+          </td>
+        `);
+        tds.push(`
+          <td class="pnr-col">
+            <input class="sp-pnr" data-kind="extra" data-idx="${idx}" value="${escapeHtml(x.personalNumber)}" placeholder="ID/Key">
+          </td>
+        `);
+        tds.push(`
+          <td class="name-col">
+            <input class="sp-category" data-kind="extra" data-idx="${idx}" value="${escapeHtml(x.category)}" placeholder="Kategorie">
+          </td>
+        `);
+        tds.push(`<td class="qual-col">${qualSelectHTML(x.qual, idx, "extra")}</td>`);
+        for (let m = 0; m < 12; m++) {
+          tds.push(`
+            <td class="month-col">
+              <input type="number" step="0.01" min="0" max="2"
+                class="sp-vk"
+                data-kind="extra" data-idx="${idx}" data-month="${m}"
+                value="${String(clamp2(x.values[m] || 0))}">
+            </td>
+          `);
+        }
+        tds.push(`
+          <td class="act-col">
+            <button class="sp-hide" data-kind="extra" data-idx="${idx}" title="Zeile ausblenden">Ausblenden</button>
+            <button class="sp-del" data-kind="extra" data-idx="${idx}" title="Zeile loeschen">Loeschen</button>
+          </td>
+        `);
+        tr.innerHTML = tds.join("");
+        tbody.appendChild(tr);
+        const sel = tr.querySelector("select.sp-qual");
+        if (sel) sel.value = x.qual || "";
+      });
+    }
+  
+    function recalcTotals() {
+      const plan = ensurePlan();
+      const monthSum = Array(12).fill(0);
+      const addRow = (row) => {
+        if (!row.include || row.hiddenRow) return;
+        for (let m = 0; m < 12; m++) monthSum[m] += Number(row.values[m] || 0);
+      };
+      plan.employees.forEach(addRow);
+      plan.extras.forEach(addRow);
+      const table = els.planTable;
+      if (table) {
+        for (let m = 0; m < 12; m++) {
+          const cell = table.querySelector(`[data-sum-month="${m}"]`);
+          if (cell) cell.textContent = fmt(monthSum[m]);
+        }
+        const totalYearCell = table.querySelector("[data-total-year]");
+        if (totalYearCell) totalYearCell.textContent = fmt(monthSum.reduce((a, b) => a + b, 0) / 12);
+      }
+      const sumYear = monthSum.reduce((a, b) => a + b, 0);
+      const avg = sumYear / 12;
+      const peak = Math.max(...monthSum);
+      if (els.sumYear) els.sumYear.textContent = fmt(sumYear);
+      if (els.avgMonth) els.avgMonth.textContent = fmt(avg);
+      if (els.peakMonth) els.peakMonth.textContent = fmt(peak);
+    }
+  
+    function renderAll() {
+      renderPlanTable();
+      renderExtrasTable();
+      recalcTotals();
+    }
+  
+    async function loadLookups() {
+      try {
+        const units = await API.getOrgUnits();
+        state.orgUnits = Array.isArray(units) && units.length ? units : FALLBACK_ORG_UNITS;
+        const quals = await API.getQualifikationen();
+        state.qualOptions = (Array.isArray(quals) ? quals.map(q => q.bezeichnung) : []).filter(Boolean);
+        if (!state.qualOptions.length) state.qualOptions = FALLBACK_QUAL_OPTIONS;
+      } catch (error) {
+        console.warn("Lookups fehlgeschlagen, verwende Fallback", error);
+        state.orgUnits = FALLBACK_ORG_UNITS;
+        state.qualOptions = FALLBACK_QUAL_OPTIONS;
+      }
+    }
+  
+    function populateOrgSelect() {
+      if (!els.deptSelect) return;
+      els.deptSelect.innerHTML = state.orgUnits.map(u => `<option value="${escapeHtml(u.code)}">${escapeHtml(u.name)}</option>`).join("");
+      if (!state.dept && state.orgUnits[0]) state.dept = state.orgUnits[0].code;
+      els.deptSelect.value = state.dept;
+    }
+  
+    function populateYear() {
+      if (!els.yearInput) return;
+      els.yearInput.value = String(state.year);
+    }
+  
+    async function loadFromDb() {
+      ensurePlan();
+      setStatus("Lade ...");
+      try {
+        const remote = await API.loadPlan(state.dept, state.year);
+        const k = key();
+        state.data[k] = {
+          employees: Array.isArray(remote.employees) ? remote.employees : [],
+          extras: Array.isArray(remote.extras) ? remote.extras : [],
+        };
+        ensurePlan();
+        saveStorage();
+        renderAll();
+        setStatus("Geladen");
+      } catch (e) {
+        console.warn(e);
+        renderAll();
+        setStatus("DB-Laden fehlgeschlagen - lokale Daten genutzt", true);
+      }
+    }
+  
+    async function saveToDb() {
+      const plan = ensurePlan();
+      setStatus("Speichere ...");
+      try {
+        const payload = {
+          orgCode: state.dept,
+          year: Number(state.year),
+          employees: plan.employees.map(r => ({
+            personalNumber: String(r.personalNumber || "").trim(),
+            name: String(r.name || "").trim(),
+            qual: String(r.qual || ""),
+            include: !!r.include,
+            hiddenRow: !!r.hiddenRow,
+            values: (r.values || []).map(v => clamp2(v)),
+          })),
+          extras: plan.extras.map(x => ({
+            personalNumber: String(x.personalNumber || "").trim(),
+            category: String(x.category || "Zusatz").trim(),
+            qual: String(x.qual || ""),
+            include: !!x.include,
+            hiddenRow: !!x.hiddenRow,
+            values: (x.values || []).map(v => clamp2(v)),
+          })),
+        };
+        await API.savePlan(payload);
+        saveStorage();
+        const ts = new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+        setStatus(`Gespeichert (${ts})`);
+      } catch (e) {
+        console.error(e);
+        setStatus(`Speichern fehlgeschlagen: ${e?.message || e}`, true);
+      }
+    }
+  
+    function wireEvents() {
+      if (els.deptSelect) {
+        els.deptSelect.addEventListener("change", async () => {
+          state.dept = els.deptSelect.value;
+          saveStorage();
+          await loadFromDb();
+        });
+      }
+      if (els.yearInput) {
+        els.yearInput.addEventListener("change", async () => {
+          const y = Number(els.yearInput.value || state.year);
+          state.year = Number.isFinite(y) && y > 1990 ? y : state.year;
+          els.yearInput.value = String(state.year);
+          saveStorage();
+          await loadFromDb();
+        });
+      }
+      if (els.btnSaveDb) els.btnSaveDb.addEventListener("click", saveToDb);
+      if (els.btnAddRow) {
+        els.btnAddRow.addEventListener("click", () => {
+          const plan = ensurePlan();
+          plan.employees.push({
+            personalNumber: "",
+            name: "Neu",
+            qual: "",
+            include: true,
+            hiddenRow: false,
+            values: Array(12).fill(0),
+          });
+          saveStorage();
+          renderAll();
+        });
+      }
+      if (els.btnAddExtra) {
+        els.btnAddExtra.addEventListener("click", () => {
+          const plan = ensurePlan();
+          plan.extras.push({
+            personalNumber: "",
+            category: "Zusatz",
+            qual: "",
+            include: true,
+            hiddenRow: false,
+            values: Array(12).fill(0),
+          });
+          saveStorage();
+          renderAll();
+        });
+      }
+      const onTableInput = (ev) => {
+        const t = ev.target;
+        if (!t) return;
+        const kind = t.dataset.kind;
+        const idx = Number(t.dataset.idx);
+        if (!Number.isFinite(idx)) return;
+        const plan = ensurePlan();
+        const row = kind === "extra" ? plan.extras[idx] : plan.employees[idx];
+        if (!row) return;
+        if (t.classList.contains("sp-include")) {
+          row.include = !!t.checked;
+        } else if (t.classList.contains("sp-pnr")) {
+          row.personalNumber = String(t.value || "");
+        } else if (t.classList.contains("sp-name")) {
+          row.name = String(t.value || "");
+        } else if (t.classList.contains("sp-category")) {
+          row.category = String(t.value || "");
+        } else if (t.classList.contains("sp-vk")) {
+          const m = Number(t.dataset.month);
+          const v = clamp2(t.value);
+          if (m >= 0 && m < 12) row.values[m] = v;
+        } else if (t.classList.contains("sp-qual")) {
+          row.qual = String(t.value || "");
+        }
+        saveStorage();
+        recalcTotals();
+        setStatus("Ungespeichert");
+      };
+      const onTableClick = (ev) => {
+        const t = ev.target;
+        if (!t || !(t instanceof HTMLElement)) return;
+        const kind = t.dataset.kind;
+        const idx = Number(t.dataset.idx);
+        if (!Number.isFinite(idx)) return;
+        const plan = ensurePlan();
+        const list = kind === "extra" ? plan.extras : plan.employees;
+        if (t.classList.contains("sp-del")) {
+          list.splice(idx, 1);
+          saveStorage();
+          renderAll();
+          setStatus("Ungespeichert");
+        }
+        if (t.classList.contains("sp-hide")) {
+          const row = list[idx];
+          if (row) row.hiddenRow = !row.hiddenRow;
+          saveStorage();
+          renderAll();
+          setStatus("Ungespeichert");
+        }
+      };
+      if (els.planTable) {
+        els.planTable.addEventListener("input", onTableInput);
+        els.planTable.addEventListener("change", onTableInput);
+        els.planTable.addEventListener("click", onTableClick);
+      }
+      if (els.extrasTable) {
+        els.extrasTable.addEventListener("input", onTableInput);
+        els.extrasTable.addEventListener("change", onTableInput);
+        els.extrasTable.addEventListener("click", onTableClick);
+      }
+    }
+  
+    async function boot() {
+      loadStorage();
+      if (els.yearInput && els.yearInput.value) {
+        const y = Number(els.yearInput.value);
+        if (Number.isFinite(y) && y > 1990) state.year = y;
+      }
+      try {
+        await loadLookups();
+        populateOrgSelect();
+        populateYear();
+        state.dept = els.deptSelect?.value || state.dept;
+        wireEvents();
+        await loadFromDb();
+      } catch (e) {
+        console.error(e);
+        wireEvents();
+        ensurePlan();
+        renderAll();
+        setStatus("Initialisierung fehlgeschlagen (Lookups/API).", true);
+      }
+    }
+  
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", boot);
+    } else {
+      boot();
+    }
+  })();
+  </script>
   </template>
 
   <script>
