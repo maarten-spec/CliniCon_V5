@@ -530,3 +530,39 @@ header{
 .action-copy{width:34px; height:34px; border-radius:8px; border:1px solid var(--line); background:linear-gradient(135deg, var(--accent-3), var(--accent-5)); color:#fff; font-weight:700; font-size:0.95rem;}
 .action-copy:hover{box-shadow:0 8px 16px rgba(28,107,255,0.15);}
 .row-hint{font-size:0.74rem; color:var(--muted);}
+.month-input{
+  width:58px;
+  padding:6px 4px;
+  border-radius:6px;
+  font-size:0.85rem;
+  text-align:center;
+}
+.qual-select{
+  min-width:180px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:#fff;
+  padding:6px 8px;
+  font:inherit;
+}
+.action-icons{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+}
+.action-icons button{
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  border:none;
+  font-size:1rem;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.action-icons button.action-hide{background:#eef2ff; color:#0f63ff;}
+.action-icons button.action-trash{background:#fee2e2; color:#dc2626;}
+.action-icons button.action-copy{background:linear-gradient(135deg, #0ea5e9, #14b8a6); color:#fff;}
+.action-icons button:hover{opacity:0.85;}

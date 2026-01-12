@@ -9,7 +9,10 @@
 (() => {
   const $ = (sel) => document.querySelector(sel);
   const fmt = (n) => (Number(n || 0)).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const clamp2 = (v) => Math.round((Number(v || 0) + Number.EPSILON) * 100) / 100;
+  const clamp2 = (v) => {
+    const normalized = Math.max(0, Math.min(1, Number(v || 0)));
+    return Math.round((normalized + Number.EPSILON) * 100) / 100;
+  };
 
   const API = {
     async getOrgUnits() {
@@ -129,6 +132,7 @@
       r.personalNumber = (r.personalNumber ?? "").toString();
       r.name = (r.name ?? "").toString();
       ensureNameParts(r);
+      r.values = r.values.map(v => clamp2(v));
     }
     for (const x of state.data[k].extras) {
       if (!Array.isArray(x.values) || x.values.length !== 12) x.values = Array(12).fill(0);
@@ -137,6 +141,7 @@
       x.qual = x.qual || "";
       x.personalNumber = (x.personalNumber ?? "").toString();
       x.category = (x.category ?? "Zusatz").toString();
+      x.values = x.values.map(v => clamp2(v));
     }
     return state.data[k];
   }
@@ -158,10 +163,13 @@
   }
 
   function qualSelectHTML(value, idx, kind) {
-    const opts = ["<option value=\"\">-</option>"]
-      .concat(state.qualOptions.map(q => `<option value="${escapeHtml(q)}">${escapeHtml(q)}</option>`))
-      .join("");
-    return `<select class="sp-qual" data-kind="${kind}" data-idx="${idx}">${opts}</select>`;
+    const vals = (String(value || "").split(",").map(v => v.trim()).filter(Boolean));
+    const opts = state.qualOptions.map(q => {
+      const escaped = escapeHtml(q);
+      const selected = vals.includes(q) ? " selected" : "";
+      return `<option value="${escaped}"${selected}>${escaped}</option>`;
+    });
+    return `<select multiple size="3" class="sp-qual qual-select" data-kind="${kind}" data-idx="${idx}">${opts.join("")}</select>`;
   }
 
   function renderPlanTable() {
@@ -204,12 +212,15 @@
       tds.push(`<td data-row-sum>${fmt(rowAvg)}</td>`);
       tds.push(`<td class="qual-col">${qualSelectHTML(r.qual, idx, "emp")}</td>`);
       tds.push(`
+              tds.push(`
         <td class="act-col">
           <div class="action-icons">
-            <button class="icon-btn action-copy" data-action="copy" data-kind="emp" data-idx="${idx}" type="button" title="Restliche Monate mit aktuellem Wert fÃ¼llen">&#10230;</button>
-            <span class="row-hint">Aktiv</span>
+            <button class="action-icons-button action-hide" data-action="hide" data-kind="emp" data-idx="${idx}" title="Zeile ausblenden">&#128065;</button>
+            <button class="action-icons-button action-trash" data-action="delete" data-kind="emp" data-idx="${idx}" title="Zeile loeschen">&#128465;</button>
+            <button class="action-icons-button action-copy" data-action="copy" data-kind="emp" data-idx="${idx}" type="button" title="Werte fortfuehren">&#10230;</button>
           </div>
         </td>
+      `)
       `);
       tr.innerHTML = tds.join("");
       tbody.appendChild(tr);
@@ -460,48 +471,54 @@
         if (m >= 0 && m < 12) row.values[m] = v;
         setLastFocus(kind, idx, m);
       } else if (t.classList.contains("sp-qual")) {
-        row.qual = String(t.value || "");
+        const opts = Array.from(t.selectedOptions || []);
+        const values = opts.map(o => String(o.value || "").trim()).filter(Boolean);
+        row.qual = values.join(", ");
       }
       saveStorage();
       recalcTotals();
       setStatus("Ungespeichert");
     };
-    const onTableClick = (ev) => {
+        const onTableClick = (ev) => {
       const t = ev.target;
       if (!t || !(t instanceof HTMLElement)) return;
       const kind = t.dataset.kind;
       const idx = Number(t.dataset.idx);
       if (!Number.isFinite(idx)) return;
       const plan = ensurePlan();
-      const list = kind === "extra" ? plan.extras : plan.employees;
+      const list = kind === 'extra' ? plan.extras : plan.employees;
       const action = t.dataset.action;
-      if (action === "copy") {
+      if (action) {
         const row = list[idx];
         if (!row) return;
-        const startMonth = lastFocus && lastFocus.kind === kind && lastFocus.idx === idx && Number.isFinite(lastFocus.month)
-          ? lastFocus.month
-          : 0;
-        const sourceVal = row.values[startMonth] || 0;
-        for (let m = startMonth; m < 12; m++) {
-          row.values[m] = sourceVal;
+        if (action === 'copy') {
+          const startMonth = lastFocus && lastFocus.kind === kind && lastFocus.idx === idx && Number.isFinite(lastFocus.month)
+            ? lastFocus.month
+            : 0;
+          const sourceVal = row.values[startMonth] || 0;
+          for (let m = startMonth; m < 12; m++) {
+            row.values[m] = sourceVal;
+          }
+          saveStorage();
+          renderAll();
+          setStatus('Zeile fortgeführt');
+          return;
         }
-        saveStorage();
-        renderAll();
-        setStatus("Zeile fortgeführt¼hrt");
-        return;
-      }
-      if (t.classList.contains("sp-del")) {
-        list.splice(idx, 1);
-        saveStorage();
-        renderAll();
-        setStatus("Ungespeichert");
-      }
-      if (t.classList.contains("sp-hide")) {
-        const row = list[idx];
-        if (row) row.hiddenRow = !row.hiddenRow;
-        saveStorage();
-        renderAll();
-        setStatus("Ungespeichert");
+        if (action === 'hide') {
+          row.hiddenRow = !row.hiddenRow;
+          row.include = !row.hiddenRow;
+          saveStorage();
+          renderAll();
+          setStatus('Zeile ein-/ausgeblendet');
+          return;
+        }
+        if (action === 'delete') {
+          list.splice(idx, 1);
+          saveStorage();
+          renderAll();
+          setStatus('Zeile gelöscht');
+          return;
+        }
       }
     };
     if (els.planTable) {
