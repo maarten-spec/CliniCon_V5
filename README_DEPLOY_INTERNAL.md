@@ -1,7 +1,7 @@
-# Deployment Guide for app.clinicon.de Internal Pages
+﻿# Deployment Guide for app.clinicon.de Internal Pages
 
 ## 1. Pages Build Configuration
-- **Build command:** (leave empty). This repo is a pure static site with no build step—Cloudflare Pages should be configured with an empty build command.
+- **Build command:** (leave empty). This repo is a pure static site with no build stepâ€”Cloudflare Pages should be configured with an empty build command.
 - **Output directory:** `.` (the repo root). The `pages/` tree is rendered as-is, and `assets/` holds shared static files.
 - **Functions directory:** `functions` (Cloudflare Pages automatically exposes `/api/*` from `functions/api/*.js`).
 
@@ -11,11 +11,11 @@
   - `database_name`: `db_clinicon`
   - `database_id`: `d371882f-ca67-47c0-aa9f-c2d9fffc017f`
 
-Ensure the above binding is added on the Pages project Settings → Functions → D1 Databases section.
+Ensure the above binding is added on the Pages project Settings â†’ Functions â†’ D1 Databases section.
 
 ## 3. Key Files/Paths
 - `pages/internerBereich/GFO/pages/stellenplan.html` (entry point for the scheduler UI)
-- `/assets/stellenplan.app.js` (frontend logic that talks to `/api/*`)
+- `/internerBereich/assets/stellenplan.app.js` (frontend logic that talks to `/api/*`)
 - `/functions/api/*.js` (backend endpoints exposed at `/api/*`)
 
 ## 4. Local Testing Checklist
