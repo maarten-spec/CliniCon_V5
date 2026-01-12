@@ -8,6 +8,7 @@
   const base = "/pages/internerBereich/GFO/pages";
   const navItems = [
     { key: "start", label: "Start", href: `${base}/1_Unterstartseite.html`, icon: "home" },
+    { key: "klinik", label: "Klinik", href: `${base}/1_klinikverbund.html`, icon: "layers" },
     { key: "assistent", label: "Clinicon Assistent", href: `${base}/clinicon-assistent.html`, icon: "help" },
     { key: "stellenplan", label: "Stellenplan", href: `${base}/stellenplan.html`, icon: "list" },
     { key: "stellenplan-gesamt", label: "Stellenplan Gesamt", href: `${base}/stellenplan-gesamt.html`, icon: "grid" },

@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8" />
@@ -7,131 +7,278 @@
   <style id="page-style">
 :root{--bg:#eef3f7;--panel:#fff;--line:#e5e7eb;--muted:#6b7280;--text:#0f172a;--accent:#1f4b82;--accent-strong:#12355c;--accent-soft:#e0e7ff;--shadow:0 18px 36px rgba(15,23,42,.12);}
 main{width:100%;max-width:none;margin:0 auto;padding:24px;display:flex;flex-direction:column;gap:18px;}
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px;}
-    .hero{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:18px;background:linear-gradient(120deg,#f7fbff 0%,#e8f1ff 40%,#f7fbff 100%);border:1px solid var(--line);box-shadow:var(--shadow);width:100%;max-width:none;margin:0;box-sizing:border-box;}
-    h1{margin:0;font-size:1.95rem;}
-    .badge{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-strong));color:#fff;font-weight:700;box-shadow:0 10px 22px rgba(18,53,92,.2);letter-spacing:.01em;}
-    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;}
-    label{display:flex;flex-direction:column;gap:6px;font-weight:700;color:var(--text);}
-    select,textarea,input{border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;background:#fff;min-width:220px;}
-    textarea{min-height:110px;resize:vertical;}
-    .btn{padding:12px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-weight:800;cursor:pointer;}
-    .layout{display:grid;gap:16px;grid-template-columns:1.1fr 0.9fr;}
-    .chat{display:flex;flex-direction:column;gap:10px;height:480px;overflow:auto;padding:12px;border:1px solid var(--line);border-radius:12px;background:#f8fafc;}
-    .bubble{padding:12px 14px;border-radius:12px;max-width:80%;line-height:1.45;box-shadow:0 4px 12px rgba(15,23,42,.08);}
-    .bubble.user{margin-left:auto;background:#2563eb;color:#fff;}
-    .bubble.bot{margin-right:auto;background:#fff;border:1px solid var(--line);}
-    .list{border:1px solid var(--line);border-radius:12px;padding:12px;background:#f8fafc;max-height:480px;overflow:auto;}
-    .list h3{margin:0 0 6px 0;}
-    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#e5e7eb;color:#0f172a;font-weight:700;margin:4px 4px 0 0;}
-    .hint{color:var(--muted);font-size:0.95rem;}
-    @media(max-width:960px){main{padding:18px;} .layout{grid-template-columns:1fr;} .chat{height:360px;}}
-@media (max-width: 900px){
-
-}
-    @media (max-width: 600px){
-}
-@media (max-width: 900px){
-}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px;}
+.hero{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:18px;background:linear-gradient(120deg,#f7fbff 0%,#e8f1ff 40%,#f7fbff 100%);border:1px solid var(--line);box-shadow:var(--shadow);width:100%;max-width:none;margin:0;box-sizing:border-box;}
+h1{margin:0;font-size:1.95rem;}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;}
+label{display:flex;flex-direction:column;gap:6px;font-weight:700;color:var(--text);}
+select,textarea,input{border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;background:#fff;min-width:220px;}
+textarea{min-height:110px;resize:vertical;}
+.btn{padding:12px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-weight:800;cursor:pointer;}
+.btn:disabled{opacity:.55;cursor:not-allowed;}
+.layout{display:grid;gap:16px;grid-template-columns:1.1fr 0.9fr;}
+.chat{display:flex;flex-direction:column;gap:10px;height:520px;overflow:auto;padding:12px;border:1px solid var(--line);border-radius:12px;background:#f8fafc;}
+.bubble{padding:12px 14px;border-radius:12px;max-width:82%;line-height:1.45;box-shadow:0 4px 12px rgba(15,23,42,.08);white-space:pre-wrap;}
+.bubble.user{margin-left:auto;background:#2563eb;color:#fff;}
+.bubble.bot{margin-right:auto;background:#fff;border:1px solid var(--line);}
+.bubble.sys{margin-right:auto;background:#fff7ed;border:1px solid #fed7aa;color:#7c2d12;}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.small{font-size:.92rem;color:var(--muted)}
+.list{border:1px solid var(--line);border-radius:12px;padding:12px;background:#f8fafc;max-height:520px;overflow:auto;}
+.list h3{margin:0 0 6px 0;}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#e5e7eb;color:#0f172a;font-weight:700;margin:4px 4px 0 0;}
+.hint{color:var(--muted);font-size:0.95rem;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+.actionBtn{padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:800;cursor:pointer;}
+.actionBtn.primary{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;}
+.actionBtn.danger{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;}
+@media(max-width:960px){main{padding:18px;} .layout{grid-template-columns:1fr;} .chat{height:420px;} .list{max-height:420px;}}
   </style>
 </head>
 <body>
   <template id="page-content">
-<section class="card hero">
-<h1>Clinicon Assistent</h1>
-      <p class="hint">Sortiert nach Fachabteilung. Schreibe eine Nachricht, um Infos im Klinikverbund abzurufen.</p>
+    <section class="card hero">
+      <h1>Clinicon Assistent</h1>
+      <p class="hint">Chatte mit dem Assistenten zum Stellenplan. <b>Phase 1</b>: Lesen & Vorschläge (Änderungen nur nach Bestätigung).</p>
+      <p class="small">Tipp: Senden mit <b>Ctrl</b>+<b>Enter</b>.</p>
     </section>
 
     <section class="card">
-      <div class="controls">
-        <label>Fachabteilung
-          <select id="deptSelect">
-            <option value="">Alle Fachabteilungen</option>
-          </select>
+      <div class="row inline" style="gap:18px;">
+        <label style="flex:1;">
+          API (optional)
+          <input id="apiUrl" placeholder="z.B. https://app.clinicon.de/api" />
         </label>
-        <label>Standort
-          <select id="siteSelect">
-            <option value="">Alle Standorte</option>
-          </select>
-        </label>
+        <span class="hint" style="flex:1; min-width:220px;">
+          <b>Hinweis:</b> Ohne Backend ist nur Demo möglich. Sobald dein Endpoint bereitsteht, schreibt der Assistent Änderungen erst nach deiner Bestätigung ein.
+        </span>
       </div>
-      <div class="layout" style="margin-top:12px;">
-        <div>
-          <label>Nachricht
-            <textarea id="messageInput" placeholder="Frage oder Auftrag eingeben..."></textarea>
-          </label>
-          <button class="btn" id="sendBtn" type="button">Senden</button>
-          <div class="hint" style="margin-top:6px;"></div>
-        </div>
-        <div>
-          <h3 style="margin:0 0 6px 0;">Aktuelle Auswahl</h3>
-          <div id="filtersInfo" class="list"></div>
-        </div>
+
+      <label style="display:block; margin-top:18px;">Nachricht
+        <textarea id="messageInput" placeholder="Frage oder Auftrag eingeben… (z.B. 'Wie ist die Frühschicht morgen?' oder 'Verschiebe Müller von Früh nach Spät')"></textarea>
+      </label>
+
+      <div class="row" style="margin-top:10px;">
+        <button class="btn" id="sendBtn" type="button">Senden</button>
+        <span id="status" class="small"></span>
       </div>
-      <div class="chat" id="chatBox" aria-label="Chat Verlauf"></div>
+
+      <h3 style="margin:18px 0 6px 0;">Log-Bericht</h3>
+      <div class="chat" id="chatBox" aria-label="Log Verlauf"></div>
     </section>
 
-<script>
-    const fachabteilungen=[
-      'AnÃƒÂ¤sthesie','Chirurgie','Dermatologie','GynÃƒÂ¤kologie','Kardiologie','Neurologie',
-      'Onkologie','OrthopÃƒÂ¤die','PÃƒÂ¤diatrie','Radiologie','Urologie','Zentrale Notaufnahme'
-    ].sort((a,b)=>a.localeCompare(b,'de'));
-    const standorte=['Bonn','DÃƒÂ¼ren','Dinslaken','Hilden','Kevelaer','KÃƒÂ¶ln','Neuss'].sort((a,b)=>a.localeCompare(b,'de'));
+    <script>
+      const DEFAULT_API_BASE = "";
+      const TIMEOUT_MS = 12000;
+      const context = {
+        dept: "Klinikverbund",
+        site: "GFO"
+      };
 
-    const els={
-      deptSelect:document.getElementById('deptSelect'),
-      siteSelect:document.getElementById('siteSelect'),
-      messageInput:document.getElementById('messageInput'),
-      sendBtn:document.getElementById('sendBtn'),
-      chatBox:document.getElementById('chatBox'),
-      filtersInfo:document.getElementById('filtersInfo'),
-    };
+      const els = {
+        apiUrl: document.getElementById("apiUrl"),
+        messageInput: document.getElementById("messageInput"),
+        sendBtn: document.getElementById("sendBtn"),
+        chatBox: document.getElementById("chatBox"),
+        status: document.getElementById("status")
+      };
 
-    function initFilters(){
-      els.deptSelect.innerHTML='<option value=\"\">Alle Fachabteilungen</option>'+fachabteilungen.map(d=>`<option value=\"${d}\">${d}</option>`).join('');
-      els.siteSelect.innerHTML='<option value=\"\">Alle Standorte</option>'+standorte.map(s=>`<option value=\"${s}\">${s}</option>`).join('');
-      renderFilters();
-    }
+      function appendBubble(text, type = "bot") {
+        const div = document.createElement("div");
+        div.className = "bubble " + type;
+        div.textContent = text;
+        els.chatBox.appendChild(div);
+        els.chatBox.scrollTop = els.chatBox.scrollHeight;
+        return div;
+      }
 
-    function renderFilters(){
-      const d=els.deptSelect.value||'Alle Fachabteilungen';
-      const s=els.siteSelect.value||'Alle Standorte';
-      els.filtersInfo.innerHTML=`<div class=\"pill\">Fachabteilung: ${d}</div><div class=\"pill\">Standort: ${s}</div>`;
-    }
+      function appendProposalCard(proposal) {
+        const wrap = document.createElement("div");
+        wrap.className = "bubble bot";
 
-    function appendBubble(text,type='bot'){
-      const div=document.createElement('div');
-      div.className='bubble '+type;
-      div.textContent=text;
-      els.chatBox.appendChild(div);
-      els.chatBox.scrollTop=els.chatBox.scrollHeight;
-    }
+        const title = document.createElement("div");
+        title.style.fontWeight = "900";
+        title.style.marginBottom = "6px";
+        title.textContent = "Vorschlag (noch nicht gespeichert)";
 
-    function handleSend(){
-      const msg=els.messageInput.value.trim();
-      if(!msg)return;
-      appendBubble(msg,'user');
-      const dept=els.deptSelect.value||'Alle Fachabteilungen';
-      const site=els.siteSelect.value||'Alle Standorte';
-      const reply=`(Demo) Anfrage verstanden:\nÃ¢â‚¬Â¢ Fachabteilung: ${dept}\nÃ¢â‚¬Â¢ Standort: ${site}\nÃ¢â‚¬Â¢ Inhalt: ${msg}`;
-      appendBubble(reply,'bot');
-      els.messageInput.value='';
-    }
+        const body = document.createElement("div");
+        body.className = "small";
+        body.style.whiteSpace = "pre-wrap";
+        body.style.color = "#0f172a";
+        body.textContent = proposal.summary || "Änderungsvorschlag wurde erzeugt.";
 
-    els.sendBtn.addEventListener('click',handleSend);
-    els.messageInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))handleSend();});
-    els.deptSelect.addEventListener('change',renderFilters);
-    els.siteSelect.addEventListener('change',renderFilters);
+        const actions = document.createElement("div");
+        actions.className = "actions";
 
-    initFilters();
-    // Demo-Chatverlauf
-    appendBubble('Versetze Ute MÃƒÂ¼ller zum 01.02.2026 auf die Station 8C','user');
-    appendBubble('Alles klar. Ich notiere: Ute MÃƒÂ¼ller wechselt zum 01.02.2026 auf Station 8C. MÃƒÂ¶chtest du auch den Dienstplan anpassen oder eine Benachrichtigung schicken?','bot');
-    appendBubble('Reduziere die Stelle von Maarten Koomen zum 01.05.2027 auf 0,4 VK','user');
-    appendBubble('Verstanden. Stelle fÃƒÂ¼r Maarten Koomen ab 01.05.2027 auf 0,4 VK gesetzt. Soll ich diese Ãƒâ€žnderung im Stellenplan speichern und den Vorgesetzten informieren?','bot');
-  </script>
+        const btnCommit = document.createElement("button");
+        btnCommit.className = "actionBtn primary";
+        btnCommit.textContent = "Änderung speichern";
+
+        const btnCancel = document.createElement("button");
+        btnCancel.className = "actionBtn";
+        btnCancel.textContent = "Verwerfen";
+
+        btnCancel.addEventListener("click", () => {
+          appendBubble("Okay, Vorschlag verworfen.", "sys");
+          wrap.remove();
+        });
+
+        btnCommit.addEventListener("click", async () => {
+          btnCommit.disabled = true;
+          btnCancel.disabled = true;
+          try {
+            const apiBase = (els.apiUrl.value || DEFAULT_API_BASE || "").trim();
+            if (!apiBase) {
+              appendBubble("Demo-Modus: Ich kann nichts speichern. Hinterlege eine API-URL und implementiere /assistant/commit.", "sys");
+              return;
+            }
+            const res = await callApi(`${apiBase.replace(/\/$/, "")}/assistant/commit`, {
+              commit_token: proposal.commit_token,
+              dept: context.dept || null,
+              site: context.site || null
+            });
+            appendBubble(res.message || "Gespeichert ✅", "bot");
+          } catch (err) {
+            appendBubble(`Speichern fehlgeschlagen: ${err.message}`, "sys");
+          } finally {
+            btnCommit.disabled = false;
+            btnCancel.disabled = false;
+          }
+        });
+
+        actions.appendChild(btnCommit);
+        actions.appendChild(btnCancel);
+
+        wrap.appendChild(title);
+        wrap.appendChild(body);
+        wrap.appendChild(actions);
+        els.chatBox.appendChild(wrap);
+        els.chatBox.scrollTop = els.chatBox.scrollHeight;
+      }
+
+      async function callApi(url, payload) {
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+        try {
+          const r = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            signal: ctrl.signal
+          });
+          const text = await r.text();
+          let data;
+          try {
+            data = text ? JSON.parse(text) : {};
+          } catch {
+            data = { message: text };
+          }
+          if (!r.ok) {
+            const msg = data?.error || data?.message || `HTTP ${r.status}`;
+            throw new Error(msg);
+          }
+          return data;
+        } finally {
+          clearTimeout(t);
+        }
+      }
+
+      function setBusy(isBusy) {
+        els.sendBtn.disabled = isBusy;
+        els.messageInput.disabled = isBusy;
+        els.apiUrl.disabled = isBusy;
+        els.status.textContent = isBusy ? "arbeitet…" : "";
+      }
+
+      function demoAnswer({ dept, site, message }) {
+        const lower = message.toLowerCase();
+        if (lower.includes("verschieb") || lower.includes("tausch") || lower.includes("reduzier") || lower.includes("erhöh")) {
+          return {
+            type: "proposal",
+            proposal: {
+              commit_token: "demo-token",
+              summary:
+                `Ich habe einen Änderungsvorschlag erkannt.\n\n` +
+                `• Fachabteilung: ${dept}\n` +
+                `• Standort: ${site}\n` +
+                `• Auftrag: ${message}\n\n` +
+                `Nächster Schritt: Ich würde die betroffenen Datensätze in R1/R2 identifizieren und eine Änderung vorbereiten.\n` +
+                `Zum Speichern brauchst du ein Backend (API).`
+            }
+          };
+        }
+
+        return {
+          type: "message",
+          message:
+            `(Demo) Anfrage verstanden:\n` +
+            `• Fachabteilung: ${dept}\n` +
+            `• Standort: ${site}\n` +
+            `• Inhalt: ${message}\n\n` +
+            `Wenn du eine API-URL einträgst, rufe ich /assistant/query auf.`
+        };
+      }
+
+      async function handleSend() {
+        const msg = els.messageInput.value.trim();
+        if (!msg) return;
+
+        appendBubble(msg, "user");
+        els.messageInput.value = "";
+
+        const typing = appendBubble("…", "bot");
+        setBusy(true);
+
+        try {
+          const apiBase = (els.apiUrl.value || DEFAULT_API_BASE || "").trim();
+          const deptLabel = context.dept || "Klinikverbund";
+          const siteLabel = context.site || "GFO";
+
+          if (apiBase) {
+            const data = await callApi(`${apiBase.replace(/\/$/, "")}/assistant/query`, {
+              dept: context.dept || null,
+              site: context.site || null,
+              message: msg,
+              context: {
+                tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                locale: navigator.language
+              }
+            });
+
+            typing.remove();
+
+            if (data?.type === "proposal" && data.proposal) {
+              appendProposalCard(data.proposal);
+            } else {
+              appendBubble(data?.message || "Keine Antwort erhalten.", "bot");
+            }
+            return;
+          }
+
+          const demo = demoAnswer({ dept: deptLabel, site: siteLabel, message: msg });
+          typing.remove();
+          if (demo.type === "proposal") appendProposalCard(demo.proposal);
+          else appendBubble(demo.message, "bot");
+
+        } catch (err) {
+          typing.remove();
+          appendBubble(`Fehler: ${err.message}`, "sys");
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      els.sendBtn.addEventListener("click", handleSend);
+      els.messageInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleSend();
+      });
+
+      appendBubble("Hi! Ich bin dein Clinicon Assistent. Stell mir Fragen zum Stellenplan oder gib einen Auftrag (z.B. \"Verschiebe …\").", "bot");
+    </script>
   </template>
 
+  <!-- Layout Loader (wie in deiner bestehenden Datei) -->
   <script>
     const __pageContent = document.getElementById("page-content")?.innerHTML || "";
     const __pageStyle = document.getElementById("page-style")?.textContent || "";
@@ -155,51 +302,42 @@ main{width:100%;max-width:none;margin:0 auto;padding:24px;display:flex;flex-dire
           if (__pageTitle) {
             document.title = __pageTitle;
             const headerTitle = document.querySelector(".topbar-left h1");
-            if (headerTitle) {
-              headerTitle.textContent = __pageTitle;
-            }
+            if (headerTitle) headerTitle.textContent = __pageTitle;
           }
 
           const slot = document.getElementById("app-main") || document.querySelector("main");
           if (slot) {
             slot.innerHTML = __pageContent;
 
+            // Re-run scripts inside injected content
             const scripts = Array.from(slot.querySelectorAll("script"));
             const runScripts = (index) => {
               if (index >= scripts.length) return;
               const oldScript = scripts[index];
               const script = document.createElement("script");
-              Array.from(oldScript.attributes).forEach((attr) => {
-                script.setAttribute(attr.name, attr.value);
-              });
+              Array.from(oldScript.attributes).forEach((attr) => script.setAttribute(attr.name, attr.value));
               script.async = false;
-              if (oldScript.textContent) {
-                script.textContent = oldScript.textContent;
-              }
+              if (oldScript.textContent) script.textContent = oldScript.textContent;
               const next = () => runScripts(index + 1);
               if (script.src) {
                 script.onload = next;
                 script.onerror = next;
               }
               oldScript.replaceWith(script);
-              if (!script.src) {
-                next();
-              }
+              if (!script.src) next();
             };
             runScripts(0);
           }
 
+          // Active nav marker
           const current = (location.pathname.split("/").pop() || "").toLowerCase();
           document.querySelectorAll(".nav a[href]").forEach((a) => a.classList.remove("active"));
           document.querySelectorAll(".nav a[href]").forEach((a) => {
             const href = (a.getAttribute("href") || "").split("?")[0].split("#")[0].toLowerCase();
-            if (href && href === current) {
-              a.classList.add("active");
-            }
+            if (href && href === current) a.classList.add("active");
           });
         });
       });
   </script>
 </body>
 </html>
-
