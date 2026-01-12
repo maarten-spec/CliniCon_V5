@@ -99,20 +99,6 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
 }
     @media (max-width: 900px){
     }
-    .access-badge{
-      position:fixed; right:12px; bottom:12px;
-      font-size:12px; padding:6px 10px; border-radius:999px;
-      border:1px solid rgba(15,23,42,.15);
-      background:rgba(255,255,255,.85);
-      backdrop-filter: blur(8px);
-      box-shadow:0 10px 25px rgba(15,23,42,.12);
-      z-index:9999;
-      cursor:default;
-    }
-    .access-badge:hover{
-      color:rgba(15,23,42,.95);
-      border-color:rgba(100,116,139,.7);
-    }
   </style>
 </head>
 <body>
@@ -223,7 +209,6 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
 
   <!-- Supabase frontend script moved to /assets/stellenplan.app.js -->
 
-  <div class="access-badge" title="Diese Seite ist &uuml;ber Cloudflare Access gesch&uuml;tzt">Access gesch&uuml;tzt</div>
   <script type="module" defer src="/assets/stellenplan.app.js"></script>
   </template>
 

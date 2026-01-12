@@ -187,29 +187,6 @@
     color:#9a5b1f;
     font-weight:600;
   }
-  .access-box{
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-    padding:8px 12px;
-    border-radius:14px;
-    background:rgba(255,255,255,0.8);
-    border:1px solid var(--line);
-    color:var(--ink);
-    box-shadow:var(--shadow-soft);
-    min-width:160px;
-  }
-  .access-label{
-    font-size:.7rem;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    color:var(--muted);
-    font-weight:600;
-  }
-  .access-value{
-    font-size:.92rem;
-    font-weight:600;
-  }
   .logout-link{
     text-decoration:none;
     font-weight:600;
@@ -693,10 +670,6 @@
         </div>
         <div class="topbar-actions app-actions" data-app-actions>
           <span class="pill app-pill" id="dataRange">Zeitraum: Demo</span>
-          <div class="access-box" aria-label="Clinicon Suite Zugriff">
-            <span class="access-label">Geschuetzt</span>
-            <span class="access-value">Cloudflare Access</span>
-          </div>
           <span class="timestamp-pill" data-app-timestamp></span>
           <button class="button app-button secondary" id="refreshButton" type="button">Aktualisieren</button>
           <button class="button app-button primary" type="button">Report exportieren</button>
