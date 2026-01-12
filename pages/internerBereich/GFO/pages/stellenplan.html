@@ -705,7 +705,7 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
           <thead>
             <tr>
               <th style="min-width:120px;" data-sort="pnr">Personalnummer <span class="sort-indicator" data-sort-ind="pnr"></span></th>
-              <th style="min-width:200px;" data-sort="name">Vorname &amp; Nachname <span class="sort-indicator" data-sort-ind="name"></span></th>
+              <th style="min-width:200px;" data-sort="name">Mitarbeiter:in <span class="sort-indicator" data-sort-ind="name"></span></th>
               <th class="month-col">Jan</th><th class="month-col">Feb</th><th class="month-col">Mrz</th><th class="month-col">Apr</th><th class="month-col">Mai</th><th class="month-col">Jun</th>
               <th class="month-col">Jul</th><th class="month-col">Aug</th><th class="month-col">Sep</th><th class="month-col">Okt</th><th class="month-col">Nov</th><th class="month-col">Dez</th>
               <th>&Oslash; Monat</th>
@@ -1346,72 +1346,86 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
   </template>
 
   <script>
-    const __pageContent = document.getElementById("page-content")?.innerHTML || "";
-    const __pageStyle = document.getElementById("page-style")?.textContent || "";
-    const __pageTitle = document.title || "";
+  (async () => {
+    // 1. Get the content and style from the template in the current page
+    const pageContentTemplate = document.getElementById('page-content');
+    const pageStyleTemplate = document.getElementById('page-style');
+    const pageTitle = document.title;
 
-    fetch("./layout.html")
-      .then((r) => r.text())
-      .then((html) => {
-        document.open();
-        document.write(html);
-        document.close();
+    if (!pageContentTemplate) {
+      console.error('Page content template not found.');
+      return;
+    }
 
-        window.addEventListener("DOMContentLoaded", () => {
-          if (__pageStyle) {
-            const style = document.createElement("style");
-            style.setAttribute("data-page-style", "true");
-            style.textContent = __pageStyle;
-            document.head.appendChild(style);
+    // Deep clone the content to move it later
+    const pageContent = pageContentTemplate.content.cloneNode(true);
+    
+    // 2. Fetch the layout
+    try {
+      const response = await fetch('./layout.html');
+      if (!response.ok) throw new Error('Layout could not be loaded.');
+      const layoutText = await response.text();
+
+      // 3. Parse the layout HTML
+      const parser = new DOMParser();
+      const layoutDoc = parser.parseFromString(layoutText, 'text/html');
+      
+      // 4. Replace the current document's head and body with the layout's
+      document.head.innerHTML = layoutDoc.head.innerHTML;
+      document.body.innerHTML = layoutDoc.body.innerHTML;
+
+      // 5. Inject page-specific styles from the template
+      if (pageStyleTemplate) {
+        const style = document.createElement('style');
+        style.textContent = pageStyleTemplate.textContent;
+        document.head.appendChild(style);
+      }
+      
+      // 6. Inject the page title
+      document.title = pageTitle;
+      const headerTitle = document.querySelector('.topbar-left h1');
+      if (headerTitle) {
+        headerTitle.textContent = pageTitle;
+      }
+
+      // 7. Find the slot and inject the content
+      const mainSlot = document.getElementById('app-main');
+      if (mainSlot) {
+        mainSlot.innerHTML = ''; // Clear placeholder
+        mainSlot.appendChild(pageContent);
+
+        // 8. Find and execute the script from the injected content
+        const scripts = Array.from(mainSlot.querySelectorAll("script"));
+        for(const oldScript of scripts){
+          const newScript = document.createElement("script");
+          // Copy attributes
+          for(const attr of oldScript.attributes){
+            newScript.setAttribute(attr.name, attr.value);
           }
-
-          if (__pageTitle) {
-            document.title = __pageTitle;
-            const headerTitle = document.querySelector(".topbar-left h1");
-            if (headerTitle) {
-              headerTitle.textContent = __pageTitle;
-            }
-          }
-
-          const slot = document.getElementById("app-main") || document.querySelector("main");
-          if (slot) {
-            slot.innerHTML = __pageContent;
-
-            const scripts = Array.from(slot.querySelectorAll("script"));
-            const runScripts = (index) => {
-              if (index >= scripts.length) return;
-              const oldScript = scripts[index];
-              const script = document.createElement("script");
-              Array.from(oldScript.attributes).forEach((attr) => {
-                script.setAttribute(attr.name, attr.value);
-              });
-              script.async = false;
-              if (oldScript.textContent) {
-                script.textContent = oldScript.textContent;
-              }
-              const next = () => runScripts(index + 1);
-              if (script.src) {
-                script.onload = next;
-                script.onerror = next;
-              }
-              oldScript.replaceWith(script);
-              if (!script.src) {
-                next();
-              }
-            };
-            runScripts(0);
-          }
-
-          const current = (location.pathname.split("/").pop() || "").toLowerCase();
-          document.querySelectorAll(".nav a[href]").forEach((a) => a.classList.remove("active"));
-          document.querySelectorAll(".nav a[href]").forEach((a) => {
-            const href = (a.getAttribute("href") || "").split("?")[0].split("#")[0].toLowerCase();
-            if (href && href === current) {
-              a.classList.add("active");
-            }
-          });
-        });
+          // Copy content
+          newScript.textContent = oldScript.textContent;
+          // Replace the old script with the new one to trigger execution
+          oldScript.parentNode.replaceChild(newScript, oldScript);
+        }
+      } else {
+        console.error('Main content slot #app-main not found in layout.');
+      }
+      
+      // 9. Activate current nav link
+      const current = (location.pathname.split("/").pop() || "stellenplan.html").toLowerCase();
+      document.querySelectorAll(".nav a").forEach((a) => {
+        const href = (a.getAttribute("href") || "").toLowerCase();
+        if (href.includes(current)) {
+          a.classList.add("active");
+        } else {
+          a.classList.remove("active");
+        }
       });
+
+    } catch (error) {
+      console.error('Failed to apply layout:', error);
+    }
+  })();
   </script>
 </body>
 </html>
