@@ -1,0 +1,44 @@
+﻿PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS organisationseinheit (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  code TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  einheitstyp TEXT NOT NULL DEFAULT 'STATION',
+  aktiv INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS qualifikation (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  code TEXT NOT NULL UNIQUE,
+  bezeichnung TEXT NOT NULL,
+  pflicht INTEGER NOT NULL DEFAULT 0,
+  sortierung INTEGER NOT NULL DEFAULT 100,
+  aktiv INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS mitarbeiter (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  personalnummer TEXT NOT NULL UNIQUE,
+  vorname TEXT NOT NULL,
+  nachname TEXT NOT NULL,
+  aktiv INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS stellenplan (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  organisationseinheit_id INTEGER NOT NULL,
+  jahr INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'ENTWURF',
+  UNIQUE (organisationseinheit_id, jahr)
+);
+
+CREATE TABLE IF NOT EXISTS stellenplan_monat (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  stellenplan_id INTEGER NOT NULL,
+  mitarbeiter_id INTEGER NOT NULL,
+  monat INTEGER NOT NULL CHECK (monat BETWEEN 1 AND 12),
+  dienstart TEXT NOT NULL DEFAULT '01',
+  vk REAL NOT NULL DEFAULT 0.0,
+  UNIQUE (stellenplan_id, mitarbeiter_id, monat, dienstart)
+);

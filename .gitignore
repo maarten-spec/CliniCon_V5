@@ -1,0 +1,20 @@
+﻿# Cloudflare Wrangler
+.wrangler/
+.wrangler/**
+
+# Local D1 / SQLite
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# Node / Build
+node_modules/
+dist/
+.tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code (optional)
+.vscode/

@@ -1,0 +1,8 @@
+name = "clinicon"
+compatibility_date = "2026-01-12"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "db_clinicon"
+database_id = "d371882f-ca67-47c0-aa9f-c2d9fffc017f"
+
