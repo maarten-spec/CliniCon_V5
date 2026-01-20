@@ -9,9 +9,12 @@
 //  - POST /api/roster/history      (D1: Historie pro Mitarbeiter)
 //  - POST /api/roster/list         (D1: Stellenplan laden)
 //  - POST /api/roster/rollover     (D1: Folgejahr kopieren)
+//  - POST /assistant/query         (Clinicon-Assistent: Analyse/Antwort)
+//  - POST /assistant/commit        (Clinicon-Assistent: Aenderung schreiben)
 //
 // Erwartete Secrets/Vars:
 //  - OPENAI_API_KEY (Secret)
+//  - ASSISTANT_TOKEN_SECRET (Secret, optional)
 //  - SUPABASE_SERVICE_ROLE_KEY (Secret)
 //  - SUPABASE_URL (Plaintext)
 //  - DB (D1 Binding)
@@ -56,6 +59,7 @@ AUSGABEFORMAT (immer JSON):
     "personal_number": string | null,
     "month": string | null,
     "year": number | null,
+    "dienstart": string | null,
     "delta_fte": number | null,
     "target_fte": number | null,
     "unit": string | null,
@@ -70,6 +74,7 @@ AUSGABEFORMAT (immer JSON):
 BESONDERE REGELN:
 - "delta_fte" ist fuer relative Aenderungen, z.B. -0.5 fuer "um 0,5 VK reduzieren".
 - "target_fte" ist fuer absolute Zielwerte, z.B. 0.8 fuer "auf 0,8 VK setzen".
+- "unit" ist die Abteilung (z.B. Stationscode). "dienstart" ist zweistellig (01-07).
 - Monate als deutschen Text.
 - Fehlende Pflichtinfos -> needs_clarification=true + passende Rueckfrage.
 - Immer nur JSON, kein Fliesstext.
@@ -290,6 +295,256 @@ async function getFteWarnings(db, siteId, year, employeeIds) {
     totalFte: r.total_fte,
     message: `Warnung: VK-Summe > 1,0 (ist ${r.total_fte})`,
   }));
+}
+
+// ---------- Assistenz: Token ----------
+const encoder = new TextEncoder();
+const b64url = (input) =>
+  btoa(String.fromCharCode(...new Uint8Array(input)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+const b64urlStr = (str) => b64url(encoder.encode(str));
+const b64urlParse = (str) => {
+  const pad = "=".repeat((4 - (str.length % 4)) % 4);
+  const safe = (str + pad).replace(/-/g, "+").replace(/_/g, "/");
+  const bin = atob(safe);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+};
+
+async function signToken(env, payload) {
+  const jsonPayload = JSON.stringify(payload);
+  const body = b64urlStr(jsonPayload);
+  const secret = env.ASSISTANT_TOKEN_SECRET;
+  if (!secret) {
+    return body;
+  }
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
+  return `${body}.${b64url(sig)}`;
+}
+
+async function verifyToken(env, token) {
+  if (!token) throw new Error("commit_token fehlt");
+  const secret = env.ASSISTANT_TOKEN_SECRET;
+  const parts = token.split(".");
+  if (!secret) {
+    const raw = b64urlParse(parts[0]);
+    return JSON.parse(raw);
+  }
+  if (parts.length !== 2) throw new Error("commit_token ungueltig");
+  const [body, sig] = parts;
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["verify"]
+  );
+  const sigPad = "=".repeat((4 - (sig.length % 4)) % 4);
+  const sigBin = atob(sig.replace(/-/g, "+").replace(/_/g, "/") + sigPad);
+  const ok = await crypto.subtle.verify(
+    "HMAC",
+    key,
+    Uint8Array.from(sigBin, (c) => c.charCodeAt(0)),
+    encoder.encode(body)
+  );
+  if (!ok) throw new Error("commit_token ungueltig");
+  const raw = b64urlParse(body);
+  return JSON.parse(raw);
+}
+
+// ---------- Assistenz: D1 Stellenplan ----------
+const monthIndexFromName = (label) => {
+  if (!label) return null;
+  const key = String(label).toLowerCase().trim();
+  const base = MONTH_MAP[key] || key.slice(0, 3);
+  const idx = MONTHS.indexOf(base);
+  return idx >= 0 ? idx + 1 : null;
+};
+const normalizeDienstart = (value) => {
+  const raw = String(value || "01").trim();
+  const padded = raw.padStart(2, "0");
+  return /^\d{2}$/.test(padded) ? padded : "01";
+};
+
+async function getOrgByCodeD1(db, code) {
+  return db.prepare(
+    `SELECT id, code, name
+     FROM organisationseinheit
+     WHERE code = ? LIMIT 1`
+  ).bind(code).first();
+}
+
+async function getOrCreatePlanD1(db, orgId, year) {
+  const existing = await db.prepare(
+    `SELECT id
+     FROM stellenplan
+     WHERE organisationseinheit_id = ? AND jahr = ?
+     LIMIT 1`
+  ).bind(orgId, year).first();
+  if (existing?.id) return existing.id;
+  const ins = await db.prepare(
+    `INSERT INTO stellenplan (organisationseinheit_id, jahr, status)
+     VALUES (?, ?, 'ENTWURF')`
+  ).bind(orgId, year).run();
+  return ins.meta.last_row_id;
+}
+
+async function findEmployeeD1(db, name, personalNumber) {
+  const pnr = String(personalNumber || "").trim();
+  if (pnr) {
+    const row = await db.prepare(
+      `SELECT id, personalnummer, vorname, nachname
+       FROM mitarbeiter
+       WHERE personalnummer = ?
+       LIMIT 1`
+    ).bind(pnr).first();
+    if (row) return row;
+  }
+  const cleaned = String(name || "").trim();
+  if (!cleaned) return null;
+  const like = `%${cleaned}%`;
+  return db.prepare(
+    `SELECT id, personalnummer, vorname, nachname
+     FROM mitarbeiter
+     WHERE (vorname || ' ' || nachname) LIKE ?
+        OR nachname LIKE ?
+        OR vorname LIKE ?
+     LIMIT 1`
+  ).bind(like, like, like).first();
+}
+
+async function upsertPlanMonthD1(db, planId, employeeId, month, dienstart, fte) {
+  await db.prepare(
+    `INSERT INTO stellenplan_monat (stellenplan_id, mitarbeiter_id, monat, dienstart, vk)
+     VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(stellenplan_id, mitarbeiter_id, monat, dienstart)
+     DO UPDATE SET vk = excluded.vk`
+  ).bind(planId, employeeId, month, dienstart, fte).run();
+}
+
+async function getEmployeeFteYearD1(db, planId, employeeId, dienstart) {
+  const rows = await db.prepare(
+    `SELECT monat, vk
+     FROM stellenplan_monat
+     WHERE stellenplan_id = ? AND mitarbeiter_id = ? AND dienstart = ?
+     ORDER BY monat`
+  ).bind(planId, employeeId, dienstart).all();
+  const values = Array(12).fill(0);
+  (rows.results || []).forEach((row) => {
+    const idx = Number(row.monat) - 1;
+    if (idx >= 0 && idx < 12) values[idx] = Number(row.vk || 0);
+  });
+  const avg = values.reduce((a, b) => a + b, 0) / 12;
+  return { values, avg };
+}
+
+async function executeAssistantActionD1(env, parsed, ctx) {
+  if (!env.DB) throw new Error("DB binding fehlt");
+  const f = parsed.fields || {};
+  const year = Number(f.year || ctx.year || 0);
+  const dept = String(ctx.dept || f.unit || "").trim();
+  const dienstart = normalizeDienstart(f.dienstart || ctx.dienstart || "01");
+  if (!year) throw new Error("Jahr fehlt");
+  if (!dept) throw new Error("Abteilung fehlt");
+
+  const org = await getOrgByCodeD1(env.DB, dept);
+  if (!org) throw new Error(`Abteilung ${dept} nicht gefunden`);
+  const planId = await getOrCreatePlanD1(env.DB, org.id, year);
+
+  const employee = await findEmployeeD1(env.DB, f.employee_name, f.personal_number);
+  if (!employee) throw new Error("Mitarbeiter:in nicht gefunden");
+
+  switch (parsed.intent) {
+    case "adjust_person_fte_rel": {
+      const month = monthIndexFromName(f.month);
+      if (!month) throw new Error("Monat fehlt/ungueltig");
+      const delta = num(f.delta_fte);
+      const current = await env.DB.prepare(
+        `SELECT vk FROM stellenplan_monat
+         WHERE stellenplan_id = ? AND mitarbeiter_id = ? AND monat = ? AND dienstart = ?`
+      ).bind(planId, employee.id, month, dienstart).first();
+      const curVal = Number(current?.vk || 0);
+      const nextVal = curVal + delta;
+      await upsertPlanMonthD1(env.DB, planId, employee.id, month, dienstart, nextVal);
+      return { ok: true, employeeId: employee.id, month, year, dienstart, oldValue: curVal, newValue: nextVal };
+    }
+    case "adjust_person_fte_abs": {
+      const month = monthIndexFromName(f.month);
+      if (!month) throw new Error("Monat fehlt/ungueltig");
+      const target = num(f.target_fte);
+      await upsertPlanMonthD1(env.DB, planId, employee.id, month, dienstart, target);
+      return { ok: true, employeeId: employee.id, month, year, dienstart, newValue: target };
+    }
+    case "get_employee_fte_year": {
+      const { values, avg } = await getEmployeeFteYearD1(env.DB, planId, employee.id, dienstart);
+      let monthValue = null;
+      let month = null;
+      if (f.month) {
+        month = monthIndexFromName(f.month);
+        if (month) monthValue = values[month - 1];
+      }
+      return { ok: true, employeeId: employee.id, year, dienstart, avg, month, monthValue, values };
+    }
+    case "check_employee_exists": {
+      return { ok: true, exists: true, employeeId: employee.id };
+    }
+    case "list_unit_employees": {
+      const rows = await env.DB.prepare(
+        `SELECT DISTINCT m.id, m.personalnummer, m.vorname, m.nachname
+         FROM stellenplan_monat sm
+         JOIN mitarbeiter m ON m.id = sm.mitarbeiter_id
+         WHERE sm.stellenplan_id = ? AND sm.dienstart = ?
+         ORDER BY m.nachname, m.vorname`
+      ).bind(planId, dienstart).all();
+      const employees = (rows.results || []).map((row) => ({
+        id: row.id,
+        personalNumber: row.personalnummer,
+        name: `${row.vorname || ""} ${row.nachname || ""}`.trim(),
+      }));
+      return { ok: true, dept, year, dienstart, employees };
+    }
+    case "get_employee_unit": {
+      const rows = await env.DB.prepare(
+        `SELECT DISTINCT o.code, o.name
+         FROM stellenplan_monat sm
+         JOIN stellenplan s ON s.id = sm.stellenplan_id
+         JOIN organisationseinheit o ON o.id = s.organisationseinheit_id
+         WHERE sm.mitarbeiter_id = ? AND s.jahr = ? AND sm.dienstart = ?
+         ORDER BY o.name`
+      ).bind(employee.id, year, dienstart).all();
+      return { ok: true, employeeId: employee.id, year, dienstart, units: rows.results || [] };
+    }
+    case "move_employee_unit":
+      throw new Error("Verschieben zwischen Abteilungen ist im D1-Plan nicht implementiert.");
+    default:
+      throw new Error(`Intent '${parsed.intent}' nicht implementiert.`);
+  }
+}
+
+function summarizeProposal(parsed, ctx) {
+  const f = parsed.fields || {};
+  const year = f.year || ctx.year || "-";
+  const dept = ctx.dept || f.unit || "-";
+  const dienstart = f.dienstart || ctx.dienstart || "01";
+  const emp = f.employee_name || f.personal_number || "Unbekannt";
+  const month = f.month || "-";
+  if (parsed.intent === "adjust_person_fte_rel") {
+    return `Aenderung: ${emp} ${month} ${year} in ${dept} (DA ${dienstart}) um ${f.delta_fte} VK anpassen.`;
+  }
+  if (parsed.intent === "adjust_person_fte_abs") {
+    return `Aenderung: ${emp} ${month} ${year} in ${dept} (DA ${dienstart}) auf ${f.target_fte} VK setzen.`;
+  }
+  return `Aenderung: ${parsed.intent} fuer ${emp} (${dept}, ${year}, DA ${dienstart}).`;
 }
 
 async function getRosterHistory(payload, db) {
@@ -717,6 +972,84 @@ async function handleAiCommand(body, env, executeDb = false) {
   return json({ success: true, parsed, applied: result });
 }
 
+// ---------- Clinicon Assistent (D1) ----------
+const READ_INTENTS = new Set([
+  "check_employee_exists",
+  "get_employee_unit",
+  "list_unit_employees",
+  "get_employee_fte_year",
+  "help",
+]);
+const WRITE_INTENTS = new Set([
+  "adjust_person_fte_rel",
+  "adjust_person_fte_abs",
+  "move_employee_unit",
+]);
+
+async function handleAssistantQuery(body, env) {
+  const { message, dept, dienstart, year } = body || {};
+  if (!message) return json({ type: "message", message: "Nachricht fehlt." }, 400);
+
+  const parsed = await callOpenAI(env, message);
+  if (parsed.needs_clarification) {
+    return json({ type: "message", message: parsed.clarification_question || "Bitte praezisieren." });
+  }
+
+  const ctx = {
+    dept: String(dept || "").trim(),
+    dienstart: normalizeDienstart(dienstart),
+    year: Number(year || 0),
+  };
+
+  if (READ_INTENTS.has(parsed.intent)) {
+    try {
+      const result = await executeAssistantActionD1(env, parsed, ctx);
+      return json({
+        type: "message",
+        message: `Ergebnis: ${JSON.stringify(result)}`,
+        parsed,
+      });
+    } catch (err) {
+      return json({ type: "message", message: `Fehler: ${err.message}`, parsed }, 500);
+    }
+  }
+
+  if (WRITE_INTENTS.has(parsed.intent)) {
+    const token = await signToken(env, {
+      parsed,
+      ctx,
+      issuedAt: new Date().toISOString(),
+    });
+    return json({
+      type: "proposal",
+      proposal: {
+        commit_token: token,
+        summary: summarizeProposal(parsed, ctx),
+      },
+      parsed,
+    });
+  }
+
+  return json({ type: "message", message: "Unbekannter Auftrag.", parsed });
+}
+
+async function handleAssistantCommit(body, env) {
+  const { commit_token, dept, dienstart, year } = body || {};
+  const tokenData = await verifyToken(env, commit_token);
+  const parsed = tokenData.parsed || {};
+  const ctx = {
+    dept: String(dept || tokenData.ctx?.dept || "").trim(),
+    dienstart: normalizeDienstart(dienstart || tokenData.ctx?.dienstart),
+    year: Number(year || tokenData.ctx?.year || 0),
+  };
+  try {
+    const result = await executeAssistantActionD1(env, parsed, ctx);
+    return json({ message: "Gespeichert.", result });
+  } catch (err) {
+    return json({ message: `Fehler: ${err.message}` }, 500);
+  }
+}
+
 // ---------- Rollover Handler ----------
 async function handleRollover(body, env){
   const { table, fromYear, toYear, dept, ids, mode } = body || {};
@@ -808,6 +1141,16 @@ export default {
     if (url.pathname === "/api/rollover" && request.method === "POST") {
       let body; try { body = await request.json(); } catch { return json({ success:false, error:"Invalid JSON" },400); }
       return await handleRollover(body, env);
+    }
+
+    // Clinicon Assistent (D1)
+    if (url.pathname === "/assistant/query" && request.method === "POST") {
+      let body; try { body = await request.json(); } catch { return json({ type:"message", message:"Invalid JSON" },400); }
+      return await handleAssistantQuery(body, env);
+    }
+    if (url.pathname === "/assistant/commit" && request.method === "POST") {
+      let body; try { body = await request.json(); } catch { return json({ message:"Invalid JSON" },400); }
+      return await handleAssistantCommit(body, env);
     }
 
     return new Response("Not found", { status: 404, headers: corsHeaders });

@@ -1,6 +1,12 @@
-﻿function toNum(v) {
+function toNum(v) {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
+}
+
+function normalizeDienstart(value) {
+  const raw = String(value || "01").trim();
+  const padded = raw.padStart(2, "0");
+  return /^\d{2}$/.test(padded) ? padded : "01";
 }
 
 async function getOrgByCode(env, orgCode) {
@@ -65,6 +71,7 @@ export async function onRequestPost({ request, env }) {
 
   const orgCode = String(body.orgCode || "").trim();
   const year = Number(body.year || 0);
+  const dienstart = normalizeDienstart(body.dienstart);
   const employees = Array.isArray(body.employees) ? body.employees : [];
   const extras = Array.isArray(body.extras) ? body.extras : [];
 
@@ -99,8 +106,8 @@ export async function onRequestPost({ request, env }) {
         const vk = toNum(values[i]);
         await env.DB.prepare(
           `INSERT INTO stellenplan_monat (stellenplan_id, mitarbeiter_id, monat, dienstart, vk)
-           VALUES (?, ?, ?, '01', ?)`
-        ).bind(planId, empId, i + 1, vk).run();
+           VALUES (?, ?, ?, ?, ?)`
+        ).bind(planId, empId, i + 1, dienstart, vk).run();
       }
     }
 
@@ -109,7 +116,7 @@ export async function onRequestPost({ request, env }) {
       const raw = String(ex.personalNumber || "").trim();
       const category = String(ex.category || "Zusatz").trim();
 
-      // stabile EX-Nummer – wenn leer, random key erzeugen
+      // stabile EX-Nummer - wenn leer, random key erzeugen
       const key = raw ? raw : (globalThis.crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()));
       const pnr = raw.startsWith("EX-") ? raw : `EX-${key}`;
 
@@ -120,8 +127,8 @@ export async function onRequestPost({ request, env }) {
         const vk = toNum(values[i]);
         await env.DB.prepare(
           `INSERT INTO stellenplan_monat (stellenplan_id, mitarbeiter_id, monat, dienstart, vk)
-           VALUES (?, ?, ?, '01', ?)`
-        ).bind(planId, exId, i + 1, vk).run();
+           VALUES (?, ?, ?, ?, ?)`
+        ).bind(planId, exId, i + 1, dienstart, vk).run();
       }
     }
 

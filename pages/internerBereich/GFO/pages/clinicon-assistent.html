@@ -48,11 +48,26 @@ textarea{min-height:110px;resize:vertical;}
       <div class="row inline" style="gap:18px;">
         <label style="flex:1;">
           API (optional)
-          <input id="apiUrl" placeholder="z.B. https://app.clinicon.de/api" />
+          <input id="apiUrl" placeholder="z.B. https://app.clinicon.de" />
         </label>
         <span class="hint" style="flex:1; min-width:220px;">
           <b>Hinweis:</b> Ohne Backend ist nur Demo moeglich. Sobald dein Endpoint bereitsteht, schreibt der Assistent Aenderungen erst nach deiner Bestaetigung ein.
         </span>
+      </div>
+
+      <div class="row inline" style="gap:18px; margin-top:14px;">
+        <label>
+          Abteilung
+          <select id="deptSelect"></select>
+        </label>
+        <label>
+          Dienstart
+          <select id="dienstartSelect"></select>
+        </label>
+        <label>
+          Jahr
+          <input id="yearInput" type="number" min="2020" max="2100" />
+        </label>
       </div>
 
       <label style="display:block; margin-top:18px;">Nachricht
@@ -69,20 +84,84 @@ textarea{min-height:110px;resize:vertical;}
     </section>
 
     <script>
-      const DEFAULT_API_BASE = "";
+      const DEFAULT_API_BASE = window.location.origin;
       const TIMEOUT_MS = 12000;
+      const STORAGE_KEY = "clinicon_assistant_ctx_v1";
+      const FALLBACK_ORG_UNITS = [
+        { code: "STA1", name: "Station 1" },
+        { code: "STA2", name: "Station 2" },
+        { code: "STA3", name: "Station 3" },
+        { code: "STA4", name: "Station 4" },
+        { code: "STA5", name: "Station 5" },
+        { code: "OPS", name: "OP / Endoskopie" },
+        { code: "PDL", name: "Pflegedienstleitung" },
+      ];
+      const DIENSTART_OPTIONS = ["01", "02", "03", "04", "05", "06", "07"];
       const context = {
-        dept: "Klinikverbund",
+        dept: "",
+        dienstart: "01",
+        year: new Date().getFullYear(),
         site: "GFO"
       };
 
       const els = {
         apiUrl: document.getElementById("apiUrl"),
+        deptSelect: document.getElementById("deptSelect"),
+        dienstartSelect: document.getElementById("dienstartSelect"),
+        yearInput: document.getElementById("yearInput"),
         messageInput: document.getElementById("messageInput"),
         sendBtn: document.getElementById("sendBtn"),
         chatBox: document.getElementById("chatBox"),
         status: document.getElementById("status")
       };
+
+
+      function loadContext() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") {
+            context.dept = parsed.dept || context.dept;
+            context.dienstart = parsed.dienstart || context.dienstart;
+            context.year = parsed.year || context.year;
+          }
+        } catch (_) {}
+      }
+      function saveContext() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            dept: context.dept,
+            dienstart: context.dienstart,
+            year: context.year
+          }));
+        } catch (_) {}
+      }
+      async function loadOrgUnits() {
+        try {
+          const r = await fetch("/api/org-units", { credentials: "same-origin" });
+          if (!r.ok) throw new Error("org-units fehlgeschlagen");
+          const data = await r.json();
+          return Array.isArray(data) && data.length ? data : FALLBACK_ORG_UNITS;
+        } catch (_) {
+          return FALLBACK_ORG_UNITS;
+        }
+      }
+      async function populateSelectors() {
+        const units = await loadOrgUnits();
+        els.deptSelect.innerHTML = units
+          .map(u => `<option value="${u.code}">${u.name}</option>`)
+          .join("");
+        if (!context.dept && units[0]) context.dept = units[0].code;
+        els.deptSelect.value = context.dept;
+
+        els.dienstartSelect.innerHTML = DIENSTART_OPTIONS
+          .map(v => `<option value="${v}">Dienstart ${v}</option>`)
+          .join("");
+        els.dienstartSelect.value = context.dienstart;
+
+        els.yearInput.value = String(context.year);
+      }
 
       function appendBubble(text, type = "bot") {
         const div = document.createElement("div");
@@ -136,6 +215,8 @@ textarea{min-height:110px;resize:vertical;}
             const res = await callApi(`${apiBase.replace(/\/$/, "")}/assistant/commit`, {
               commit_token: proposal.commit_token,
               dept: context.dept || null,
+              dienstart: context.dienstart || null,
+              year: context.year || null,
               site: context.site || null
             });
             appendBubble(res.message || "Gespeichert ✅", "bot");
@@ -188,7 +269,10 @@ textarea{min-height:110px;resize:vertical;}
         els.sendBtn.disabled = isBusy;
         els.messageInput.disabled = isBusy;
         els.apiUrl.disabled = isBusy;
-        els.status.textContent = isBusy ? "arbeitet…" : "";
+        els.deptSelect.disabled = isBusy;
+        els.dienstartSelect.disabled = isBusy;
+        els.yearInput.disabled = isBusy;
+        els.status.textContent = isBusy ? "arbeitet..." : "";
       }
 
       function demoAnswer({ dept, site, message }) {
@@ -232,12 +316,14 @@ textarea{min-height:110px;resize:vertical;}
 
         try {
           const apiBase = (els.apiUrl.value || DEFAULT_API_BASE || "").trim();
-          const deptLabel = context.dept || "Klinikverbund";
+          const deptLabel = context.dept || "STA1";
           const siteLabel = context.site || "GFO";
 
           if (apiBase) {
             const data = await callApi(`${apiBase.replace(/\/$/, "")}/assistant/query`, {
               dept: context.dept || null,
+              dienstart: context.dienstart || null,
+              year: context.year || null,
               site: context.site || null,
               message: msg,
               context: {
@@ -273,8 +359,26 @@ textarea{min-height:110px;resize:vertical;}
       els.messageInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleSend();
       });
+      els.deptSelect.addEventListener("change", () => {
+        context.dept = els.deptSelect.value;
+        saveContext();
+      });
+      els.dienstartSelect.addEventListener("change", () => {
+        context.dienstart = els.dienstartSelect.value;
+        saveContext();
+      });
+      els.yearInput.addEventListener("change", () => {
+        const y = Number(els.yearInput.value || context.year);
+        context.year = Number.isFinite(y) ? y : context.year;
+        els.yearInput.value = String(context.year);
+        saveContext();
+      });
 
-      appendBubble("Hi! Ich bin dein Clinicon Assistent. Stell mir Fragen zum Stellenplan oder gib einen Auftrag (z.B. \"Verschiebe …\").", "bot");
+      (async () => {
+        loadContext();
+        await populateSelectors();
+        appendBubble("Hi! Ich bin dein Clinicon Assistent. Stell mir Fragen zum Stellenplan oder gib einen Auftrag.", "bot");
+      })();
     </script>
   </template>
 

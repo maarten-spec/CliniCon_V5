@@ -22,15 +22,14 @@ Ensure the above binding is added on the Pages project Settings â†’ Functio
 1. `wrangler pages dev . --d1 DB=db_clinicon` (runs Cloudflare Pages emulator with the D1 binding)
 2. `curl http://127.0.0.1:8787/api/org-units` (expect JSON array)
 3. `curl http://127.0.0.1:8787/api/qualifikationen`
-4. `curl "http://127.0.0.1:8787/api/stellenplan?org=STA1&year=2026"` (use a valid org code/year)
+4. `curl "http://127.0.0.1:8787/api/stellenplan?org=STA1&year=2026&dienstart=01"` (use a valid org code/year)
 
 ## 5. Post-Deploy Smoke Tests (app.clinicon.de)
 1. `https://app.clinicon.de/api/org-units`
 2. `https://app.clinicon.de/api/qualifikationen`
-3. `https://app.clinicon.de/api/stellenplan?org=STA1&year=2026`
+3. `https://app.clinicon.de/api/stellenplan?org=STA1&year=2026&dienstart=01`
 4. `https://app.clinicon.de/pages/internerBereich/GFO/pages/stellenplan.html` (verify Access badge shows and scheduler loads)
 
 ## 6. Notes
 - Static assets under `/assets/*` and html under `/pages/*` are served without a build step.
-- The frontend uses `fetch("/api/...")`, so ensure Functions are reachable through the same origin (Cloudflare Access must not block `/api`).
-
+- The frontend uses `fetch("/api/...")`, so ensure Functions are reachable through the same origin (Cloudflare Access must not block `/api` for authenticated users).

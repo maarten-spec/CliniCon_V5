@@ -1,6 +1,6 @@
 /* Clinicon Stellenplan - Frontend (D1 via /api/*)
    Erwartete Elemente:
-   - select#deptSelect, input#yearInput
+   - select#deptSelect, select#dienstartSelect, input#yearInput
    - button#btnSaveDb, button#btnAddRow, button#btnAddExtra
    - table#planTable, table#extrasTable
    - div/span#saveStatus, #sumYear, #avgMonth, #peakMonth
@@ -25,8 +25,13 @@
       if (!r.ok) throw new Error("Qualifikationen laden fehlgeschlagen");
       return r.json();
     },
-    async loadPlan(orgCode, year) {
-      const r = await fetch(`/api/stellenplan?org=${encodeURIComponent(orgCode)}&year=${encodeURIComponent(year)}`, { credentials: "same-origin" });
+    async loadPlan(orgCode, year, dienstart) {
+      const params = new URLSearchParams({
+        org: String(orgCode || ""),
+        year: String(year || ""),
+        dienstart: String(dienstart || ""),
+      });
+      const r = await fetch(`/api/stellenplan?${params.toString()}`, { credentials: "same-origin" });
       if (!r.ok) throw new Error("Stellenplan laden fehlgeschlagen");
       return r.json();
     },
@@ -44,6 +49,7 @@
 
   const els = {
     deptSelect: $("#deptSelect"),
+    dienstartSelect: $("#dienstartSelect"),
     yearInput: $("#yearInput"),
     planTable: $("#planTable"),
     extrasTable: $("#extrasTable"),
@@ -84,6 +90,7 @@
     orgUnits: [],
     qualOptions: [],
     dept: "",
+    dienstart: "01",
     year: new Date().getFullYear(),
     data: {},
   };
@@ -104,6 +111,7 @@
       if (parsed && typeof parsed === "object") {
         state.data = parsed.data || {};
         state.dept = parsed.dept || state.dept;
+        state.dienstart = parsed.dienstart || state.dienstart;
         state.year = parsed.year || state.year;
       }
     } catch (_) {}
@@ -111,12 +119,17 @@
 
   function saveStorage() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ dept: state.dept, year: state.year, data: state.data }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        dept: state.dept,
+        dienstart: state.dienstart,
+        year: state.year,
+        data: state.data,
+      }));
     } catch (_) {}
   }
 
   function key() {
-    return `${state.dept}-${state.year}`;
+    return `${state.dept}-${state.dienstart}-${state.year}`;
   }
 
   function ensurePlan() {
@@ -212,15 +225,13 @@
       tds.push(`<td data-row-sum>${fmt(rowAvg)}</td>`);
       tds.push(`<td class="qual-col">${qualSelectHTML(r.qual, idx, "emp")}</td>`);
       tds.push(`
-              tds.push(`
-        <td class="act-col">
-          <div class="action-icons">
-            <button class="action-icons-button action-hide" data-action="hide" data-kind="emp" data-idx="${idx}" title="Zeile ausblenden">&#128065;</button>
-            <button class="action-icons-button action-trash" data-action="delete" data-kind="emp" data-idx="${idx}" title="Zeile loeschen">&#128465;</button>
-            <button class="action-icons-button action-copy" data-action="copy" data-kind="emp" data-idx="${idx}" type="button" title="Werte fortfuehren">&#10230;</button>
+        <td class="actions-cell">
+          <div class="action-buttons">
+            <button class="icon-btn" data-action="hide" data-kind="emp" data-idx="${idx}" title="Zeile ausblenden">&#128065;</button>
+            <button class="icon-btn" data-action="delete" data-kind="emp" data-idx="${idx}" title="Zeile loeschen">&#128465;</button>
+            <button class="icon-btn" data-action="copy" data-kind="emp" data-idx="${idx}" type="button" title="Werte fortfuehren">&#10230;</button>
           </div>
         </td>
-      `)
       `);
       tr.innerHTML = tds.join("");
       tbody.appendChild(tr);
@@ -243,11 +254,6 @@
       if (x.hiddenRow) tr.style.display = "none";
       const tds = [];
       tds.push(`
-        <td class="ctrl-col">
-          <input type="checkbox" class="sp-include" data-kind="extra" data-idx="${idx}" ${x.include ? "checked" : ""}>
-        </td>
-      `);
-      tds.push(`
         <td class="pnr-col">
           <input class="sp-pnr" data-kind="extra" data-idx="${idx}" value="${escapeHtml(x.personalNumber)}" placeholder="ID/Key">
         </td>
@@ -269,9 +275,11 @@
         `);
       }
       tds.push(`
-        <td class="act-col">
-          <button class="sp-hide" data-kind="extra" data-idx="${idx}" title="Zeile ausblenden">Ausblenden</button>
-          <button class="sp-del" data-kind="extra" data-idx="${idx}" title="Zeile loeschen">Loeschen</button>
+        <td class="actions-cell">
+          <div class="action-buttons">
+            <button class="icon-btn" data-action="hide" data-kind="extra" data-idx="${idx}" title="Zeile ausblenden">&#128065;</button>
+            <button class="icon-btn" data-action="delete" data-kind="extra" data-idx="${idx}" title="Zeile loeschen">&#128465;</button>
+          </div>
         </td>
       `);
       tr.innerHTML = tds.join("");
@@ -334,6 +342,15 @@
     els.deptSelect.value = state.dept;
   }
 
+  function populateDienstartSelect() {
+    if (!els.dienstartSelect) return;
+    const options = ["01", "02", "03", "04", "05", "06", "07"];
+    els.dienstartSelect.innerHTML = options
+      .map(v => `<option value="${v}">Dienstart ${v}</option>`)
+      .join("");
+    els.dienstartSelect.value = state.dienstart || "01";
+  }
+
   function populateYear() {
     if (!els.yearInput) return;
     els.yearInput.value = String(state.year);
@@ -343,7 +360,7 @@
     ensurePlan();
     setStatus("Lade ...");
     try {
-      const remote = await API.loadPlan(state.dept, state.year);
+      const remote = await API.loadPlan(state.dept, state.year, state.dienstart);
       const k = key();
       state.data[k] = {
         employees: Array.isArray(remote.employees) ? remote.employees : [],
@@ -366,6 +383,7 @@
     try {
       const payload = {
         orgCode: state.dept,
+        dienstart: state.dienstart,
         year: Number(state.year),
         employees: plan.employees.map(r => ({
           personalNumber: String(r.personalNumber || "").trim(),
@@ -402,6 +420,13 @@
     if (els.deptSelect) {
       els.deptSelect.addEventListener("change", async () => {
         state.dept = els.deptSelect.value;
+        saveStorage();
+        await loadFromDb();
+      });
+    }
+    if (els.dienstartSelect) {
+      els.dienstartSelect.addEventListener("change", async () => {
+        state.dienstart = els.dienstartSelect.value;
         saveStorage();
         await loadFromDb();
       });
@@ -542,8 +567,10 @@
     try {
       await loadLookups();
       populateOrgSelect();
+      populateDienstartSelect();
       populateYear();
       state.dept = els.deptSelect?.value || state.dept;
+      state.dienstart = els.dienstartSelect?.value || state.dienstart;
       wireEvents();
       await loadFromDb();
     } catch (e) {
