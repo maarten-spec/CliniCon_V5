@@ -8,6 +8,8 @@
 
 (() => {
   const $ = (sel) => document.querySelector(sel);
+  const API_BASE = (document.body?.dataset?.apiBase || "").trim();
+  const apiUrl = (path) => (API_BASE ? `${API_BASE.replace(/\/$/, "")}${path}` : path);
   const fmt = (n) => (Number(n || 0)).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const clamp2 = (v) => {
     const normalized = Math.max(0, Math.min(1, Number(v || 0)));
@@ -16,12 +18,12 @@
 
   const API = {
     async getOrgUnits() {
-      const r = await fetch("/api/org-units", { credentials: "same-origin" });
+      const r = await fetch(apiUrl("/api/org-units"), { credentials: "same-origin" });
       if (!r.ok) throw new Error("Organisationseinheiten laden fehlgeschlagen");
       return r.json();
     },
     async getQualifikationen() {
-      const r = await fetch("/api/qualifikationen", { credentials: "same-origin" });
+      const r = await fetch(apiUrl("/api/qualifikationen"), { credentials: "same-origin" });
       if (!r.ok) throw new Error("Qualifikationen laden fehlgeschlagen");
       return r.json();
     },
@@ -31,12 +33,12 @@
         year: String(year || ""),
         dienstart: String(dienstart || ""),
       });
-      const r = await fetch(`/api/stellenplan?${params.toString()}`, { credentials: "same-origin" });
+      const r = await fetch(apiUrl(`/api/stellenplan?${params.toString()}`), { credentials: "same-origin" });
       if (!r.ok) throw new Error("Stellenplan laden fehlgeschlagen");
       return r.json();
     },
     async savePlan(payload) {
-      const r = await fetch("/api/stellenplan/save", {
+      const r = await fetch(apiUrl("/api/stellenplan/save"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",

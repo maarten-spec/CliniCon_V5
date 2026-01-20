@@ -55,21 +55,6 @@ textarea{min-height:110px;resize:vertical;}
         </span>
       </div>
 
-      <div class="row inline" style="gap:18px; margin-top:14px;">
-        <label>
-          Abteilung
-          <select id="deptSelect"></select>
-        </label>
-        <label>
-          Dienstart
-          <select id="dienstartSelect"></select>
-        </label>
-        <label>
-          Jahr
-          <input id="yearInput" type="number" min="2020" max="2100" />
-        </label>
-      </div>
-
       <label style="display:block; margin-top:18px;">Nachricht
         <textarea id="messageInput" placeholder="Frage oder Auftrag eingeben… (z.B. 'Wie ist die Fruehschicht morgen?' oder 'Verschiebe Mueller von Frueh nach Spaet')"></textarea>
       </label>
@@ -96,7 +81,6 @@ textarea{min-height:110px;resize:vertical;}
         { code: "OPS", name: "OP / Endoskopie" },
         { code: "PDL", name: "Pflegedienstleitung" },
       ];
-      const DIENSTART_OPTIONS = ["01", "02", "03", "04", "05", "06", "07"];
       const context = {
         dept: "",
         dienstart: "01",
@@ -106,9 +90,6 @@ textarea{min-height:110px;resize:vertical;}
 
       const els = {
         apiUrl: document.getElementById("apiUrl"),
-        deptSelect: document.getElementById("deptSelect"),
-        dienstartSelect: document.getElementById("dienstartSelect"),
-        yearInput: document.getElementById("yearInput"),
         messageInput: document.getElementById("messageInput"),
         sendBtn: document.getElementById("sendBtn"),
         chatBox: document.getElementById("chatBox"),
@@ -147,20 +128,10 @@ textarea{min-height:110px;resize:vertical;}
           return FALLBACK_ORG_UNITS;
         }
       }
-      async function populateSelectors() {
+      async function initContextDefaults() {
         const units = await loadOrgUnits();
-        els.deptSelect.innerHTML = units
-          .map(u => `<option value="${u.code}">${u.name}</option>`)
-          .join("");
         if (!context.dept && units[0]) context.dept = units[0].code;
-        els.deptSelect.value = context.dept;
-
-        els.dienstartSelect.innerHTML = DIENSTART_OPTIONS
-          .map(v => `<option value="${v}">Dienstart ${v}</option>`)
-          .join("");
-        els.dienstartSelect.value = context.dienstart;
-
-        els.yearInput.value = String(context.year);
+        if (!Number.isFinite(context.year)) context.year = new Date().getFullYear();
       }
 
       function appendBubble(text, type = "bot") {
@@ -269,9 +240,6 @@ textarea{min-height:110px;resize:vertical;}
         els.sendBtn.disabled = isBusy;
         els.messageInput.disabled = isBusy;
         els.apiUrl.disabled = isBusy;
-        els.deptSelect.disabled = isBusy;
-        els.dienstartSelect.disabled = isBusy;
-        els.yearInput.disabled = isBusy;
         els.status.textContent = isBusy ? "arbeitet..." : "";
       }
 
@@ -359,24 +327,9 @@ textarea{min-height:110px;resize:vertical;}
       els.messageInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleSend();
       });
-      els.deptSelect.addEventListener("change", () => {
-        context.dept = els.deptSelect.value;
-        saveContext();
-      });
-      els.dienstartSelect.addEventListener("change", () => {
-        context.dienstart = els.dienstartSelect.value;
-        saveContext();
-      });
-      els.yearInput.addEventListener("change", () => {
-        const y = Number(els.yearInput.value || context.year);
-        context.year = Number.isFinite(y) ? y : context.year;
-        els.yearInput.value = String(context.year);
-        saveContext();
-      });
-
       (async () => {
         loadContext();
-        await populateSelectors();
+        await initContextDefaults();
         appendBubble("Hi! Ich bin dein Clinicon Assistent. Stell mir Fragen zum Stellenplan oder gib einen Auftrag.", "bot");
       })();
     </script>
