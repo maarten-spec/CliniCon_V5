@@ -40,7 +40,7 @@ textarea{min-height:110px;resize:vertical;}
   <template id="page-content">
     <section class="card hero">
       <h1>Clinicon Assistent</h1>
-      <p class="hint">Chatte mit dem Assistenten zum Stellenplan. <b>Phase 1</b>: Lesen & Vorschläge (Änderungen nur nach Bestätigung).</p>
+      <p class="hint">Chatte mit dem Assistenten zum Stellenplan. <b>Phase 1</b>: Lesen & Vorschlaege (Aenderungen nur nach Bestaetigung).</p>
       <p class="small">Tipp: Senden mit <b>Ctrl</b>+<b>Enter</b>.</p>
     </section>
 
@@ -51,12 +51,12 @@ textarea{min-height:110px;resize:vertical;}
           <input id="apiUrl" placeholder="z.B. https://app.clinicon.de/api" />
         </label>
         <span class="hint" style="flex:1; min-width:220px;">
-          <b>Hinweis:</b> Ohne Backend ist nur Demo möglich. Sobald dein Endpoint bereitsteht, schreibt der Assistent Änderungen erst nach deiner Bestätigung ein.
+          <b>Hinweis:</b> Ohne Backend ist nur Demo moeglich. Sobald dein Endpoint bereitsteht, schreibt der Assistent Aenderungen erst nach deiner Bestaetigung ein.
         </span>
       </div>
 
       <label style="display:block; margin-top:18px;">Nachricht
-        <textarea id="messageInput" placeholder="Frage oder Auftrag eingeben… (z.B. 'Wie ist die Frühschicht morgen?' oder 'Verschiebe Müller von Früh nach Spät')"></textarea>
+        <textarea id="messageInput" placeholder="Frage oder Auftrag eingeben… (z.B. 'Wie ist die Fruehschicht morgen?' oder 'Verschiebe Mueller von Frueh nach Spaet')"></textarea>
       </label>
 
       <div class="row" style="margin-top:10px;">
@@ -106,14 +106,14 @@ textarea{min-height:110px;resize:vertical;}
         body.className = "small";
         body.style.whiteSpace = "pre-wrap";
         body.style.color = "#0f172a";
-        body.textContent = proposal.summary || "Änderungsvorschlag wurde erzeugt.";
+        body.textContent = proposal.summary || "Aenderungsvorschlag wurde erzeugt.";
 
         const actions = document.createElement("div");
         actions.className = "actions";
 
         const btnCommit = document.createElement("button");
         btnCommit.className = "actionBtn primary";
-        btnCommit.textContent = "Änderung speichern";
+        btnCommit.textContent = "Aenderung speichern";
 
         const btnCancel = document.createElement("button");
         btnCancel.className = "actionBtn";
@@ -193,17 +193,17 @@ textarea{min-height:110px;resize:vertical;}
 
       function demoAnswer({ dept, site, message }) {
         const lower = message.toLowerCase();
-        if (lower.includes("verschieb") || lower.includes("tausch") || lower.includes("reduzier") || lower.includes("erhöh")) {
+        if (lower.includes("verschieb") || lower.includes("tausch") || lower.includes("reduzier") || lower.includes("erhoeh")) {
           return {
             type: "proposal",
             proposal: {
               commit_token: "demo-token",
               summary:
-                `Ich habe einen Änderungsvorschlag erkannt.\n\n` +
+                `Ich habe einen Aenderungsvorschlag erkannt.\n\n` +
                 `• Fachabteilung: ${dept}\n` +
                 `• Standort: ${site}\n` +
                 `• Auftrag: ${message}\n\n` +
-                `Nächster Schritt: Ich würde die betroffenen Datensätze in R1/R2 identifizieren und eine Änderung vorbereiten.\n` +
+                `Naechster Schritt: Ich wuerde die betroffenen Datensaetze in R1/R2 identifizieren und eine Aenderung vorbereiten.\n` +
                 `Zum Speichern brauchst du ein Backend (API).`
             }
           };
@@ -216,7 +216,7 @@ textarea{min-height:110px;resize:vertical;}
             `• Fachabteilung: ${dept}\n` +
             `• Standort: ${site}\n` +
             `• Inhalt: ${message}\n\n` +
-            `Wenn du eine API-URL einträgst, rufe ich /assistant/query auf.`
+            `Wenn du eine API-URL eintraegst, rufe ich /assistant/query auf.`
         };
       }
 

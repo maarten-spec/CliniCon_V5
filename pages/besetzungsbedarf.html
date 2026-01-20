@@ -1,11 +1,12 @@
 ﻿<!-- Besetzungsbedarf Tool -->
+<link rel="stylesheet" href="shared/ui-base.css" />
 <style>
   #besetzungsbedarf-frame{
     padding:0;
     overflow:hidden;
   }
   #besetzungsbedarf-frame .page-frame__body{
-    padding:16px;
+    padding:var(--space-4);
   }
   .besetzungsbedarf-app{
     display:flex;
@@ -21,7 +22,7 @@
   .besetzungsbedarf-app .formula-block{
     padding:0;
     border:1px solid var(--line,#e2e8f0);
-    border-radius:18px;
+    border-radius:var(--radius-lg);
     color:var(--text);
     background:#f8fafc;
     box-shadow:0 18px 32px rgba(15,23,42,.06);
@@ -56,7 +57,7 @@
     display:flex;
     align-items:flex-start;
     justify-content:space-between;
-    gap:12px;
+    gap:var(--space-3);
     padding:clamp(1rem, 2.8vw, 1.4rem) clamp(1rem, 2.8vw, 1.4rem) 0;
   }
   .besetzungsbedarf-app .formula-header h2{
@@ -103,7 +104,7 @@
   .besetzungsbedarf-app .formula-panel + .formula-panel{margin-top:0;}
   .besetzungsbedarf-app .grid{
     display:grid;
-    gap:12px;
+    gap:var(--space-3);
   }
   .besetzungsbedarf-app .grid.grid-2{grid-template-columns:1fr 1fr;}
   .besetzungsbedarf-app .grid.grid-3{grid-template-columns:repeat(3,1fr);}
@@ -125,9 +126,9 @@
   .besetzungsbedarf-app select,
   .besetzungsbedarf-app input{
     width:100%;
-    padding:10px 12px;
+    padding:0.6rem 0.75rem;
     border:1px solid var(--line,#e2e8f0);
-    border-radius:10px;
+    border-radius:var(--radius-md);
     background:#fff;
     font-family:var(--font-base);
   }
@@ -140,13 +141,22 @@
   .besetzungsbedarf-app .table th,
   .besetzungsbedarf-app .table td{
     border-bottom:1px solid var(--line,#e2e8f0);
-    padding:10px 12px;
+    padding:0.6rem 0.75rem;
     text-align:left;
     vertical-align:middle;
   }
   .besetzungsbedarf-app .table thead th{
     background:#f8fafc;
     font-weight:600;
+    position:sticky;
+    top:0;
+    z-index:1;
+  }
+  .besetzungsbedarf-app .table tbody tr:nth-child(even) td{
+    background:#f8fafc;
+  }
+  .besetzungsbedarf-app .table tbody tr:hover td{
+    background:#eef2ff;
   }
   .besetzungsbedarf-app .table th.art,
   .besetzungsbedarf-app .table td.art,
@@ -163,8 +173,8 @@
   .besetzungsbedarf-app .kpi .item{
     background:#fff;
     border:1px solid var(--line,#e2e8f0);
-    border-radius:14px;
-    padding:12px;
+    border-radius:var(--radius-md);
+    padding:var(--space-3);
     box-shadow:0 10px 20px rgba(15,23,42,.05);
   }
   .besetzungsbedarf-app .kpi .item b{
@@ -173,8 +183,8 @@
   }
   .besetzungsbedarf-app details.holidays{
     border:1px solid var(--line,#e2e8f0);
-    border-radius:14px;
-    padding:14px;
+    border-radius:var(--radius-md);
+    padding:var(--space-4);
     background:#fff;
   }
   .besetzungsbedarf-app details.holidays summary{
@@ -183,12 +193,12 @@
   }
   .besetzungsbedarf-app .legend{
     display:flex;
-    gap:14px;
+    gap:var(--space-4);
     flex-wrap:wrap;
-    margin-bottom:8px;
+    margin-bottom:var(--space-2);
   }
   .besetzungsbedarf-app .pill{
-    padding:6px 10px;
+    padding:0.45rem 0.7rem;
     border-radius:999px;
     background:#f8fafc;
     border:1px solid var(--line,#e2e8f0);
@@ -197,7 +207,7 @@
     margin-bottom:18px;
     padding:16px;
     border:1px solid var(--line,#e2e8f0);
-    border-radius:14px;
+    border-radius:var(--radius-md);
     background:#fff;
   }
   .besetzungsbedarf-app .room-header{
@@ -266,7 +276,7 @@
     color:#94a3b8;
   }
 </style>
-<section class="card page-frame ppug-layout" id="besetzungsbedarf-frame">
+<section class="card page-frame ppug-layout ui-scope" id="besetzungsbedarf-frame">
   <div class="page-frame__body">
 <div class="besetzungsbedarf-app">
   <div class="besetzungsbedarf-container">
@@ -276,10 +286,10 @@
                   <h2>Einsatzbedarf</h2>
                   <p>(Menge &times; Zeit) &divide; Regelarbeitszeit</p>
                 </div>
-                <div class="formula-value" id="metricEinsatz">Berechne zun&auml;chst die Arbeitspl&auml;tze.</div>
+                <div class="formula-value" id="metricEinsatz">Berechne zunaechst die Arbeitsplaetze.</div>
               </div>
               <div class="formula-panel">
-                <h2>Abteilungs-Berechnung (Arbeitspl&auml;tze)</h2>
+                <h2>Abteilungs-Berechnung (Arbeitsplaetze)</h2>
                 <div id="rooms-container">
                   <div class="room-entry">
                     <div class="room-header">
@@ -289,8 +299,8 @@
                     <select class="room">
                       <option value="OP-Saal">OP-Saal</option>
                       <option value="Endoskopie-Raum">Endoskopie-Raum</option>
-                      <option value="Krei&szlig;saal">Krei&szlig;saal</option>
-                      <option value="R&ouml;ntgen">R&ouml;ntgen</option>
+                      <option value="Kreisssaal">Kreisssaal</option>
+                      <option value="Roentgen">Roentgen</option>
                       <option value="Herzkatheter-Labor">Herzkatheter-Labor</option>
                       <option value="EEG / EKG / Funktionsdiagnostik">EEG / EKG / Funktionsdiagnostik</option>
                       <option value="Aufwachraum">Aufwachraum</option>
@@ -301,7 +311,7 @@
                       <option value="Sonstiges">Sonstiges</option>
                     </select>
                     <input type="text" class="room-custom" placeholder="Sonstiges beschreiben" aria-label="Sonstiges beschreiben">
-                    <label style="margin-top:8px">Ben&ouml;tigte Personen</label>
+                    <label style="margin-top:8px">Benoetigte Personen</label>
                     <input type="number" class="staff" placeholder="z. B. 2" min="1">
                     <div style="margin-top:10px">
                       <label>Betriebstage & Stunden pro Tag</label>
@@ -326,7 +336,7 @@
                     </div>
                   </div>
                 </div>
-                <button type="button" class="btn ghost" style="margin-top:8px;" onclick="addRoom()">+ weiteren Arbeitsplatz hinzuf&uuml;gen</button>
+                <button type="button" class="btn ghost" style="margin-top:8px;" onclick="addRoom()">+ weiteren Arbeitsplatz hinzufuegen</button>
               </div>
             </section>
   
@@ -352,24 +362,28 @@
                   </div>
                 </div>
                 <div style="margin-top:16px">
-                  <button class="btn primary" style="width:100%" onclick="calculateAll()">Gesamtberechnung durchf&uuml;hren</button>
+                  <button class="btn primary" style="width:100%" onclick="calculateAll()">Gesamtberechnung durchfuehren</button>
                 </div>
                 <div class="grid grid-4" style="margin-top:10px">
                   <div>
                     <label>Urlaubstage</label>
                     <input id="vacation" type="number" value="30" min="0" max="60" />
+                    <small class="inline-help">Regelurlaub je VK und Jahr.</small>
                   </div>
                   <div>
                     <label>Zusatzurlaub</label>
                     <input id="extraVacation" type="number" value="0" min="0" max="30" />
+                    <small class="inline-help">Nur Zusatzurlaub (Schicht/Nacht).</small>
                   </div>
                   <div>
                     <label>Fortbildung (Tage)</label>
                     <input id="trainingDays" type="number" value="5" min="0" max="30" />
+                    <small class="inline-help">Planwert je VK und Jahr.</small>
                   </div>
                   <div>
                     <label>Krankheit (Tage)</label>
                     <input id="sickDays" type="number" value="12" min="0" max="60" />
+                    <small class="inline-help">Sollwert aus Vorjahr oder Tarif.</small>
                   </div>
                 </div>
               </div>
@@ -405,7 +419,7 @@
                 <div class="formula-value" id="metricBrutto">Summe in VK.</div>
               </div>
               <div class="formula-panel" id="result">
-                <p class="muted">Bitte zuerst Arbeitspl&auml;tze und Parameter ausf&uuml;llen und &bdquo;Gesamtberechnung&ldquo; starten.</p>
+                <p class="muted">Bitte zuerst Arbeitsplaetze und Parameter ausfuellen und &bdquo;Gesamtberechnung&ldquo; starten.</p>
               </div>
             </section>
   
@@ -422,6 +436,7 @@
                   <div>
                     <label>Abwesenheitsquote (%)</label>
                     <input type="number" id="absence" value="21" min="0" max="50">
+                    <small class="inline-help">Gesamtquote inkl. Urlaub, Fortbildung, Krankheit.</small>
                   </div>
                   <div>
                     <label>Ergebnisbasis</label>
@@ -436,10 +451,10 @@
             </section>
             <!-- Feiertage (15 Jahre) -->
             <section class="card subtle-card">
-              <h2>Feiertage &ndash; Vorschau der n&auml;chsten 15 Jahre</h2>
-              <div class="legend"><span class="pill">bundesweit</span><span class="pill">L&auml;nder-spezifisch</span><span class="pill">beweglich</span></div>
+              <h2>Feiertage &ndash; Vorschau der naechsten 15 Jahre</h2>
+              <div class="legend"><span class="pill">bundesweit</span><span class="pill">Laender-spezifisch</span><span class="pill">beweglich</span></div>
               <details class="holidays">
-                <summary><span id="holidaySummary">Feiertage f&uuml;r &hellip;</span></summary>
+                <summary><span id="holidaySummary">Feiertage fuer &hellip;</span></summary>
                 <div id="holidayTables"></div>
               </details>
             </section>
@@ -694,7 +709,7 @@
         const availabilityTable = document.getElementById('availabilityTable');
         if (availabilityTable) {
           availabilityTable.innerHTML = `
-            <h3>Abz&uuml;ge & verf&uuml;gbare Tage</h3>
+            <h3>Abzuege & verfuegbare Tage</h3>
             <table class="table">
               <tbody>
                 <tr><td>Tage Montag-Freitag</td><td>${monFri}</td></tr>
@@ -703,9 +718,9 @@
                 <tr><td>abzgl. Zusatzurlaub</td><td>${extraVacation}</td></tr>
                 <tr><td>abzgl. Fortbildung</td><td>${trainingDays}</td></tr>
                 <tr><td>abzgl. Krankheit</td><td>${sickDays}</td></tr>
-                <tr><th>verf&uuml;gbare Tage</th><th>${availableDays}</th></tr>
-                <tr><th>verf&uuml;gbare Stunden/Jahr</th><th>${availableHoursYear.toFixed(0)}</th></tr>
-                <tr><th>verf&uuml;gbare Stunden/Monat (Durchschnitt)</th><th>${availableHoursMonth.toFixed(1)}</th></tr>
+                <tr><th>verfuegbare Tage</th><th>${availableDays}</th></tr>
+                <tr><th>verfuegbare Stunden/Jahr</th><th>${availableHoursYear.toFixed(0)}</th></tr>
+                <tr><th>verfuegbare Stunden/Monat (Durchschnitt)</th><th>${availableHoursMonth.toFixed(1)}</th></tr>
               </tbody>
             </table>
           `;

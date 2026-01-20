@@ -4,15 +4,15 @@
     <p class="kc-sub">Bias: <strong>ambulant bevorzugt</strong> – es sei denn, Red-Flags oder hohe Gesamtrisiken sprechen dagegen.</p>
   </section>
 
-  <!-- KURZFORM: OPS, Anästhesie, Dauer, Blutungsrisiko -->
+  <!-- KURZFORM: OPS, Anaesthesie, Dauer, Blutungsrisiko -->
   <section class="kc-card kc-grid-2">
     <div>
       <label class="kc-label">OPS-Code (optional)</label>
       <input id="ops" class="kc-input" placeholder="z. B. 5-510.1" />
-      <p class="kc-hint">Der Algorithmus funktioniert auch ohne OPS. (Mapping kann später ergänzt werden.)</p>
+      <p class="kc-hint">Der Algorithmus funktioniert auch ohne OPS. (Mapping kann spaeter ergaenzt werden.)</p>
     </div>
     <div>
-      <label class="kc-label">Anästhesieart</label>
+      <label class="kc-label">Anaesthesieart</label>
       <select id="anesthesia" class="kc-input">
         <option value="regional">Regional/LA</option>
         <option value="itn">ITN / Larynxmaske</option>
@@ -68,22 +68,22 @@
       </div>
       <div class="kc-span-3 kc-chips">
         <label class="kc-chip"><input type="checkbox" id="anticoag"> Therapeutische Antikoagulation</label>
-        <label class="kc-chip"><input type="checkbox" id="osa"> Ausgeprägte OSA (nicht optimiert)</label>
+        <label class="kc-chip"><input type="checkbox" id="osa"> Ausgepraegte OSA (nicht optimiert)</label>
         <label class="kc-chip"><input type="checkbox" id="frail"> Frailty/gebrechlich</label>
       </div>
     </div>
   </section>
 
-  <!-- K2: Prozedur/Komplexität -->
+  <!-- K2: Prozedur/Komplexitaet -->
   <section class="kc-card">
-    <h2 class="kc-h2">K2 – Prozedur &amp; Komplexität</h2>
+    <h2 class="kc-h2">K2 – Prozedur &amp; Komplexitaet</h2>
     <div class="kc-grid-3">
       <div>
         <label class="kc-label">Implantat/Prothese</label>
         <select id="implant" class="kc-input">
           <option value="none">Nein</option>
           <option value="minor">Klein (z. B. Schraube, Pin)</option>
-          <option value="major">Größer/mehrere</option>
+          <option value="major">Groesser/mehrere</option>
         </select>
       </div>
       <div>
@@ -108,7 +108,7 @@
   <section class="kc-card">
     <h2 class="kc-h2">K3 – Infrastruktur &amp; Organisation</h2>
     <div class="kc-chips">
-      <label class="kc-chip"><input type="checkbox" id="pacu"> Aufwachraum/Monitoring verfügbar</label>
+      <label class="kc-chip"><input type="checkbox" id="pacu"> Aufwachraum/Monitoring verfuegbar</label>
       <label class="kc-chip"><input type="checkbox" id="painproto"> Schmerz-/Nausea-Protokoll vorhanden</label>
       <label class="kc-chip"><input type="checkbox" id="escalation"> 24/7 Eskalationspfad vorhanden</label>
     </div>
@@ -119,7 +119,7 @@
     <h2 class="kc-h2">K4 – Nachsorge &amp; soziales Umfeld</h2>
     <div class="kc-grid-3">
       <div>
-        <label class="kc-label">Begleitperson für 24 h</label>
+        <label class="kc-label">Begleitperson fuer 24 h</label>
         <select id="escort" class="kc-input">
           <option value="yes">Ja</option>
           <option value="no">Nein</option>
@@ -133,29 +133,29 @@
         </select>
       </div>
       <div>
-        <label class="kc-label">Mobilität zu Hause</label>
+        <label class="kc-label">Mobilitaet zu Hause</label>
         <select id="mobility" class="kc-input">
           <option value="ok">Unproblematisch</option>
-          <option value="limited">Eingeschränkt (z. B. Treppen)</option>
+          <option value="limited">Eingeschraenkt (z. B. Treppen)</option>
         </select>
       </div>
     </div>
   </section>
 
-  <!-- K5: Besondere Gründe -->
+  <!-- K5: Besondere Gruende -->
   <section class="kc-card">
     <h2 class="kc-h2">K5 – Sonderindikationen</h2>
     <div class="kc-chips">
-      <label class="kc-chip"><input type="checkbox" id="prevcomp"> Frühere schwere Komplikation gleicher Art</label>
-      <label class="kc-chip"><input type="checkbox" id="psych"> Ausgeprägte Angst/Compliance-Probleme</label>
+      <label class="kc-chip"><input type="checkbox" id="prevcomp"> Fruehere schwere Komplikation gleicher Art</label>
+      <label class="kc-chip"><input type="checkbox" id="psych"> Ausgepraegte Angst/Compliance-Probleme</label>
     </div>
   </section>
 
   <!-- RED FLAGS -->
   <section class="kc-card kc-danger">
-    <h2 class="kc-h2">Red-Flags (führen <em>immer</em> zu „stationär“)</h2>
+    <h2 class="kc-h2">Red-Flags (fuehren <em>immer</em> zu „stationaer“)</h2>
     <div class="kc-chips">
-      <label class="kc-chip"><input type="checkbox" id="unstable"> Hämodynamisch instabil / akute Sepsis</label>
+      <label class="kc-chip"><input type="checkbox" id="unstable"> Haemodynamisch instabil / akute Sepsis</label>
       <label class="kc-chip"><input type="checkbox" id="airway"> Kritischer Atemweg / nicht gesicherte Atemwegssituation</label>
       <label class="kc-chip"><input type="checkbox" id="noConsent"> Keine Einwilligung/Nachsorge sichergestellt</label>
     </div>
@@ -170,7 +170,7 @@
     <h2 class="kc-h2">Empfehlung</h2>
     <p id="rec-text" class="kc-rec">–</p>
     <details class="kc-details" open>
-      <summary>Begründung & Scoring anzeigen</summary>
+      <summary>Begruendung & Scoring anzeigen</summary>
       <div id="rationale" class="kc-rationale"></div>
     </details>
   </section>
@@ -201,12 +201,12 @@
 
   <script>
     // ——— Scoring-Logik (ambulant bevorzugt) ———
-    // Score startet bei 0 (ambulant). Je höher, desto eher stationär.
+    // Score startet bei 0 (ambulant). Je hoeher, desto eher stationaer.
     // Schwellen:
     // 0–2: ambulant empfohlen
-    // 3–5: ambulant mit Auflagen (Sicherheitsmaßnahmen)
-    // =6: stationär empfohlen
-    // Red-Flags => immer stationär (unabhängig vom Score)
+    // 3–5: ambulant mit Auflagen (Sicherheitsmassnahmen)
+    // =6: stationaer empfohlen
+    // Red-Flags => immer stationaer (unabhaengig vom Score)
 
     function val(id){ const el = document.getElementById(id); return el?.value; }
     function chk(id){ const el = document.getElementById(id); return !!el?.checked; }
@@ -233,7 +233,7 @@
       if(bmi === 'h'){ score += 2; reasons.push('BMI > 40: +2'); }
 
       if(chk('anticoag')){ score += 2; reasons.push('Therap. Antikoagulation: +2'); }
-      if(chk('osa')){ score += 2; reasons.push('Ausgeprägte OSA: +2'); }
+      if(chk('osa')){ score += 2; reasons.push('Ausgepraegte OSA: +2'); }
       if(chk('frail')){ score += 2; reasons.push('Frailty: +2'); }
 
       // K2 – Prozedur
@@ -247,7 +247,7 @@
 
       const implant = val('implant');
       if(implant === 'minor'){ score += 1; reasons.push('Kleines Implantat: +1'); }
-      if(implant === 'major'){ score += 2; reasons.push('Größeres/mehrere Implantate: +2'); }
+      if(implant === 'major'){ score += 2; reasons.push('Groesseres/mehrere Implantate: +2'); }
 
       const pain = val('pain'); // nur als Hinweis, kein fixer Score
       const ponv = val('ponv');
@@ -261,15 +261,15 @@
       // K4 – Nachsorge
       if(val('escort') === 'no'){ score += 2; reasons.push('Keine 24h-Begleitperson: +2'); }
       if(val('distance') === 'long'){ score += 1; reasons.push('Heimweg > 45 min: +1'); }
-      if(val('mobility') === 'limited'){ score += 1; reasons.push('Eingeschränkte Mobilität zuhause: +1'); }
+      if(val('mobility') === 'limited'){ score += 1; reasons.push('Eingeschraenkte Mobilitaet zuhause: +1'); }
 
       // K5 – Sonderindikationen
-      if(chk('prevcomp')){ score += 2; reasons.push('Frühere schwere Komplikation: +2'); }
-      if(chk('psych')){ score += 1; reasons.push('Ausgeprägte Angst/Compliance: +1'); }
+      if(chk('prevcomp')){ score += 2; reasons.push('Fruehere schwere Komplikation: +2'); }
+      if(chk('psych')){ score += 1; reasons.push('Ausgepraegte Angst/Compliance: +1'); }
 
       // Pro-ambulant Modifikatoren
       const anesthesia = val('anesthesia');
-      if(anesthesia === 'regional'){ score -= 1; reasons.push('Regionalanästhesie: -1'); }
+      if(anesthesia === 'regional'){ score -= 1; reasons.push('Regionalanaesthesie: -1'); }
       if(pain === 'low'){ score -= 1; reasons.push('Geringe Schmerzerwartung: -1'); }
 
       // Ergebnis erzeugen
@@ -279,27 +279,27 @@
 
       if(hasRed){
         badge.className = 'kc-badge bad';
-        badge.textContent = 'Empfehlung: STATIONÄR (Red-Flag)';
-        recText.innerHTML = 'Mindestens eine Red-Flag ist erfüllt. Unabhängig vom Score wird <strong>stationär</strong> empfohlen.';
+        badge.textContent = 'Empfehlung: STATIONAeR (Red-Flag)';
+        recText.innerHTML = 'Mindestens eine Red-Flag ist erfuellt. Unabhaengig vom Score wird <strong>stationaer</strong> empfohlen.';
       } else if(score <= 2){
         badge.className = 'kc-badge ok';
         badge.textContent = 'Empfehlung: ambulant';
-        recText.innerHTML = 'Die Risikokonstellation erlaubt eine <strong>ambulante</strong> Durchführung.';
+        recText.innerHTML = 'Die Risikokonstellation erlaubt eine <strong>ambulante</strong> Durchfuehrung.';
       } else if(score <= 5){
         badge.className = 'kc-badge warn';
         badge.textContent = 'Empfehlung: ambulant – mit Auflagen';
-        recText.innerHTML = 'Eine <strong>ambulante</strong> Durchführung ist möglich, jedoch mit <strong>zusätzlichen Sicherheitsmaßnahmen</strong> (z. B. optimierte Analgesie/Antiemese, enges Telefon-Follow-up, klare Eskalationswege).';
+        recText.innerHTML = 'Eine <strong>ambulante</strong> Durchfuehrung ist moeglich, jedoch mit <strong>zusaetzlichen Sicherheitsmassnahmen</strong> (z. B. optimierte Analgesie/Antiemese, enges Telefon-Follow-up, klare Eskalationswege).';
       } else {
         badge.className = 'kc-badge bad';
-        badge.textContent = 'Empfehlung: stationär';
-        recText.innerHTML = 'Die Gesamtrisiken sprechen für einen <strong>stationären</strong> Aufenthalt.';
+        badge.textContent = 'Empfehlung: stationaer';
+        recText.innerHTML = 'Die Gesamtrisiken sprechen fuer einen <strong>stationaeren</strong> Aufenthalt.';
       }
 
-      // Begründung + Score
+      // Begruendung + Score
       rationale.innerHTML = `
         <p><strong>Gesamtscore:</strong> ${score}</p>
         <ul>${reasons.map(r => `<li>${r}</li>`).join('')}</ul>
-        <p class="kc-hint">Hinweis: Dies ist ein <em>unterstützendes</em> Tool. Ärztliche Bewertung geht vor.</p>
+        <p class="kc-hint">Hinweis: Dies ist ein <em>unterstuetzendes</em> Tool. Aerztliche Bewertung geht vor.</p>
       `;
       return {score, reasons, red, anesthesia, pain};
     }
@@ -329,7 +329,7 @@
       URL.revokeObjectURL(url);
     });
 
-    // Recompute bei jeder Änderung
+    // Recompute bei jeder Aenderung
     document.querySelectorAll('#kc-aop-advisor input, #kc-aop-advisor select').forEach(el=>{
       el.addEventListener('input', compute);
       el.addEventListener('change', compute);

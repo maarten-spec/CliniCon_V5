@@ -90,8 +90,8 @@ table{font-size:0.95rem;}
 <section class="card hero">
           <div class="hero-top">
             <div class="hero-copy">
-<h1>Alle Abteilungen in einer &Uuml;bersicht</h1>
-              <p class="hint">Summiert VZ&auml; aus <strong>stellenplan_employees</strong> je Abteilung und Jahr.</p>
+<h1>Alle Abteilungen in einer Uebersicht</h1>
+              <p class="hint">Summiert VZae aus <strong>stellenplan_employees</strong> je Abteilung und Jahr.</p>
               <div class="hero-meta">
                 <span class="chip"><small>Mandant</small><strong id="siteLabel">-</strong></span>
                 <span class="chip"><small>Jahr</small><strong id="heroYear">-</strong></span>
@@ -293,7 +293,7 @@ table{font-size:0.95rem;}
         ${MONTHS.map(m=>`<th class="num">${m}</th>`).join('')}
         <th class="num">&Oslash; Jahr</th>
         <th class="num">Abweichung</th>
-        <th class="num">K&ouml;pfe</th>
+        <th class="num">Koepfe</th>
       </tr>`;
       const body = safeRows.map(r => {
         const total = r.months.reduce((a,b)=>a+b,0);

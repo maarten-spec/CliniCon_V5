@@ -1,4 +1,5 @@
 <!-- Startseite Inhalt -->
+<link rel="stylesheet" href="shared/ui-base.css" />
 <style>
   #start-frame{
     --brand:#2563eb;
@@ -272,7 +273,7 @@
   }
 </style>
 
-<section class="card page-frame ppug-layout" id="start-frame">
+<section class="card page-frame ppug-layout ui-scope" id="start-frame">
   <div class="ppug-grid">
     <div class="start-landing">
       <section class="hero-pro" aria-label="CliniCon Einstieg">
@@ -300,7 +301,7 @@
           </h1>
           <p class="hero-lead">
             CliniCon verbindet Personalbedarf, Schichtlogik und Kosten
-            zu einer belastbaren Entscheidungsgrundlage f&uuml;r Krankenh&auml;user.
+            zu einer belastbaren Entscheidungsgrundlage fuer Krankenhaeuser.
           </p>
           <div class="hero-actions">
             <a href="#tools" class="btn-primary" onclick="const t=document.getElementById('tools'); if(t){t.scrollIntoView({behavior:'smooth'});} return false;">CliniCon Tools</a>
@@ -317,7 +318,7 @@
           <h3>Personalbedarf &amp; Regulierung</h3>
           <p>
             PPUG-, PPBV- und Besetzungsbedarfe strukturiert berechnen &ndash;
-            als Grundlage f&uuml;r Planung, Argumentation und Steuerung.
+            als Grundlage fuer Planung, Argumentation und Steuerung.
           </p>
           <a href="#" onclick="const nav=document.querySelector('#mainNav a[data-key=&quot;ppug&quot;]'); if(nav){navigate(nav);} return false;">Zu den Rechnern &rarr;</a>
         </div>
@@ -334,7 +335,7 @@
         <div class="tool-card">
           <h3>Gehaltsrechner AVR Anlage 31</h3>
           <p>
-            Pflegekr&auml;fte im Pflegedienst (AVR Caritas Anlage 31) k&ouml;nnen ihr Gehalt
+            Pflegekraefte im Pflegedienst (AVR Caritas Anlage 31) koennen ihr Gehalt
             anhand der P-Entgeltgruppen schnell berechnen &ndash; ohne Tabellenarbeit.
           </p>
           <a href="#" onclick="const nav=document.querySelector('#mainNav a[data-key=&quot;gehaltsrechner&quot;]'); if(nav){navigate(nav);} return false;">Zum Gehaltsrechner &rarr;</a>
@@ -345,7 +346,7 @@
         <h2>Wenn aus Tools Steuerung wird</h2>
         <p>
           Viele Einrichtungen starten mit einzelnen Berechnungstools.
-          Ab einer gewissen Komplexit&auml;t braucht es jedoch
+          Ab einer gewissen Komplexitaet braucht es jedoch
           eine integrierte, vergleichbare Systemlogik.
         </p>
         <a href="#" class="btn-primary" onclick="const nav=document.querySelector('#mainNav a[data-key=&quot;produkt&quot;]'); if(nav){navigate(nav);} return false;">Mehr zur CliniCon Suite</a>
@@ -353,4 +354,3 @@
     </div>
   </div>
 </section>
-

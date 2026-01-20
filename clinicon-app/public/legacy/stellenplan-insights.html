@@ -175,7 +175,7 @@
           <div class="tile"><span>Peak-Monat</span><strong id="kpiPeak">-</strong></div>
         </div>
         <div class="chart">
-          <div class="chart-meta">Verhältnis Pflegefachkraft / -assistenz</div>
+          <div class="chart-meta">Verhaeltnis Pflegefachkraft / -assistenz</div>
           <div id="heatmapRatios" class="ratio-grid"></div>
         </div>
         <div class="chart" style="margin-top:12px;">
@@ -219,7 +219,7 @@
         <div class="insights-section">
           <div class="insights-head">
             <div>
-              <div class="title">Verhältnis Pflegefachkraft / Assistenz <span class="insights-tag">PFK / PFA / VK</span></div>
+              <div class="title">Verhaeltnis Pflegefachkraft / Assistenz <span class="insights-tag">PFK / PFA / VK</span></div>
               <p class="insights-sub">VK-Werte, Prozentverteilung und Gesamt je Station.</p>
             </div>
           </div>
@@ -284,12 +284,12 @@
 
         <div class="insights-section">
           <div class="insights-head">
-            <div class="title">Pyramidenübersicht</div>
+            <div class="title">Pyramidenuebersicht</div>
             <p class="insights-sub">Strukturierte Ansicht deiner Bereiche.</p>
           </div>
           <div class="pyramid">
             <div class="pyramid-level"><div class="pyramid-box">Intensivstationen</div></div>
-            <div class="pyramid-level"><div class="pyramid-box">IMC / Überwachung</div></div>
+            <div class="pyramid-level"><div class="pyramid-box">IMC / Ueberwachung</div></div>
             <div class="pyramid-level"><div class="pyramid-box">Normalstationen</div></div>
             <div class="pyramid-level"><div class="pyramid-box">Funktionsbereiche / OP / Endoskopie</div></div>
           </div>
@@ -313,7 +313,7 @@
         <div class="glass-card">
           <div class="glass-card-title">Wirtschaftsplan Gesamt (Dienstart 01)</div>
           <div class="glass-card-value" id="planTotalValue">-</div>
-          <div class="glass-card-label">Gesamt-VK f&uuml;r das ausgew&auml;hlte Jahr/Standort.</div>
+          <div class="glass-card-label">Gesamt-VK fuer das ausgewaehlte Jahr/Standort.</div>
         </div>
       </div>
       <div class="controls" style="margin-bottom:10px;">
@@ -888,7 +888,7 @@
       const cards=[
         {title:'VK gesamt Pflege',value:`${fmt(totalVK)} VK`,label:'Alle Stationen summiert.'},
         {title:'PFK-Quote',value:`${pfkQuote.toFixed(1)} %`,label:'Zielkorridor 70–80 %.'},
-        {title:'PFK VK',value:`${fmt(totalPFK)} VK`,label:'Pflegefachkräfte gesamt.'},
+        {title:'PFK VK',value:`${fmt(totalPFK)} VK`,label:'Pflegefachkraefte gesamt.'},
         {title:'PFA VK',value:`${fmt(totalPFA)} VK`,label:'Pflegeassistenz gesamt.'},
       ];
       els.glassGrid.innerHTML=cards.map(c=>`<div class="glass-card">
@@ -981,7 +981,7 @@
       const globalDelta = Number(els.scenarioInput?.value||0);
       let runningAdd = 0;
       const scenario = baseForecast.map((v,i)=>{
-        runningAdd += Number(scenarioDeltas[i])||0; // Zugänge wirken fortlaufend in Folgemonaten
+        runningAdd += Number(scenarioDeltas[i])||0; // Zugaenge wirken fortlaufend in Folgemonaten
         const val = (Number(v)||0) + globalDelta + runningAdd + sinScaled[i];
         return Math.max(0,val);
       });
@@ -1043,7 +1043,7 @@
     function renderGroupedBars(actual){const svg=els.groupedChart;if(!svg)return;const width=svg.clientWidth||svg.parentElement.clientWidth||900;const height=320;const pad={top:20,right:16,bottom:30,left:32};const innerW=Math.max(1,width-pad.left-pad.right);const innerH=Math.max(1,height-pad.top-pad.bottom);const n=12;const max=Math.max(...actual,1);const colW=innerW/n;const barW=Math.max(12,colW*0.5);let bars='';for(let i=0;i<n;i++){const x0=pad.left+colW*i;const val=actual[i]||0;const h=Math.max(4,(val/max)*innerH);const x=x0+(colW-barW)/2;const y=pad.top+innerH-h;bars+=`<rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="4" fill="#1f4b82"><title>${MONTHS[i]}: ${fmt(val)}</title></rect>`;}svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.innerHTML=bars;}
     function renderBubbleChart(actual,forecast){if(!els.bubbleChart)return;const svg=els.bubbleChart;const width=svg.clientWidth||svg.parentElement.clientWidth||600;const height=220;svg.setAttribute('viewBox',`0 0 ${width} ${height}`);const max=Math.max(...actual,...forecast,1);const colWidth=width/Math.max(1,actual.length);let circles='';actual.forEach((v,i)=>{const x=i*colWidth+colWidth/2;const y=height-(v/max)*(height-40)-20;const r=Math.max(6,Math.sqrt(Math.abs(v))*1.5);circles+=`<circle cx="${x}" cy="${y}" r="${r}" fill="#1f4b82" fill-opacity="0.65"><title>${MONTHS[i]} Ist: ${fmt(v)}</title></circle>`;});forecast.forEach((v,i)=>{const x=i*colWidth+colWidth/2+6;const y=height-(v/max)*(height-40)-20;const r=Math.max(6,Math.sqrt(Math.abs(v))*1.5);circles+=`<circle cx="${x}" cy="${y}" r="${r}" fill="#f9be00" fill-opacity="0.55"><title>${MONTHS[i]} Forecast: ${fmt(v)}</title></circle>`;});svg.innerHTML=circles;}
     function renderTable(actual,forecast,scenario,cA,cF,cS){const hasS=Array.isArray(scenario)&&scenario.length;const rows=[];rows.push(`<tr><th>Monat</th><th>Ist</th><th>Forecast</th><th>Szenario</th><th>Ist kum.</th><th>Forecast kum.</th><th>Szenario kum.</th></tr>`);MONTHS.forEach((m,i)=>{rows.push(`<tr><td>${m}</td><td>${fmt(actual[i]||0)}</td><td>${fmt(forecast[i]||0)}</td><td>${hasS?fmt(scenario[i]||0):'-'}</td><td>${fmt(cA[i]||0)}</td><td>${fmt(cF[i]||0)}</td><td>${hasS?fmt(cS[i]||0):'-'}</td></tr>`);});els.monthsTable.innerHTML=rows.join('');}
-    function renderHintsList(actual,forecast){const hints=[];const total=actual.reduce((a,b)=>a+b,0);const peak=Math.max(...actual,0);const idx=actual.indexOf(peak);if(peak>0&&idx>=0)hints.push(`Peak: ${MONTHS[idx]} mit ${fmt(peak)} VK.`);const avgF=forecast.reduce((a,b)=>a+b,0)/forecast.length||0;if(avgF<total/12)hints.push('Trend fallend: Forecast unter dem aktuellen Monatsmittel.');if(avgF>total/12)hints.push('Trend steigend: Forecast über dem aktuellen Monatsmittel.');return hints;}
+    function renderHintsList(actual,forecast){const hints=[];const total=actual.reduce((a,b)=>a+b,0);const peak=Math.max(...actual,0);const idx=actual.indexOf(peak);if(peak>0&&idx>=0)hints.push(`Peak: ${MONTHS[idx]} mit ${fmt(peak)} VK.`);const avgF=forecast.reduce((a,b)=>a+b,0)/forecast.length||0;if(avgF<total/12)hints.push('Trend fallend: Forecast unter dem aktuellen Monatsmittel.');if(avgF>total/12)hints.push('Trend steigend: Forecast ueber dem aktuellen Monatsmittel.');return hints;}
     function renderQualTiles(entries){if(!els.qualSummaryTiles)return;const active=entries.filter(e=>e.include!==false);const counts={};active.forEach(item=>normalizeQuals(item.qual).forEach(q=>{counts[q]=(counts[q]||0)+1;}));const totalQuals=Object.keys(counts).length;const totalPeople=active.length;const praxis=Object.entries(counts).filter(([q])=>q.toLowerCase().includes('praxisanleitung')).reduce((a,[,c])=>a+c,0);const hygiene=Object.entries(counts).filter(([q])=>q.toLowerCase().includes('hygiene')).reduce((a,[,c])=>a+c,0);els.qualSummaryTiles.innerHTML=[{label:'Mitarbeitende aktiv',value:totalPeople},{label:'Unterschiedliche Qualifikationen',value:totalQuals},{label:'Praxisanleitung',value:praxis},{label:'Hygiene',value:hygiene}].map(t=>`<div class="cockpit-tile"><span>${t.label}</span><strong>${t.value}</strong></div>`).join('');}
     function renderQualTables(currentEntries,allEntries,filterQual='__all__'){if(els.qualDeptLabel)els.qualDeptLabel.textContent=state.dept||'-';if(els.qualYearLabel)els.qualYearLabel.textContent=state.year||'-';if(els.qualSiteLabel)els.qualSiteLabel.textContent=SITE_LABEL||'-';const build=list=>list.filter(e=>e.include!==false).map(e=>({dept:e.dept||state.dept||'-',name:(e.name||'').trim()||(e.personalNumber||'Unbenannt'),personalNumber:e.personalNumber||'',qualList:normalizeQuals(e.qual),type:e.type||'Mitarbeiter',months:e.months||e.values||[]}));const cur=build(currentEntries);const all=build(allEntries);const filtCur=filterQual==='__all__'?cur:cur.filter(e=>e.qualList.includes(filterQual));const filtAll=filterQual==='__all__'?all:all.filter(e=>e.qualList.includes(filterQual));if(els.qualDeptTable){if(!filtCur.length)els.qualDeptTable.innerHTML='<tr><td>Keine Qualifikationen erfasst.</td></tr>';else{const head='<tr><th>Name</th><th>Qualifikationen</th><th>Typ</th></tr>';const body=filtCur.map(r=>{const label=r.personalNumber?`${r.name} (${r.personalNumber})`:r.name;return `<tr><td>${label}</td><td>${r.qualList.join(', ')}</td><td>${r.type}</td></tr>`;}).join('');els.qualDeptTable.innerHTML=`<thead>${head}</thead><tbody>${body}</tbody>`;}}if(els.qualSummaryTable){if(!filtAll.length)els.qualSummaryTable.innerHTML='<tr><td>Keine Qualifikationen erfasst.</td></tr>';else{const by={};filtAll.forEach(r=>r.qualList.forEach(q=>{const k=`${q}|||${r.dept}`;by[k]=(by[k]||0)+1;}));const totals={};Object.entries(by).forEach(([k,c])=>{const [q]=k.split('|||');totals[q]=(totals[q]||0)+c;});const rows=[...Object.entries(by).map(([k,c])=>{const [q,d]=k.split('|||');return {q,d,c,isTotal:false};}).sort((a,b)=>a.q.localeCompare(b.q,'de')||a.d.localeCompare(b.d,'de')),...Object.entries(totals).map(([q,c])=>({q,d:'Gesamt Haus',c,isTotal:true}))];const head='<tr><th>Qualifikation</th><th>Abteilung</th><th>Anzahl</th></tr>';const body=rows.map(r=>`<tr${r.isTotal?' class="is-total"':''}><td>${r.q}</td><td>${r.d}</td><td style="text-align:right;">${r.c}</td></tr>`).join('');els.qualSummaryTable.innerHTML=`<thead>${head}</thead><tbody>${body}</tbody>`;}}if(els.qualPeopleTable){if(!filtAll.length)els.qualPeopleTable.innerHTML='<tr><td>Keine Qualifikationen erfasst.</td></tr>';else{const rows=filtAll.sort((a,b)=>a.dept.localeCompare(b.dept,'de')||a.name.localeCompare(b.name,'de'));const head='<tr><th>Mitarbeiter:in</th><th>Abteilung</th><th>Qualifikationen</th><th>Typ</th></tr>';const body=rows.map(r=>{const label=r.personalNumber?`${r.name} (${r.personalNumber})`:r.name;return `<tr><td>${label}</td><td>${r.dept}</td><td>${r.qualList.join(', ')}</td><td>${r.type}</td></tr>`;}).join('');els.qualPeopleTable.innerHTML=`<thead>${head}</thead><tbody>${body}</tbody>`;}}renderQualTiles(filtAll);}
 
@@ -1161,7 +1161,7 @@
 
       renderQualTables(activeEntries,state.allEntries,activeFilter);
     }
-function computeQualAlerts(entries){const alerts=[];const active=(entries||[]).filter(e=>e.include!==false);const by=active.reduce((acc,e)=>{(acc[e.dept]=acc[e.dept]||[]).push(e);return acc;},{});Object.entries(by).forEach(([dept,list])=>{const total=list.length||1;const count=kw=>list.filter(e=>normalizeQuals(e.qual).some(q=>q.toLowerCase().includes(kw))).length;const praxis=count('praxisanleitung');const hygiene=count('hygiene');const anae=count('anästhesie')+count('anaesthesie')+count('intensiv');const notfall=count('notfall');const qA=anae/total;const qN=notfall/total;if(praxis<=1)alerts.push(`Station ${dept}: Nur ${praxis} Praxisanleiter:in erfasst (Frühwarnung).`);if(hygiene<=2)alerts.push(`Station ${dept}: Nur ${hygiene} Hygienefachkraft/Fachkräfte erfasst (Frühwarnung).`);if(qA<0.5)alerts.push(`Station ${dept}: Fachweiterbildung Anästhesie/Intensiv unter 50% (${Math.round(qA*100)}%).`);if(qN<0.5)alerts.push(`Station ${dept}: Fachweiterbildung Notfallpflege unter 50% (${Math.round(qN*100)}%).`);});return alerts;}
+function computeQualAlerts(entries){const alerts=[];const active=(entries||[]).filter(e=>e.include!==false);const by=active.reduce((acc,e)=>{(acc[e.dept]=acc[e.dept]||[]).push(e);return acc;},{});Object.entries(by).forEach(([dept,list])=>{const total=list.length||1;const count=kw=>list.filter(e=>normalizeQuals(e.qual).some(q=>q.toLowerCase().includes(kw))).length;const praxis=count('praxisanleitung');const hygiene=count('hygiene');const anae=count('anaesthesie')+count('anaesthesie')+count('intensiv');const notfall=count('notfall');const qA=anae/total;const qN=notfall/total;if(praxis<=1)alerts.push(`Station ${dept}: Nur ${praxis} Praxisanleiter:in erfasst (Fruehwarnung).`);if(hygiene<=2)alerts.push(`Station ${dept}: Nur ${hygiene} Hygienefachkraft/Fachkraefte erfasst (Fruehwarnung).`);if(qA<0.5)alerts.push(`Station ${dept}: Fachweiterbildung Anaesthesie/Intensiv unter 50% (${Math.round(qA*100)}%).`);if(qN<0.5)alerts.push(`Station ${dept}: Fachweiterbildung Notfallpflege unter 50% (${Math.round(qN*100)}%).`);});return alerts;}
 
     function syncDept(val){state.dept=val;if(els.deptSelect)els.deptSelect.value=val;if(els.chartsDeptSelect)els.chartsDeptSelect.value=val;}
     function syncYear(val){state.year=clampYear(val);if(els.yearSelect)els.yearSelect.value=state.year;if(els.chartsYearSelect)els.chartsYearSelect.value=state.year;if(els.planYearSelect)els.planYearSelect.value=state.year;}

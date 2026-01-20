@@ -39,7 +39,7 @@
     <section class="hero card">
       <div class="badge">Clinicon Assistent</div>
       <h1>Direktbefehle an den Stellenplan</h1>
-      <p class="hint">Mandant wird automatisch verwendet. KI-Parser läuft vor der Ausführung.</p>
+      <p class="hint">Mandant wird automatisch verwendet. KI-Parser laeuft vor der Ausfuehrung.</p>
     </section>
 
     <section class="card">
@@ -150,11 +150,11 @@
         els.auditTop.innerHTML = top3.map(item=>{
           const ts = (item.created_at||"").replace("T"," ").replace("Z","");
           return `<div class="bubble"><strong>${ts}</strong> · ${item.status||""}<br>Aktion: ${item.action||"-"}<br>Cmd: ${item.command||""}</div>`;
-        }).join("") || '<div class="hint">Keine Einträge.</div>';
+        }).join("") || '<div class="hint">Keine Eintraege.</div>';
         els.auditScroll.innerHTML = rest.map(item=>{
           const ts = (item.created_at||"").replace("T"," ").replace("Z","");
           return `<div class="bubble" style="margin-bottom:6px;"><strong>${ts}</strong> · ${item.status||""}<br>Aktion: ${item.action||"-"} · Jahr: ${item.plan_year||"-"}<br>Cmd: ${item.command||""}</div>`;
-        }).join("") || '<div class="hint">Ältere Einträge leer.</div>';
+        }).join("") || '<div class="hint">Aeltere Eintraege leer.</div>';
       }catch(err){
         els.auditTop.innerHTML = '<div class="hint">Audit-Log Fehler: '+err.message+'</div>';
         els.auditScroll.innerHTML = '';
@@ -181,13 +181,13 @@
       const parsed = parseRes.data?.parsed || {};
       els.lastJson.textContent = "KI-JSON:\n" + JSON.stringify(parsed, null, 2);
       if(parsed.needs_clarification){
-        appendBubble(`⚠️ Klärungsfrage: ${parsed.clarification_question || "Bitte präzisieren."}`, "bot");
-        setStatus("Klärung nötig","err");
+        appendBubble(`⚠️ Klaerungsfrage: ${parsed.clarification_question || "Bitte praezisieren."}`, "bot");
+        setStatus("Klaerung noetig","err");
         return;
       }
 
-      // 2) DB-Ausführung
-      setStatus("Ausführung ...");
+      // 2) DB-Ausfuehrung
+      setStatus("Ausfuehrung ...");
       const execRes = await requestJson("/api/command", {
         method:"POST",
         headers:{"Content-Type":"application/json"},
@@ -202,7 +202,7 @@
       const applied = execRes.data?.applied || {};
       const feedback = formatApplied(applied, execRes.data?.parsed);
       const parts = [
-        "Backend bestätigt",
+        "Backend bestaetigt",
         "Aktion: " + (execRes.data?.parsed?.intent || execRes.data?.parsed?.action || "unbekannt"),
         feedback || null,
         "Mandant: " + SITE

@@ -1,14 +1,10 @@
 <!-- AVR Gehaltsrechner -->
+<link rel="stylesheet" href="shared/ui-base.css" />
 <style>
   #gehaltsrechner{
     width:100%;
     display:block;
     padding:0;
-  }
-  #gehaltsrechner .hint{
-    margin:0;
-    color:var(--muted,#64748b);
-    
   }
   #gehaltsrechner .result-meta{
     margin:0;
@@ -46,15 +42,6 @@
   }
   #gehaltsrechner .task-text li{
     margin:0;
-  }
-  #gehaltsrechner .future-note{
-    margin:10px 0 0;
-    padding:clamp(0.6rem, 1.8vw, 0.8rem) clamp(0.7rem, 2vw, 0.9rem);
-    border-radius:12px;
-    border:1px dashed var(--line,#e2e8f0);
-    background:#f8fafc;
-    color:var(--muted,#64748b);
-    
   }
   #gehaltsrechner .calc-btn{
     background:var(--accent,#2563eb);
@@ -124,12 +111,10 @@
   }
 </style>
 
-<section class="card ppug-layout" id="gehaltsrechner">
+<section class="card ppug-layout ui-scope" id="gehaltsrechner">
   <div class="ppug-grid">
     <div class="ppug-card">
       <h2>Gehaltsrechner AVR Caritas</h2>
-      <p class="hint">Anlage 31 (Pflegedienst), Tabellenwerte 2025 (Ost/West).</p>
-      <p class="future-note">Hinweis: Geplant ist eine kleine Visitenkarte mit QR-Code zur Gehaltsrechner-Seite, damit der Rechner unterwegs schnell per Handy genutzt werden kann.</p>
 
       <div class="row">
         <label class="field span-4">
@@ -144,7 +129,7 @@
           Bundesland
           <select id="avr-state">
             <option value="" disabled>Bitte auswaehlen</option>
-            <option value="baden-wuerttemberg">Baden-W&uuml;rttemberg</option>
+            <option value="baden-wuerttemberg">Baden-Wuerttemberg</option>
             <option value="bayern">Bayern</option>
             <option value="berlin">Berlin</option>
             <option value="brandenburg">Brandenburg</option>
@@ -159,7 +144,7 @@
             <option value="sachsen">Sachsen</option>
             <option value="sachsen-anhalt">Sachsen-Anhalt</option>
             <option value="schleswig-holstein">Schleswig-Holstein</option>
-            <option value="thueringen">Th&uuml;ringen</option>
+            <option value="thueringen">Thueringen</option>
           </select>
         </label>
       </div>
@@ -179,8 +164,8 @@
           <label class="check span-6">
             <input type="radio" name="shiftType" class="avr-allow" data-key="shift" />
             <span class="tip" tabindex="0"
-              data-tip="Gilt, wenn du dauerhaft im Schichtdienst eingesetzt bist (dienstplanm&auml;&szlig;iger Wechsel von Fr&uuml;h/Sp&auml;t &uuml;ber einen l&auml;ngeren Zeitraum).">
-              Schichtzulage (st&auml;ndig) <span class="i" aria-hidden="true">?</span>
+              data-tip="Gilt, wenn du dauerhaft im Schichtdienst eingesetzt bist (dienstplanmaessiger Wechsel von Frueh/Spaet ueber einen laengeren Zeitraum).">
+              Schichtzulage (staendig) <span class="i" aria-hidden="true">?</span>
             </span>
             <input type="number" class="avr-allow-amt" data-key="shift" step="0.01" min="0" value="100.00" />
             <span class="muted">&euro;/Monat</span>
@@ -189,8 +174,8 @@
           <label class="check span-6">
             <input type="radio" name="shiftType" class="avr-allow" data-key="ws" />
             <span class="tip" tabindex="0"
-              data-tip="Gilt, wenn du st&auml;ndig in Wechselschicht arbeitest (dienstplanm&auml;&szlig;iger Wechsel zwischen Tag- und Nachtschichten).">
-              Wechselschichtzulage (st&auml;ndige Wechselschicht) <span class="i" aria-hidden="true">?</span>
+              data-tip="Gilt, wenn du staendig in Wechselschicht arbeitest (dienstplanmaessiger Wechsel zwischen Tag- und Nachtschichten).">
+              Wechselschichtzulage (staendige Wechselschicht) <span class="i" aria-hidden="true">?</span>
             </span>
             <input type="number" class="avr-allow-amt" data-key="ws" step="0.01" min="0" value="250.00" />
             <span class="muted">&euro;/Monat</span>
@@ -199,7 +184,7 @@
           <label class="check span-6">
             <input type="checkbox" class="avr-allow" data-key="care" />
             <span class="tip" tabindex="0"
-              data-tip="Gilt f&uuml;r Mitarbeitende in den Pflege-Entgeltgruppen (z. B. P 4 bis P 16), wenn die Zulage f&uuml;r die jeweilige Eingruppierung vorgesehen ist.">
+              data-tip="Gilt fuer Mitarbeitende in den Pflege-Entgeltgruppen (z. B. P 4 bis P 16), wenn die Zulage fuer die jeweilige Eingruppierung vorgesehen ist.">
               Pflegezulage <span class="i" aria-hidden="true">?</span>
             </span>
             <input type="number" class="avr-allow-amt" data-key="care" step="0.01" min="0" value="141.82" />
@@ -209,7 +194,7 @@
           <label class="check span-6">
             <input type="checkbox" class="avr-allow" data-key="nonDyn" />
             <span class="tip" tabindex="0"
-              data-tip="Gilt nur, wenn deine Eingruppierung oder regionale Regelung diese Zulage ausdr&uuml;cklich vorsieht.">
+              data-tip="Gilt nur, wenn deine Eingruppierung oder regionale Regelung diese Zulage ausdruecklich vorsieht.">
               Nicht dynamische Zulage <span class="i" aria-hidden="true">?</span>
             </span>
             <input type="number" class="avr-allow-amt" data-key="nonDyn" step="0.01" min="0" value="25.00" />
@@ -219,7 +204,7 @@
         </div>
 
         <p class="muted note" style="margin:8px 0 0 0;">
-          Hinweis: Manche Zulagen gelten nur f&uuml;r bestimmte T&auml;tigkeiten/Entgeltgruppen/Regionen. Betr&auml;ge sind editierbar. Alle Zulagen werden brutto gezahlt und unterliegen der Steuer- und Sozialversicherungspflicht.
+          Hinweis: Manche Zulagen gelten nur fuer bestimmte Taetigkeiten/Entgeltgruppen/Regionen. Betraege sind editierbar. Alle Zulagen werden brutto gezahlt und unterliegen der Steuer- und Sozialversicherungspflicht.
         </p>
       </div>
     </div>
@@ -261,7 +246,7 @@
       <p class="result-meta">Bundesland: <strong id="avr-result-state">-</strong></p>
       <p class="muted note" id="avr-source-note">Quelle: AVR Caritas Anlage 31 (Tabellenwerte).</p>
       <div class="task-card">
-        <h4>T&auml;tigkeitsmerkmale (Auszug)</h4>
+        <h4>Taetigkeitsmerkmale (Auszug)</h4>
         <div class="task-text" id="avr-role-text">-</div>
         <p class="muted note">Quelle: schiering.org &ndash; Anlage 31, Anhang D (Stand 31.12.2025).</p>
       </div>
@@ -368,50 +353,50 @@
 
     const ROLE_BY_GROUP = {
       P4: [
-        'Pflegehelfer mit entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3).'
+        'Pflegehelfer mit entsprechender Taetigkeit (Anmerkungen Nrn. 1 bis 3).'
       ],
       P6: [
-        'Pflegehelfer mit mindestens einj&auml;hriger Ausbildung und entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3).'
+        'Pflegehelfer mit mindestens einjaehriger Ausbildung und entsprechender Taetigkeit (Anmerkungen Nrn. 1 bis 3).'
       ],
       P7: [
-        'Pfleger mit mindestens dreij&auml;hriger Ausbildung und entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3 und 7).',
-        'Operationstechnische Assistenten sowie An&auml;sthesietechnische Assistenten mit abgeschlossener Ausbildung nach der DKG-Empfehlung vom 17. September 2013 (oder gleichwertiger landesrechtlicher Regelung) und entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3).'
+        'Pfleger mit mindestens dreijaehriger Ausbildung und entsprechender Taetigkeit (Anmerkungen Nrn. 1 bis 3 und 7).',
+        'Operationstechnische Assistenten sowie Anaesthesietechnische Assistenten mit abgeschlossener Ausbildung nach der DKG-Empfehlung vom 17. September 2013 (oder gleichwertiger landesrechtlicher Regelung) und entsprechender Taetigkeit (Anmerkungen Nrn. 1 bis 3).'
       ],
       P8: [
-        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 1, deren T&auml;tigkeit sich aufgrund besonderer Schwierigkeit erheblich aus der Entgeltgruppe P 7 Fallgruppe 1 heraushebt (Anmerkungen Nrn. 1 bis 6).',
-        'Praxisanleiter in der Pflege mit berufsp&auml;dagogischer Zusatzqualifikation nach bundesrechtlicher Regelung und entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3).',
-        'Hebammen und Entbindungspfleger mit mindestens dreij&auml;hriger Ausbildung und entsprechender T&auml;tigkeit.',
-        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 2, deren T&auml;tigkeit sich aufgrund besonderer Schwierigkeit erheblich aus der Entgeltgruppe P 7 Fallgruppe 2 heraushebt (Anmerkungen Nrn. 1 bis 6).'
+        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 1, deren Taetigkeit sich aufgrund besonderer Schwierigkeit erheblich aus der Entgeltgruppe P 7 Fallgruppe 1 heraushebt (Anmerkungen Nrn. 1 bis 6).',
+        'Praxisanleiter in der Pflege mit berufspaedagogischer Zusatzqualifikation nach bundesrechtlicher Regelung und entsprechender Taetigkeit (Anmerkungen Nrn. 1 bis 3).',
+        'Hebammen und Entbindungspfleger mit mindestens dreijaehriger Ausbildung und entsprechender Taetigkeit.',
+        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 2, deren Taetigkeit sich aufgrund besonderer Schwierigkeit erheblich aus der Entgeltgruppe P 7 Fallgruppe 2 heraushebt (Anmerkungen Nrn. 1 bis 6).'
       ],
       P9: [
-        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 1 mit abgeschlossener Fachweiterbildung und entsprechender T&auml;tigkeit (Anmerkungen Nrn. 1 bis 3 und 6).',
-        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 1 mit erfolgreich abgeschlossener Fachweiterbildung zur Hygienefachkraft und entsprechender T&auml;tigkeit.',
-        'Mitarbeiter als st&auml;ndige Vertreter von Gruppenleitern oder Teamleitern (Anmerkung).'
+        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 1 mit abgeschlossener Fachweiterbildung und entsprechender Taetigkeit (Anmerkungen Nrn. 1 bis 3 und 6).',
+        'Mitarbeiter der Entgeltgruppe P 7 Fallgruppe 1 mit erfolgreich abgeschlossener Fachweiterbildung zur Hygienefachkraft und entsprechender Taetigkeit.',
+        'Mitarbeiter als staendige Vertreter von Gruppenleitern oder Teamleitern (Anmerkung).'
       ],
       P10: [
         'Mitarbeiter als Gruppenleiter oder Teamleiter.',
-        'Mitarbeiter als st&auml;ndige Vertreter von Gruppenleitern oder Teamleitern der Entgeltgruppe P 11 Fallgruppe 1.'
+        'Mitarbeiter als staendige Vertreter von Gruppenleitern oder Teamleitern der Entgeltgruppe P 11 Fallgruppe 1.'
       ],
       P11: [
-        'Mitarbeiter als Gruppenleiter bzw. Teamleiter mit einem h&ouml;heren Ma&szlig; von Verantwortlichkeit oder von gro&szlig;en Gruppen oder Teams.',
-        'Mitarbeiter als st&auml;ndige Vertreter von Stationsleitern.'
+        'Mitarbeiter als Gruppenleiter bzw. Teamleiter mit einem hoeheren Mass von Verantwortlichkeit oder von grossen Gruppen oder Teams.',
+        'Mitarbeiter als staendige Vertreter von Stationsleitern.'
       ],
       P12: [
         'Mitarbeiter als Stationsleiter.',
-        'Mitarbeiter als st&auml;ndige Vertreter von Stationsleitern der Entgeltgruppe P 13 oder von Bereichsleitern oder Abteilungsleitern.'
+        'Mitarbeiter als staendige Vertreter von Stationsleitern der Entgeltgruppe P 13 oder von Bereichsleitern oder Abteilungsleitern.'
       ],
       P13: [
-        'Mitarbeiter als Stationsleiter mit einem h&ouml;heren Ma&szlig; von Verantwortlichkeit oder von gro&szlig;en Stationen.'
+        'Mitarbeiter als Stationsleiter mit einem hoeheren Mass von Verantwortlichkeit oder von grossen Stationen.'
       ],
       P14: [
         'Mitarbeiter als Bereichsleiter oder als Abteilungsleiter.',
-        'Mitarbeiter als st&auml;ndige Vertreter von Bereichsleitern der Entgeltgruppe P 15.'
+        'Mitarbeiter als staendige Vertreter von Bereichsleitern der Entgeltgruppe P 15.'
       ],
       P15: [
-        'Mitarbeiter als Bereichsleiter oder als Abteilungsleiter, deren T&auml;tigkeit sich durch den Umfang und die Bedeutung ihres Aufgabengebietes sowie durch gro&szlig;e Selbst&auml;ndigkeit erheblich aus der Entgeltgruppe P 14 heraushebt oder von gro&szlig;en Bereichen bzw. Abteilungen.'
+        'Mitarbeiter als Bereichsleiter oder als Abteilungsleiter, deren Taetigkeit sich durch den Umfang und die Bedeutung ihres Aufgabengebietes sowie durch grosse Selbstaendigkeit erheblich aus der Entgeltgruppe P 14 heraushebt oder von grossen Bereichen bzw. Abteilungen.'
       ],
       P16: [
-        'Mitarbeiter der Entgeltgruppe P 15, deren T&auml;tigkeit sich durch das Ma&szlig; der damit verbundenen Verantwortung erheblich aus der Entgeltgruppe P 15 heraushebt.'
+        'Mitarbeiter der Entgeltgruppe P 15, deren Taetigkeit sich durch das Mass der damit verbundenen Verantwortung erheblich aus der Entgeltgruppe P 15 heraushebt.'
       ]
     };
 
@@ -563,4 +548,3 @@
     }
   })();
 </script>
-

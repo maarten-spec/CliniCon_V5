@@ -29,13 +29,13 @@ const json = (d, s = 200) =>
 
 // ---------- KI-Prompt ----------
 const SYSTEM_PROMPT = `
-Du bist ein Assistent für das Stellenplan- und Personalplanungssystem "Clinicon" in einem Krankenhaus.
+Du bist ein Assistent fuer das Stellenplan- und Personalplanungssystem "Clinicon" in einem Krankenhaus.
 
 AUFGABE:
-- Du erhältst deutschsprachige Texte (Befehle oder Fragen).
-- Du interpretierst diese Texte und gibst IMMER eine JSON-Struktur zurück.
-- Du führst KEINE Aktionen selbst aus, du PARST nur.
-- Wenn etwas unklar ist, schlage eine Rückfrage vor und setze "needs_clarification" auf true.
+- Du erhaeltst deutschsprachige Texte (Befehle oder Fragen).
+- Du interpretierst diese Texte und gibst IMMER eine JSON-Struktur zurueck.
+- Du fuehrst KEINE Aktionen selbst aus, du PARST nur.
+- Wenn etwas unklar ist, schlage eine Rueckfrage vor und setze "needs_clarification" auf true.
 
 ERLAUBTE INTENTS:
 - "adjust_person_fte_rel"
@@ -68,11 +68,11 @@ AUSGABEFORMAT (immer JSON):
 }
 
 BESONDERE REGELN:
-- "delta_fte" ist für relative Änderungen, z.B. -0.5 für "um 0,5 VK reduzieren".
-- "target_fte" ist für absolute Zielwerte, z.B. 0.8 für "auf 0,8 VK setzen".
+- "delta_fte" ist fuer relative Aenderungen, z.B. -0.5 fuer "um 0,5 VK reduzieren".
+- "target_fte" ist fuer absolute Zielwerte, z.B. 0.8 fuer "auf 0,8 VK setzen".
 - Monate als deutschen Text.
-- Fehlende Pflichtinfos -> needs_clarification=true + passende Rückfrage.
-- Immer nur JSON, kein Fließtext.
+- Fehlende Pflichtinfos -> needs_clarification=true + passende Rueckfrage.
+- Immer nur JSON, kein Fliesstext.
 `;
 
 // ---------- KI-Aufruf ----------
@@ -467,7 +467,7 @@ async function handleAuditFetch(env, url) {
 const MONTH_MAP = {
   "januar": "jan", "jan": "jan",
   "februar": "feb", "feb": "feb",
-  "märz": "mrz", "maerz": "mrz", "mrz": "mrz",
+  "maerz": "mrz", "maerz": "mrz", "mrz": "mrz",
   "april": "apr", "apr": "apr",
   "mai": "mai",
   "juni": "jun", "jun": "jun",
@@ -482,7 +482,7 @@ const MONTHS = ["jan","feb","mrz","apr","mai","jun","jul","aug","sep","okt","nov
 const YEAR_MIN = 2026;
 const YEAR_MAX = 2099;
 const monthCol = (m, y) => {
-  const key = (m || "").toLowerCase().replace("ä", "ae").replace("ö", "oe").replace("ü", "ue");
+  const key = (m || "").toLowerCase().replace("ae", "ae").replace("oe", "oe").replace("ue", "ue");
   const base = MONTH_MAP[key] || key.slice(0,3);
   return `${base}_${y}`;
 };
@@ -498,7 +498,7 @@ async function fetchEmployee(env, table, name, year){
 }
 function ensureYearInRange(y){
   if (y < YEAR_MIN || y > YEAR_MAX) {
-    throw new Error(`Jahr ${y} nicht verfügbar (erwartet ${YEAR_MIN}-${YEAR_MAX}).`);
+    throw new Error(`Jahr ${y} nicht verfuegbar (erwartet ${YEAR_MIN}-${YEAR_MAX}).`);
   }
 }
 function ensureHasColumn(record, colName, table){
@@ -511,7 +511,7 @@ async function actAdjustRel(env, table, fields){
   const col = monthCol(fields.month, y);
   const delta = num(fields.delta_fte);
   const emp = await fetchEmployee(env, table, fields.employee_name||"", y);
-  if(!emp) throw new Error(`Kein Datensatz für ${fields.employee_name} in ${y}`);
+  if(!emp) throw new Error(`Kein Datensatz fuer ${fields.employee_name} in ${y}`);
   ensureHasColumn(emp, col, table);
   const cur = num(emp[col]), neu = cur + delta;
   await updateColumns(env, table, emp.id, { [col]: neu, updated_at: new Date().toISOString() });
@@ -523,7 +523,7 @@ async function actAdjustAbs(env, table, fields){
   const col = monthCol(fields.month, y);
   const target = num(fields.target_fte);
   const emp = await fetchEmployee(env, table, fields.employee_name||"", y);
-  if(!emp) throw new Error(`Kein Datensatz für ${fields.employee_name} in ${y}`);
+  if(!emp) throw new Error(`Kein Datensatz fuer ${fields.employee_name} in ${y}`);
   ensureHasColumn(emp, col, table);
   const cur = num(emp[col]);
   await updateColumns(env, table, emp.id, { [col]: target, updated_at: new Date().toISOString() });
@@ -533,7 +533,7 @@ async function actTransfer(env, table, fields){
   const y = parseInt(fields.year||"0",10); if(!y) throw new Error("Jahr fehlt.");
   ensureYearInRange(y);
   const emp = await fetchEmployee(env, table, fields.employee_name||"", y);
-  if(!emp) throw new Error(`Kein Datensatz für ${fields.employee_name} in ${y}`);
+  if(!emp) throw new Error(`Kein Datensatz fuer ${fields.employee_name} in ${y}`);
   await updateColumns(env, table, emp.id, { dept: fields.unit||"", updated_at: new Date().toISOString() });
   return { employee_id: emp.id, table, old_dept: emp.dept, new_dept: fields.unit||"", year: y };
 }
@@ -576,7 +576,7 @@ async function actEmployeeFteYear(env, table, fields){
   const record = rows[0];
   const effectiveYear = y; // erzwinge das angefragte Jahr
   const cols=MONTHS.map(m=>`${m}_${effectiveYear}`);
-  // prüfen, ob alle Spalten existieren
+  // pruefen, ob alle Spalten existieren
   cols.forEach(c => ensureHasColumn(record, c, table));
   const selectVals = cols.map(c=>num(record[c]));
   const avg=selectVals.reduce((a,b)=>a+b,0)/cols.length;
@@ -602,10 +602,10 @@ async function actEmployeeFteYear(env, table, fields){
 // ROLLOVER: Werte von fromYear nach toYear kopieren, optional gefiltert auf ids/dept, mode: fill (nur leere Ziele) oder overwrite (immer)
 async function actRollover(env, table, fromYear, toYear, dept, ids = [], mode = "fill") {
   if(fromYear < YEAR_MIN || toYear > YEAR_MAX || fromYear >= toYear){
-    throw new Error(`Jahresbereich ungültig (${fromYear}-${toYear}, erlaubt ${YEAR_MIN}-${YEAR_MAX}, from<to)`);
+    throw new Error(`Jahresbereich ungueltig (${fromYear}-${toYear}, erlaubt ${YEAR_MIN}-${YEAR_MAX}, from<to)`);
   }
   if(!Array.isArray(ids) || ids.length === 0){
-    throw new Error("Bitte ids angeben (Array von IDs), um einen gezielten Rollover auszuführen.");
+    throw new Error("Bitte ids angeben (Array von IDs), um einen gezielten Rollover auszufuehren.");
   }
   const colsFrom = MONTHS.map(m => `${m}_${fromYear}`);
   const colsTo = MONTHS.map(m => `${m}_${toYear}`);
@@ -659,7 +659,7 @@ async function handleAiCommand(body, env, executeDb = false) {
     return json({ success: true, parsed });
   }
 
-  // DB-Ausführung
+  // DB-Ausfuehrung
   const intent = parsed.intent || "unknown";
   const f = parsed.fields || {};
   let result;
@@ -798,13 +798,13 @@ export default {
       try { return await handleAiCommand(body, env, false); } catch (err) { return json({ success:false, error: err.message },500); }
     }
 
-    // KI-Parser + DB-Ausführung
+    // KI-Parser + DB-Ausfuehrung
     if (url.pathname === "/api/command" && request.method === "POST") {
       let body; try { body = await request.json(); } catch { return json({ success:false, error:"Invalid JSON" },400); }
       try { return await handleAiCommand(body, env, true); } catch (err) { return json({ success:false, error: err.message },500); }
     }
 
-    // Rollover (Werte von fromYear nach toYear kopieren, nur leere Ziele werden gefüllt)
+    // Rollover (Werte von fromYear nach toYear kopieren, nur leere Ziele werden gefuellt)
     if (url.pathname === "/api/rollover" && request.method === "POST") {
       let body; try { body = await request.json(); } catch { return json({ success:false, error:"Invalid JSON" },400); }
       return await handleRollover(body, env);

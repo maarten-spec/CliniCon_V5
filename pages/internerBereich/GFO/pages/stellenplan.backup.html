@@ -133,7 +133,7 @@
       border:1px solid #bae6fd;
       font-weight:600;
     }
-    // Qualifikations-Popover (wird für beide Tabellen genutzt)
+    // Qualifikations-Popover (wird fuer beide Tabellen genutzt)
     const qualPopover = document.createElement('div');
     qualPopover.className = 'qual-popover';
     qualPopover.innerHTML = QUAL_OPTIONS.map(opt => `<label><input type="checkbox" data-qual="${opt}">${opt}</label>`).join('');
@@ -243,12 +243,12 @@
           </tfoot>
         </table>
       </div>
-      <p class="hint">Alle Werte in VK. &Auml;nderungen werden lokal im Browser pro Abteilung/Jahr gespeichert.</p>
+      <p class="hint">Alle Werte in VK. Aenderungen werden lokal im Browser pro Abteilung/Jahr gespeichert.</p>
     </section>
 
     <section class="card">
       <div class="section-header">
-        <h3 style="margin-top:0;">Zusatzgruppen (Sch&uuml;ler:innen, Azubis, MFA, ATA ...)</h3>
+        <h3 style="margin-top:0;">Zusatzgruppen (Schueler:innen, Azubis, MFA, ATA ...)</h3>
       </div>
       <div class="table-wrap">
         <table id="extrasTable">
@@ -294,7 +294,7 @@
     const DEPARTMENTS = ['Station 1','Station 2','Station 3','Station 4','Station 5','Station 6','Station 7','Endoskopie','OP','Sozialdienst','Pflegedienstleitung'];
     const QUAL_OPTIONS = [
       'Notfallpflege',
-      'Anästhesie/Intensiv',
+      'Anaesthesie/Intensiv',
       'Hygiene',
       'Praxisanleitung',
       'OP',
@@ -310,9 +310,9 @@
       'Neonatologie',
       'Psychiatrie',
       'Schmerzmanagement',
-      'Pflegepädagogik',
+      'Pflegepaedagogik',
       'Stationsleitung',
-      'Fachkraft Präv./Reha'
+      'Fachkraft Praev./Reha'
     ];
     const DEFAULT_SUPABASE_URL = 'https://fqilehnixnsujefyrdcy.supabase.co';
     const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxaWxlaG5peG5zdWplZnlyZGN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MjIyNzUsImV4cCI6MjA3OTQ5ODI3NX0.Ml1J-YsID7_CXX7LbLZM4ayhWpV08FBSZc3rgVuwqt4';
@@ -387,7 +387,7 @@
             {id:crypto.randomUUID(), personalNumber:'', name:'Mitarbeiter:in 2', values:Array(12).fill(0)}
           ],
           extras:[
-            {id:crypto.randomUUID(), personalNumber:'', category:'Schüler:in', values:Array(12).fill(0)},
+            {id:crypto.randomUUID(), personalNumber:'', category:'Schueler:in', values:Array(12).fill(0)},
             {id:crypto.randomUUID(), personalNumber:'', category:'Azubi', values:Array(12).fill(0)},
             {id:crypto.randomUUID(), personalNumber:'', category:'MFA/ATA', values:Array(12).fill(0)}
           ]
@@ -586,7 +586,7 @@
         const tr = document.createElement('tr');
         tr.dataset.id = emp.id;
         const qualBadgeLabel = (emp.qual||'').split(',').filter(Boolean);
-        const qualText = qualBadgeLabel.length ? qualBadgeLabel.join(', ') : 'Qualifikation wählen';
+        const qualText = qualBadgeLabel.length ? qualBadgeLabel.join(', ') : 'Qualifikation waehlen';
         const qualButtons = `<button class="qual-badge" data-qual-badge="emp" data-id="${emp.id}"><span>${qualText}</span><span>▼</span></button>`;
         let tds = `<td><input class="name-input" data-field="pnr" placeholder="z.B. 1001" value="${emp.personalNumber||''}"></td>`;
         tds += `<td><input class="name-input" data-field="name" value="${emp.name}"></td>`;
@@ -612,7 +612,7 @@
         const tr = document.createElement('tr');
         tr.dataset.id = ex.id;
         const qualBadgeLabel = (ex.qual||'').split(',').filter(Boolean);
-        const qualText = qualBadgeLabel.length ? qualBadgeLabel.join(', ') : 'Qualifikation wählen';
+        const qualText = qualBadgeLabel.length ? qualBadgeLabel.join(', ') : 'Qualifikation waehlen';
         const qualButtons = `<button class="qual-badge" data-qual-badge="extra" data-id="${ex.id}"><span>${qualText}</span><span>▼</span></button>`;
         let tds = `<td><input class="name-input" data-field="pnr" placeholder="z.B. 2001" value="${ex.personalNumber||''}"></td>`;
         tds += `<td><input class="name-input" data-field="category" value="${ex.category}"></td>`;

@@ -1,4 +1,5 @@
 <!-- Login Seite -->
+<link rel="stylesheet" href="shared/ui-base.css" />
 <style>
   .login-page{
     grid-column:1/-1;
@@ -84,11 +85,11 @@
   }
 </style>
 
-<section class="login-page ppug-layout">
+<section class="login-page ppug-layout ui-scope">
   <form class="login-box" onsubmit="return login(event)">
     <img alt="CliniCon Logo" class="login-logo" src="../assets/Bilder/CliniConLogo.png" />
     <h2>Interner Bereich</h2>
-    <p class="login-intro">Bitte melden Sie sich mit Ihrem Standortk&uuml;rzel und Ihrem pers&ouml;nlichen Passwort an.</p>
+    <p class="login-intro">Bitte melden Sie sich mit Ihrem Standortkuerzel und Ihrem persoenlichen Passwort an.</p>
     <div class="input-group">
       <label for="username">Benutzername</label>
       <input id="username" placeholder="Benutzername" required type="text" autocomplete="username" />
@@ -207,4 +208,3 @@
   }
 </script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-

@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="shared/ui-base.css" />
 <style>
   .shift-page{
     width:100%;
@@ -25,23 +26,23 @@
     justify-content:space-between;
     padding:clamp(1rem, 2.6vw, 1.4rem);
     border:1px solid var(--line,#e2e8f0);
-    border-radius:18px;
+    border-radius:var(--radius-lg);
     background:var(--panel,#fff);
     box-shadow:0 18px 32px rgba(15,23,42,.06);
   }
   .shift-hero__copy h2{margin:6px 0 6px; }
   .shift-hero__copy p{margin:0; max-width:45rem; color:var(--muted,#64748b);}
-  .shift-hero__actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
+  .shift-hero__actions{display:flex; gap:var(--space-3); flex-wrap:wrap; margin-top:12px;}
   .shift-hero__stats{
     display:grid;
     grid-template-columns:repeat(auto-fit, minmax(clamp(9rem, 18vw, 11rem), 1fr));
-    gap:10px;
+    gap:var(--space-3);
     min-width:clamp(14rem, 30vw, 18rem);
   }
   .shift-hero__stats .stat{
     padding:12px 14px;
     border:1px solid var(--line,#e2e8f0);
-    border-radius:14px;
+    border-radius:var(--radius-md);
     background:#fff;
     display:grid;
     gap:4px;
@@ -53,13 +54,13 @@
   .shift-app{
     display:flex;
     flex-direction:column;
-    gap:16px;
+    gap:var(--space-4);
   }
 
   .shift-card{
     background:var(--panel,#fff);
     border:1px solid var(--line,#e2e8f0);
-    border-radius:18px;
+    border-radius:var(--radius-lg);
     padding:clamp(1rem, 2.6vw, 1.4rem);
     box-shadow:0 18px 32px rgba(15,23,42,.06);
   }
@@ -86,7 +87,7 @@
 
   .shift-table-scroll{
     overflow:auto;
-    border-radius:12px;
+    border-radius:var(--radius-md);
     border:1px solid var(--line,#e2e8f0);
     background:#fff;
   }
@@ -100,7 +101,7 @@
     background:#f8fafc;
     z-index:2;
     text-align:left;
-    padding:10px 10px;
+    padding:0.6rem 0.7rem;
     
     font-weight:600;
     color:#0f172a;
@@ -108,9 +109,15 @@
   }
   .shift-page tbody td{
     background:#fff;
-    padding:10px;
+    padding:0.6rem 0.7rem;
     border-bottom:1px solid var(--line,#e2e8f0);
     vertical-align:middle;
+  }
+  .shift-page tbody tr:nth-child(even) td{
+    background:#f8fafc;
+  }
+  .shift-page tbody tr:hover td{
+    background:#eef2ff;
   }
   .shift-table-value{
     font-weight:600;
@@ -123,9 +130,9 @@
     display:inline-flex;
     align-items:center;
     gap:8px;
-    border-radius:12px;
+    border-radius:var(--radius-md);
     border:1px solid var(--line,#e2e8f0);
-    padding:10px 14px;
+    padding:0.6rem 1rem;
     font-weight:600;
     cursor:pointer;
     background:#fff;
@@ -153,9 +160,9 @@
 
   .shift-input{
     width:100%;
-    padding:10px 12px;
+    padding:0.6rem 0.75rem;
     border:1px solid var(--line,#e2e8f0);
-    border-radius:10px;
+    border-radius:var(--radius-md);
     background:#fff;
     font-family:var(--font-base);
     transition:.16s ease border,.16s ease box-shadow;
@@ -172,9 +179,9 @@
   .shift-duration-display{
     width:100%;
     min-width:7rem;
-    padding:10px 12px;
+    padding:0.6rem 0.75rem;
     border:1px solid var(--line,#e2e8f0);
-    border-radius:10px;
+    border-radius:var(--radius-md);
     background:#f8fafc;
     font-family:var(--font-base);
     color:#0f172a;
@@ -189,7 +196,7 @@
   }
   .shift-availability .mini-card{
     border:1px solid var(--line,#e2e8f0);
-    border-radius:14px;
+    border-radius:var(--radius-md);
     padding:14px;
     background:#fff;
     display:flex;
@@ -208,17 +215,17 @@
   }
 </style>
 
-<section class="card page-frame ppug-layout" id="schichtmatrix-frame">
+<section class="card page-frame ppug-layout ui-scope" id="schichtmatrix-frame">
   <div class="ppug-grid">
     <div class="shift-page">
       <div class="shift-shell">
         <div class="shift-hero">
           <div class="shift-hero__copy">
-            <h2>Dienste planen &amp; Vollzeitkr&auml;fte-Bedarf ermitteln</h2>
-            <p>Plane Dienste, ber&uuml;cksichtige Ausf&auml;lle und lass dir Stunden- sowie VK-Bedarf automatisch berechnen.</p>
+            <h2>Dienste planen &amp; Vollzeitkraefte-Bedarf ermitteln</h2>
+            <p>Plane Dienste, beruecksichtige Ausfaelle und lass dir Stunden- sowie VK-Bedarf automatisch berechnen.</p>
             <div class="shift-hero__actions">
               <button type="button" class="shift-button shift-button--ghost" id="bp-addPreset">Beispieldienste laden</button>
-              <button type="button" class="shift-button shift-button--primary" id="bp-addRow">+ Dienst hinzuf&uuml;gen</button>
+              <button type="button" class="shift-button shift-button--primary" id="bp-addRow">+ Dienst hinzufuegen</button>
             </div>
           </div>
           <div class="shift-hero__stats">
@@ -238,26 +245,32 @@
           <div class="shift-field">
             <label for="bp-dFeiertage">Freizeitausgleich Feiertage (Tage)</label>
             <input id="bp-dFeiertage" class="shift-input shift-input--number" type="number" min="0" value="9">
+            <small class="inline-help">Tarifliche Tage fuer Feiertagsausgleich, z. B. 9.</small>
           </div>
           <div class="shift-field">
             <label for="bp-dVorfest">Freizeitausgleich Vorfesttage</label>
             <input id="bp-dVorfest" class="shift-input shift-input--number" type="number" min="0" value="2">
+            <small class="inline-help">Bezieht sich auf verkurzte Vorfesttage.</small>
           </div>
           <div class="shift-field">
             <label for="bp-dUrlaub">Urlaub (Tage)</label>
             <input id="bp-dUrlaub" class="shift-input shift-input--number" type="number" min="0" value="30">
+            <small class="inline-help">Regelurlaub pro VK und Jahr.</small>
           </div>
           <div class="shift-field">
             <label for="bp-dZusatz">Zusatzurlaub (Schicht) (Tage)</label>
             <input id="bp-dZusatz" class="shift-input shift-input--number" type="number" min="0" value="3">
+            <small class="inline-help">Nur Schicht- oder Nachtzusatzurlaub.</small>
           </div>
           <div class="shift-field">
             <label for="bp-dFortb">Fortbildung (Tage)</label>
             <input id="bp-dFortb" class="shift-input shift-input--number" type="number" min="0" value="3">
+            <small class="inline-help">Durchschnitt pro VK und Jahr.</small>
           </div>
           <div class="shift-field">
             <label for="bp-dKrank">Krankheit / krankes Kind (Tage)</label>
             <input id="bp-dKrank" class="shift-input shift-input--number" type="number" min="0" value="14">
+            <small class="inline-help">Planwert auf Basis der Vorjahre.</small>
           </div>
           <div class="shift-field">
             <label for="bp-stdProTag">Vertragliche Arbeitszeit (Std/Tag)</label>
@@ -270,10 +283,12 @@
           <div class="shift-field">
             <label for="bp-ftYear">Feiertage pro Jahr (FT/Jahr)</label>
             <input id="bp-ftYear" class="shift-input shift-input--number" type="number" min="0" value="10">
+            <small class="inline-help">Kalenderjahr, ggf. bundeslandspezifisch.</small>
           </div>
           <div class="shift-field">
             <label for="bp-vftYear">Vorfesttage pro Jahr (VFT/Jahr)</label>
             <input id="bp-vftYear" class="shift-input shift-input--number" type="number" min="0" value="5">
+            <small class="inline-help">Kalenderjahr, z. B. 24.12/31.12.</small>
           </div>
         </div>
       </section>
@@ -281,7 +296,7 @@
       <section class="shift-card shift-card--table">
         <div class="shift-card-head">
           <h2>Schichtmatrix</h2>
-          <p>Dienste, Besetzungsst&auml;rke und Feiertage pro Jahr erfassen.</p>
+          <p>Dienste, Besetzungsstaerke und Feiertage pro Jahr erfassen.</p>
         </div>
         <div class="shift-toolbar">
           <p class="shift-toolbar-note">
@@ -292,7 +307,7 @@
           <table id="bp-tbl">
             <thead>
               <tr>
-                <th>K&uuml;rzel</th>
+                <th>Kuerzel</th>
                 <th>Beginn</th>
                 <th>Ende</th>
                 <th>Dauer</th>
@@ -317,7 +332,7 @@
       <section class="shift-card shift-card--availability">
         <div class="shift-availability">
           <div class="mini-card">
-            <span>Verf&uuml;gbare Tage</span>
+            <span>Verfuegbare Tage</span>
             <strong id="bp-availDays">200</strong>
           </div>
           <div class="mini-card">
@@ -325,7 +340,7 @@
             <strong><span id="bp-availHours">1&nbsp;540</span> Std/Jahr</strong>
           </div>
         </div>
-        <p class="shift-note">Der berechnete Vollzeitkr&auml;fte-Bedarf nutzt dein Arbeitszeitangebot und alle eingetragenen Dienste.</p>
+        <p class="shift-note">Der berechnete Vollzeitkraefte-Bedarf nutzt dein Arbeitszeitangebot und alle eingetragenen Dienste.</p>
       </section>
     </div>
     </div>
@@ -346,6 +361,7 @@
   };
 
   const durationInHours = (start, end) => {
+    if(start === end) return 0;
     let s = timeToMinutes(start);
     let e = timeToMinutes(end);
     if(e <= s) e += 1440;
@@ -538,6 +554,3 @@
   seedPresets();
 })();
 </script>
-
-
-

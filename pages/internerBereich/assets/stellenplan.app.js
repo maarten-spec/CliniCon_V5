@@ -501,7 +501,7 @@
           }
           saveStorage();
           renderAll();
-          setStatus('Zeile fortgeführt');
+          setStatus('Zeile fortgefuehrt');
           return;
         }
         if (action === 'hide') {
@@ -516,7 +516,7 @@
           list.splice(idx, 1);
           saveStorage();
           renderAll();
-          setStatus('Zeile gelöscht');
+          setStatus('Zeile geloescht');
           return;
         }
       }

@@ -7,13 +7,13 @@ from psycopg2 import sql
 
 from text_parser import parse_command
 
-# Monat → Basis-Spaltenpräfix
+# Monat → Basis-Spaltenpraefix
 GERMAN_MONTHS_TO_COL = {
     "januar": "jan",
     "jan": "jan",
     "februar": "feb",
     "feb": "feb",
-    "märz": "mrz",
+    "maerz": "mrz",
     "maerz": "mrz",
     "mrz": "mrz",
     "april": "apr",
@@ -65,7 +65,7 @@ def _validate_table_name(table_name: str) -> sql.Identifier:
     Sehr defensiv: nur a–z, 0–9 und _ zulassen, um SQL-Injection zu vermeiden.
     """
     if not table_name or not table_name.replace("_", "").isalnum():
-        raise ValueError("Ungültiger Tabellenname.")
+        raise ValueError("Ungueltiger Tabellenname.")
     return sql.Identifier(table_name)
 
 
@@ -102,7 +102,7 @@ def apply_adjust_person_fte_rel(conn, table_name: str, data: dict, year: int):
         )
         row = cur.fetchone()
         if not row:
-            raise ValueError(f"Kein Datensatz für {name} im Jahr {year} in {table_name} gefunden")
+            raise ValueError(f"Kein Datensatz fuer {name} im Jahr {year} in {table_name} gefunden")
 
         emp_id, current_val = row
         current_val = Decimal(str(current_val or 0))
@@ -128,7 +128,7 @@ def apply_adjust_person_fte_rel(conn, table_name: str, data: dict, year: int):
 def apply_adjust_person_fte_abs(conn, table_name: str, data: dict, year: int):
     """
     Aktionstyp: adjust_person_fte_abs / *_full
-    Beispiel: 'Setze Frau Schulz ab März 2028 auf 0,8 VK.'
+    Beispiel: 'Setze Frau Schulz ab Maerz 2028 auf 0,8 VK.'
     """
     if year not in VALID_PLAN_YEARS:
         raise ValueError(f"Jahr {year} ist nicht in den erlaubten Planjahren {sorted(VALID_PLAN_YEARS)}.")
@@ -140,7 +140,7 @@ def apply_adjust_person_fte_abs(conn, table_name: str, data: dict, year: int):
 
     colname = month_col_for_year(month_name, year) if month_name else None
     if not colname:
-        raise ValueError("Monat fehlt für die VK-Setzung.")
+        raise ValueError("Monat fehlt fuer die VK-Setzung.")
 
     tbl_ident = _validate_table_name(table_name)
     col_ident = sql.Identifier(colname)
@@ -154,7 +154,7 @@ def apply_adjust_person_fte_abs(conn, table_name: str, data: dict, year: int):
         )
         row = cur.fetchone()
         if not row:
-            raise ValueError(f"Kein Datensatz für {name} im Jahr {year} in {table_name} gefunden")
+            raise ValueError(f"Kein Datensatz fuer {name} im Jahr {year} in {table_name} gefunden")
 
         emp_id, current_val = row
         current_val = Decimal(str(current_val or 0))
@@ -178,13 +178,13 @@ def apply_adjust_person_fte_abs(conn, table_name: str, data: dict, year: int):
 
 def apply_adjust_person_fte_range(conn, table_name: str, data: dict):
     """
-    Reduziert VK für einen Zeitraum innerhalb eines Jahres (vereinfachte Variante: from/to im selben Jahr).
+    Reduziert VK fuer einen Zeitraum innerhalb eines Jahres (vereinfachte Variante: from/to im selben Jahr).
     """
     name = data["name"].strip()
     dt_from = datetime.strptime(data["from"], "%d.%m.%Y").date()
     dt_to = datetime.strptime(data["to"], "%d.%m.%Y").date()
     if dt_from.year != dt_to.year:
-        raise ValueError("Zeitraum über mehrere Jahre wird aktuell nicht unterstützt.")
+        raise ValueError("Zeitraum ueber mehrere Jahre wird aktuell nicht unterstuetzt.")
     year = dt_from.year
     if year not in VALID_PLAN_YEARS:
         raise ValueError(f"Jahr {year} ist nicht in den erlaubten Planjahren {sorted(VALID_PLAN_YEARS)}.")
@@ -205,7 +205,7 @@ def apply_adjust_person_fte_range(conn, table_name: str, data: dict):
         )
         row = cur.fetchone()
         if not row:
-            raise ValueError(f"Kein Datensatz für {name} im Jahr {year} in {table_name} gefunden")
+            raise ValueError(f"Kein Datensatz fuer {name} im Jahr {year} in {table_name} gefunden")
         emp_id = row[0]
         current_vals = [Decimal(str(v or 0)) for v in row[1:]]
         new_vals = [val - delta for val in current_vals]
@@ -232,7 +232,7 @@ def apply_transfer_staff_unit(conn, table_name: str, data: dict):
     """
     Aktionstyp: transfer_staff_unit
     Beispiel:
-      'Zum 01.04.2026 Hans Möller auf Station 5 versetzen.'
+      'Zum 01.04.2026 Hans Moeller auf Station 5 versetzen.'
     → setzt dept in der entsprechenden Jahreszeile.
     """
     name = data["name"].strip()
@@ -259,7 +259,7 @@ def apply_transfer_staff_unit(conn, table_name: str, data: dict):
         )
         row = cur.fetchone()
         if not row:
-            raise ValueError(f"Kein Datensatz für {name} im Jahr {year} in {table_name} gefunden")
+            raise ValueError(f"Kein Datensatz fuer {name} im Jahr {year} in {table_name} gefunden")
 
         emp_id, old_dept = row
 
@@ -293,7 +293,7 @@ def apply_exclude_employee_year(conn, table_name: str, data: dict):
         )
         row = cur.fetchone()
         if not row:
-            raise ValueError(f"Kein Datensatz für {name} im Jahr {year} in {table_name} gefunden")
+            raise ValueError(f"Kein Datensatz fuer {name} im Jahr {year} in {table_name} gefunden")
         emp_id = row[0]
     conn.commit()
     return {"employee_id": str(emp_id), "table": table_name, "include": False}
@@ -335,7 +335,7 @@ def query_employee_station(conn, table_name: str, data: dict, year: Optional[int
         params.append(year)
     rows, cols = _fetch_employee_rows(conn, table_name, where, tuple(params))
     if not rows:
-        raise ValueError(f"Keine Station für {name} gefunden.")
+        raise ValueError(f"Keine Station fuer {name} gefunden.")
     recs = [dict(zip(cols, r)) for r in rows]
     return {"stations": recs}
 
@@ -371,7 +371,7 @@ def query_employee_vks_year(conn, table_name: str, data: dict):
         )
         row = cur.fetchone()
         if not row:
-            raise ValueError(f"Keine Daten für {name} in {year}")
+            raise ValueError(f"Keine Daten fuer {name} in {year}")
         vals = [Decimal(str(v or 0)) for v in row]
     avg = sum(vals) / Decimal(len(vals))
     return {"name": name, "year": year, "avg_vk": str(round(avg, 4)), "months": dict(zip(cols, map(str, vals)))}
@@ -427,7 +427,7 @@ def apply_action(conn, table_name: str, parsed: dict, year: Optional[int] = None
     """
     Dispatcher: ruft je nach action-Typ die passende Funktion auf.
     year:
-      - für Monatsaktionen (VK-Anpassungen) nötig
+      - fuer Monatsaktionen (VK-Anpassungen) noetig
       - wenn None → heuristisch aktuelles Jahr
     """
     action = parsed["action"]
@@ -443,7 +443,7 @@ def apply_action(conn, table_name: str, parsed: dict, year: Optional[int] = None
     if action in {"transfer_staff_unit", "move_employee_to_station_year"}:
         return apply_transfer_staff_unit(conn, table_name, data)
     if action == "adjust_person_fte_rel_missing_name":
-        raise ValueError("Name fehlt: Für welchen Mitarbeiter soll der Stellenanteil angepasst werden?")
+        raise ValueError("Name fehlt: Fuer welchen Mitarbeiter soll der Stellenanteil angepasst werden?")
     if action == "adjust_person_fte_range":
         return apply_adjust_person_fte_range(conn, table_name, data)
     if action == "exclude_employee_year":
@@ -497,7 +497,7 @@ if __name__ == "__main__":
         print("Erkannt:", parsed)
         try:
             result = apply_action(conn, table, parsed, year=year)
-            print("✅ Ausgeführt:", result)
+            print("✅ Ausgefuehrt:", result)
         except Exception as exc:
             print("⚠️ Fehler:", exc)
 

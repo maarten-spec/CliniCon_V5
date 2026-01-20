@@ -628,8 +628,8 @@ body[data-app-page="stellenplan-insights"] .chart{box-shadow:var(--shadow-soft);
   <template id="page-content">
         <section class="hero insights-hero" data-tabs="insights">
           <div>
-            <h2>Live-Visualisierung f&uuml;r den Stellenplan</h2>
-            <p>Dieses Cockpit kombiniert Auslastung, PPUG-Status und Personalabweichung in einem interaktiven &Uuml;berblick. Die Daten werden aktuell aus einem Demo-Datensatz geladen und sind bereit f&uuml;r die D1-Anbindung.</p>
+            <h2>Live-Visualisierung fuer den Stellenplan</h2>
+            <p>Dieses Cockpit kombiniert Auslastung, PPUG-Status und Personalabweichung in einem interaktiven Ueberblick. Die Daten werden aktuell aus einem Demo-Datensatz geladen und sind bereit fuer die D1-Anbindung.</p>
           </div>
           <div class="hero-cards">
             <div class="hero-card">
@@ -638,7 +638,7 @@ body[data-app-page="stellenplan-insights"] .chart{box-shadow:var(--shadow-soft);
             </div>
             <div class="hero-card">
               <strong id="heroOccupancy">--</strong>
-              <span>Auslastung &uuml;ber alle Stationen</span>
+              <span>Auslastung ueber alle Stationen</span>
             </div>
             <div class="hero-card">
               <strong id="heroVariance">--</strong>
@@ -700,9 +700,9 @@ body[data-app-page="stellenplan-insights"] .chart{box-shadow:var(--shadow-soft);
             <div class="kpi-progress"><span id="kpiOccupancyProgress"></span></div>
           </div>
           <div class="kpi-card kpi-tone-orange">
-            <h4>PPUG Verst&ouml;&szlig;e</h4>
+            <h4>PPUG Verstoesse</h4>
             <div class="kpi-value" id="kpiViolations">--</div>
-            <div class="kpi-sub" id="kpiViolationsSub">Stationen in Pr&uuml;fung</div>
+            <div class="kpi-sub" id="kpiViolationsSub">Stationen in Pruefung</div>
             <div class="kpi-progress"><span id="kpiViolationsProgress"></span></div>
           </div>
           <div class="kpi-card kpi-tone-red">
@@ -753,8 +753,8 @@ body[data-app-page="stellenplan-insights"] .chart{box-shadow:var(--shadow-soft);
               <canvas id="shiftChart"></canvas>
             </div>
             <div class="status-list">
-              <div class="status-item"><span>Fr&uuml;h</span><span id="shiftEarly">--</span></div>
-              <div class="status-item"><span>Sp&auml;t</span><span id="shiftLate">--</span></div>
+              <div class="status-item"><span>Frueh</span><span id="shiftEarly">--</span></div>
+              <div class="status-item"><span>Spaet</span><span id="shiftLate">--</span></div>
               <div class="status-item"><span>Nacht</span><span id="shiftNight">--</span></div>
             </div>
           </div>
@@ -783,8 +783,8 @@ body[data-app-page="stellenplan-insights"] .chart{box-shadow:var(--shadow-soft);
         <section class="table-grid">
           <div class="card">
             <div class="card-header">
-              <h3>Stations&uuml;bersicht</h3>
-              <span class="card-sub">Klicke eine Station f&uuml;r Details</span>
+              <h3>Stationsuebersicht</h3>
+              <span class="card-sub">Klicke eine Station fuer Details</span>
             </div>
             <div style="overflow-x:auto">
               <table>
@@ -830,7 +830,7 @@ body[data-app-page="stellenplan-insights"] .chart{box-shadow:var(--shadow-soft);
               <div class="value" id="spotlightVariance">--</div>
               <span id="spotlightVarianceLabel">--</span>
             </div>
-            <p class="data-note">Hinweis: Im n&auml;chsten Schritt folgt die Anbindung an den Stellenplan-Import.</p>
+            <p class="data-note">Hinweis: Im naechsten Schritt folgt die Anbindung an den Stellenplan-Import.</p>
           </div>
         </section>
       
@@ -857,7 +857,7 @@ body[data-app-page="stellenplan-insights"] .chart{box-shadow:var(--shadow-soft);
           <div class="tile"><span>Peak-Monat</span><strong id="kpiPeak">-</strong></div>
         </div>
         <div class="chart">
-          <div class="chart-meta">Verh&auml;ltnis Pflegefachkraft / -assistenz</div>
+          <div class="chart-meta">Verhaeltnis Pflegefachkraft / -assistenz</div>
           <div id="heatmapRatios" class="ratio-grid"></div>
         </div>
         <div class="chart" style="margin-top:12px;">
@@ -885,7 +885,7 @@ body[data-app-page="stellenplan-insights"] .chart{box-shadow:var(--shadow-soft);
         <div class="insights-section">
           <div class="insights-head">
             <div>
-              <div class="title">Verh&auml;ltnis Pflegefachkraft / Assistenz <span class="insights-tag">PFK / PFA / VK</span></div>
+              <div class="title">Verhaeltnis Pflegefachkraft / Assistenz <span class="insights-tag">PFK / PFA / VK</span></div>
               <p class="insights-sub">VK-Werte, Prozentverteilung und Gesamt je Station.</p>
             </div>
           </div>
@@ -1050,12 +1050,12 @@ body[data-app-page="stellenplan-insights"] .chart{box-shadow:var(--shadow-soft);
 
     <section class="card" data-tabs="parameter">
       <h3 style="margin-top:0;">Parameter (Wirtschaftsplan VK)</h3>
-      <p class="hint">VK-Gesamtwert (Dienstart 01) und nachgelagerte Verteilung je Station. Werte werden in der Parameter-Tabelle f&uuml;r den Standort/Jahr gespeichert.</p>
+      <p class="hint">VK-Gesamtwert (Dienstart 01) und nachgelagerte Verteilung je Station. Werte werden in der Parameter-Tabelle fuer den Standort/Jahr gespeichert.</p>
       <div class="glass-grid" style="margin-bottom:12px;">
         <div class="glass-card">
           <div class="glass-card-title">Wirtschaftsplan Gesamt (Dienstart 01)</div>
           <div class="glass-card-value" id="planTotalValue">-</div>
-          <div class="glass-card-label">Gesamt-VK f&uuml;r das ausgew&auml;hlte Jahr/Standort.</div>
+          <div class="glass-card-label">Gesamt-VK fuer das ausgewaehlte Jahr/Standort.</div>
         </div>
       </div>
       <div class="controls" style="margin-bottom:10px;">
@@ -1438,7 +1438,7 @@ body[data-app-page="stellenplan-insights"] .chart{box-shadow:var(--shadow-soft);
     }
 
     async function savePlanTotal(){
-      if(!supabaseClient || !PARAM_TABLE){setStatus('Supabase/Param-Tabelle nicht verf&uuml;gbar.', false);return;}
+      if(!supabaseClient || !PARAM_TABLE){setStatus('Supabase/Param-Tabelle nicht verfuegbar.', false);return;}
       const year = Number(els.planYearSelect?.value || state.year);
       const value = parseFloat(els.planTotalInput?.value||'0')||0;
       const { error } = await supabaseClient

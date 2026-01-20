@@ -267,7 +267,7 @@
 <section class="card form-card">
           <div class="form-top">
             <h2>Eingaben</h2>
-            <p>Berechnen Sie den WHO-Perzentilenwert f&uuml;r Kinder und Jugendliche.</p>
+            <p>Berechnen Sie den WHO-Perzentilenwert fuer Kinder und Jugendliche.</p>
           </div>
 
           <div class="form-layout">
@@ -276,14 +276,14 @@
               <input type="number" id="age" min="0" max="228" placeholder="z. B. 72 (6 Jahre)">
             </div>
             <div class="form-field">
-              <label for="height">Gr&ouml;&szlig;e (cm)</label>
+              <label for="height">Groesse (cm)</label>
               <input type="number" id="height" min="30" max="220" placeholder="z. B. 120">
             </div>
             <div class="form-field">
               <label for="sex">Geschlecht</label>
               <select id="sex">
                 <option value="m">Junge</option>
-                <option value="w">M&auml;dchen</option>
+                <option value="w">Maedchen</option>
               </select>
             </div>
             <button type="button" class="form-submit" onclick="calcPercentile()">Berechnen</button>
@@ -392,7 +392,7 @@
       else percentile = 99;
 
       document.getElementById('result').innerHTML =
-        `Gr&ouml;&szlig;e: <strong>${height} cm</strong> entspricht etwa der <strong>${percentile}. Perzentile</strong>.`;
+        `Groesse: <strong>${height} cm</strong> entspricht etwa der <strong>${percentile}. Perzentile</strong>.`;
 
       drawChart(ref, age, height);
     }

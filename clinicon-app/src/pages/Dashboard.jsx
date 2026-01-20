@@ -4,7 +4,7 @@ export default function Dashboard(){
   const cards = [
     { title: "Stellenplan", desc: "Planung & Kontrolle - Monatswerte, Qualis, Inclusion", href: "#/stellenplan" },
     { title: "Insights", desc: "Cockpit & Forecast - Heatmaps, KPIs je Station", href: "#/stellenplan-insights" },
-    { title: "Assistent", desc: "KI-Agent f&uuml;r Stellenplan-Kommandos + Audit-Log", href: "#/assistent" },
+    { title: "Assistent", desc: "KI-Agent fuer Stellenplan-Kommandos + Audit-Log", href: "#/assistent" },
     { title: "Gesamt", desc: "Hausweite Aggregation - Plan vs Ist", href: "#/stellenplan-gesamt" }
   ];
 
@@ -13,7 +13,7 @@ export default function Dashboard(){
       <div className="glass" style={{ padding:18 }}>
         <div style={{ fontWeight:900, fontSize:22 }}>Willkommen</div>
         <div style={{ color:"var(--muted)", fontWeight:600, marginTop:4 }}>
-          Deine Suite f&uuml;r Personalplanung: Stellenplan, Clinicon-Assistent und Insights.
+          Deine Suite fuer Personalplanung: Stellenplan, Clinicon-Assistent und Insights.
         </div>
       </div>
 
@@ -23,7 +23,7 @@ export default function Dashboard(){
             <div style={{ fontWeight:900 }}>{c.title}</div>
             <div style={{ color:"var(--muted)", fontWeight:600, marginTop:6, lineHeight:1.3 }}>{c.desc}</div>
             <div style={{ marginTop:12 }}>
-              <span className="btn btnPrimary" role="button">&Ouml;ffnen</span>
+              <span className="btn btnPrimary" role="button">Oeffnen</span>
             </div>
           </a>
         ))}

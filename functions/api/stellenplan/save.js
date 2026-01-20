@@ -74,7 +74,7 @@ export async function onRequestPost({ request, env }) {
     const org = await getOrgByCode(env, orgCode);
     const planId = await getOrCreatePlan(env, org.id, year);
 
-    // Einfach & robust: alles für den Plan neu schreiben
+    // Einfach & robust: alles fuer den Plan neu schreiben
     await env.DB.prepare(
       `DELETE FROM stellenplan_monat WHERE stellenplan_id = ?`
     ).bind(planId).run();

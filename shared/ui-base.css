@@ -1,0 +1,187 @@
+/* shared/ui-base.css */
+:root{
+  --font-base:"Manrope","Segoe UI",sans-serif;
+  --text:#0f172a;
+  --muted:#64748b;
+  --line:#e2e8f0;
+  --panel:#ffffff;
+  --accent:#2563eb;
+  --accent-strong:#1d4ed8;
+  --success:#16a34a;
+  --warning:#d97706;
+  --danger:#dc2626;
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:16px;
+  --space-5:20px;
+  --space-6:24px;
+  --space-7:32px;
+  --space-8:40px;
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:18px;
+  --shadow-sm:0 6px 14px rgba(15,23,42,0.08);
+  --shadow-md:0 12px 24px rgba(15,23,42,0.12);
+  --shadow-lg:0 18px 32px rgba(15,23,42,0.16);
+  --text-xs:0.75rem;
+  --text-sm:0.85rem;
+  --text-md:1rem;
+  --text-lg:1.15rem;
+  --text-xl:1.35rem;
+  --focus-ring:0 0 0 3px rgba(37,99,235,0.2);
+}
+
+.ui-scope{
+  color:var(--text);
+  font-family:var(--font-base);
+}
+
+.ui-scope .btn,
+.ui-scope .shift-button,
+.ui-scope .legend-item,
+.ui-scope button.btn{
+  appearance:none;
+  display:inline-flex;
+  align-items:center;
+  gap:var(--space-2);
+  padding:0.6rem 1rem;
+  border-radius:var(--radius-md);
+  border:1px solid var(--line);
+  background:var(--panel);
+  color:var(--text);
+  font-weight:600;
+  line-height:1.1;
+  cursor:pointer;
+  transition:transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.ui-scope .btn.primary,
+.ui-scope .shift-button--primary{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+  box-shadow:0 10px 22px rgba(37,99,235,0.18);
+}
+
+.ui-scope .btn.primary:hover,
+.ui-scope .shift-button--primary:hover{
+  background:var(--accent-strong);
+  border-color:var(--accent-strong);
+}
+
+.ui-scope .btn.ghost,
+.ui-scope .shift-button--ghost{
+  background:transparent;
+}
+
+.ui-scope .btn:hover,
+.ui-scope .shift-button:hover,
+.ui-scope .legend-item:hover{
+  border-color:var(--accent);
+}
+
+.ui-scope .btn:focus-visible,
+.ui-scope .shift-button:focus-visible,
+.ui-scope .legend-item:focus-visible,
+.ui-scope input:focus-visible,
+.ui-scope select:focus-visible,
+.ui-scope textarea:focus-visible{
+  outline:none;
+  box-shadow:var(--focus-ring);
+  border-color:var(--accent);
+}
+
+.ui-scope .btn:disabled,
+.ui-scope .shift-button:disabled,
+.ui-scope .legend-item:disabled,
+.ui-scope .btn[disabled],
+.ui-scope input:disabled,
+.ui-scope select:disabled,
+.ui-scope textarea:disabled{
+  cursor:not-allowed;
+  opacity:0.6;
+  background:#f8fafc;
+  border-color:var(--line);
+  box-shadow:none;
+}
+
+.ui-scope input[type="text"],
+.ui-scope input[type="number"],
+.ui-scope input[type="time"],
+.ui-scope input[type="email"],
+.ui-scope input[type="password"],
+.ui-scope select,
+.ui-scope textarea{
+  font-family:var(--font-base);
+  font-size:var(--text-md);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:var(--radius-md);
+  padding:0.6rem 0.75rem;
+  background:#fff;
+  transition:border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.ui-scope input::placeholder,
+.ui-scope textarea::placeholder{
+  color:#94a3b8;
+}
+
+.inline-help{
+  display:block;
+  margin-top:4px;
+  font-size:var(--text-sm);
+  color:var(--muted);
+}
+
+.status-badge{
+  --status-bg:#e2e8f0;
+  --status-text:#475569;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-weight:600;
+  font-size:var(--text-xs);
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  background:var(--status-bg);
+  color:var(--status-text);
+}
+
+.status-active{
+  --status-bg:#dbeafe;
+  --status-text:#1d4ed8;
+}
+.status-planned{
+  --status-bg:#fef3c7;
+  --status-text:#b45309;
+}
+.status-research{
+  --status-bg:#ede9fe;
+  --status-text:#6d28d9;
+}
+.status-success{
+  --status-bg:#dcfce7;
+  --status-text:#15803d;
+  --status-color:var(--success);
+}
+.status-warn{
+  --status-bg:#fef3c7;
+  --status-text:#b45309;
+  --status-color:var(--warning);
+}
+.status-danger{
+  --status-bg:#fee2e2;
+  --status-text:#b91c1c;
+  --status-color:var(--danger);
+}
+
+.status-dot{
+  width:0.75rem;
+  height:0.75rem;
+  border-radius:999px;
+  background:var(--status-color,#94a3b8);
+}

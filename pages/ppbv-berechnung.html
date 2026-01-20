@@ -1,12 +1,13 @@
-<section class="card page-frame ppug-layout" id="ppbv-tool">
+<link rel="stylesheet" href="shared/ui-base.css" />
+<section class="card page-frame ppug-layout ui-scope" id="ppbv-tool">
   <div class="ppug-grid">
     <header class="ppug-card ppbv-hero">
       <div>
         <h2>PPBV Erwachsene &ndash; PPBV-Berechner</h2>
         <p class="section-lead">Tagschicht nach PPBV, Nachtdienst nach PPUG &ndash; komplett im Layout des PPUG-Rechners.</p>
-        <p class="section-lead">Stand 12.06.2024 (&Auml;nderungen 05.12.2024) &middot; VZ&Auml;-Bezugsgr&ouml;&szlig;e &sect;2 Abs.7 (38,5 h/Woche) &middot; Tagschicht &sect;4 Abs.2 &middot; Nachtschicht &sect;4 Abs.3.</p>
+        <p class="section-lead">Stand 12.06.2024 (Aenderungen 05.12.2024) &middot; VZAe-Bezugsgroesse &sect;2 Abs.7 (38,5 h/Woche) &middot; Tagschicht &sect;4 Abs.2 &middot; Nachtschicht &sect;4 Abs.3.</p>
       </div>
-      <button id="btnFAQ" type="button" class="btn ghost">FAQ &ouml;ffnen</button>
+      <button id="btnFAQ" type="button" class="btn ghost">FAQ oeffnen</button>
     </header>
 
     <section class="ppug-card">
@@ -15,29 +16,29 @@
           <h3>Tagschicht &ndash; PPBV Erwachsene (&sect;4 Abs.2 / &sect;12)</h3>
           <p class="muted">Grundwert + Patientengruppen + Fallwerte.</p>
         </div>
-        <button id="btnResetTag" type="button" class="btn ghost">Zur&uuml;cksetzen</button>
+        <button id="btnResetTag" type="button" class="btn ghost">Zuruecksetzen</button>
       </div>
       <div class="row">
-        <label class="field span-4">Vollstation&auml;r gesamt
+        <label class="field span-4">Vollstationaer gesamt
           <input id="vollGesamt" type="number" min="0" value="16" />
         </label>
         <label class="field span-4">davon Isolation
           <input id="isoAnzahl" type="number" min="0" value="0" />
         </label>
-        <label class="field span-4">Teilstation&auml;r (Anzahl)
+        <label class="field span-4">Teilstationaer (Anzahl)
           <input id="teilAnzahlDummy" type="number" min="0" value="0" />
         </label>
       </div>
       <div class="row">
-        <label class="field span-4">Aufnahmen vollstation&auml;r / einmalig (&sect;12 Abs.3)
+        <label class="field span-4">Aufnahmen vollstationaer / einmalig (&sect;12 Abs.3)
           <input id="aufnahmenEinmalig" type="number" min="0" value="0" />
         </label>
-        <label class="field span-4">Teilstation&auml;r regelm&auml;&szlig;ig (&sect;12 Abs.4)
+        <label class="field span-4">Teilstationaer regelmaessig (&sect;12 Abs.4)
           <input id="tsRegelmaessig" type="number" min="0" value="0" />
         </label>
         <div class="field span-4 add-group">
           <label>Patientengruppe (&sect;9/&sect;12)</label>
-          <button id="btnAddRow" type="button" class="btn primary">Patientengruppe hinzuf&uuml;gen</button>
+          <button id="btnAddRow" type="button" class="btn primary">Patientengruppe hinzufuegen</button>
         </div>
       </div>
       <div class="table-wrap">
@@ -76,7 +77,7 @@
           <strong><span id="tagHoursOut">0.00</span> h</strong>
         </div>
         <div class="kpi-tile">
-          <small>VZ&Auml; Tag (&Oslash;)</small>
+          <small>VZAe Tag (&Oslash;)</small>
           <strong><span id="tagFTE">0.00</span></strong>
         </div>
       </div>
@@ -86,9 +87,9 @@
       <div class="section-head">
         <div>
           <h3>Nachtschicht &ndash; Empfehlung nach PPUG (&sect;4 Abs.3)</h3>
-          <p class="muted">Dropdown wie beim PPUG-Rechner: Quotient + Hilfskraft-Anteil werden automatisch ber&uuml;cksichtigt.</p>
+          <p class="muted">Dropdown wie beim PPUG-Rechner: Quotient + Hilfskraft-Anteil werden automatisch beruecksichtigt.</p>
         </div>
-        <button id="btnResetNacht" type="button" class="btn ghost">Zur&uuml;cksetzen</button>
+        <button id="btnResetNacht" type="button" class="btn ghost">Zuruecksetzen</button>
       </div>
       <div class="row">
         <label class="field span-6">Bereich (PPUG-Verordnung)
@@ -107,12 +108,12 @@
         </label>
         <div class="field span-8">
           <label>PPUG-Nachtratio</label>
-          <p class="muted">Verh&auml;ltnis: <span id="nachtRatioInfo">-</span> &middot; Hilfskr&auml;fte max.: <span id="nachtCapInfo">-</span></p>
+          <p class="muted">Verhaeltnis: <span id="nachtRatioInfo">-</span> &middot; Hilfskraefte max.: <span id="nachtCapInfo">-</span></p>
         </div>
       </div>
       <div class="kpi-grid">
         <div class="kpi-tile">
-          <small>Erforderliche Pflegekr&auml;fte (K&ouml;pfe)</small>
+          <small>Erforderliche Pflegekraefte (Koepfe)</small>
           <strong><span id="nachtKopf">0.00</span></strong>
         </div>
         <div class="kpi-tile">
@@ -120,15 +121,15 @@
           <strong><span id="nachtHoursOut">0.00</span> h</strong>
         </div>
         <div class="kpi-tile">
-          <small>VZ&Auml; Nacht (&Oslash;)</small>
+          <small>VZAe Nacht (&Oslash;)</small>
           <strong><span id="nachtFTE">0.00</span></strong>
         </div>
         <div class="kpi-tile">
-          <small>Fachpersonen (K&ouml;pfe)</small>
+          <small>Fachpersonen (Koepfe)</small>
           <strong><span id="nachtFachSplit">0.00</span></strong>
         </div>
         <div class="kpi-tile">
-          <small>Hilfskr&auml;fte (K&ouml;pfe)</small>
+          <small>Hilfskraefte (Koepfe)</small>
           <strong><span id="nachtHilfSplit">0.00</span></strong>
         </div>
       </div>
@@ -141,27 +142,27 @@
       <div class="kpi-grid summary">
         <div class="kpi-tile">
           <small>Tagschicht (PPBV)</small>
-          <strong><span id="resTagFTE">0.00</span> VZ&Auml;</strong>
+          <strong><span id="resTagFTE">0.00</span> VZAe</strong>
         </div>
         <div class="kpi-tile">
           <small>Nachtschicht (PPUG)</small>
-          <strong><span id="resNachtFTE">0.00</span> VZ&Auml;</strong>
+          <strong><span id="resNachtFTE">0.00</span> VZAe</strong>
         </div>
         <div class="kpi-tile">
           <small>Gesamtbedarf</small>
-          <strong><span id="resGesamt">0.00</span> VZ&Auml;</strong>
+          <strong><span id="resGesamt">0.00</span> VZAe</strong>
         </div>
         <div class="kpi-tile">
-          <small>Max. Hilfskr&auml;fte (20 %)</small>
-          <strong><span id="resHilfMax">0.00</span> VZ&Auml;</strong>
+          <small>Max. Hilfskraefte (20 %)</small>
+          <strong><span id="resHilfMax">0.00</span> VZAe</strong>
         </div>
         <div class="kpi-tile">
           <small>Max. Auszubildende (10 %)</small>
-          <strong><span id="resAzubiMax">0.00</span> VZ&Auml;</strong>
+          <strong><span id="resAzubiMax">0.00</span> VZAe</strong>
         </div>
         <div class="kpi-tile ampel-card" id="ampelBox" role="status" aria-live="polite">
           <div class="ampel-status">
-            <span class="ampel-dot" aria-hidden="true"></span>
+            <span class="ampel-dot status-dot" aria-hidden="true"></span>
             <div>
               <small id="ampelLabel">Taganteil</small>
               <strong class="ampel-value" id="ampelValue">&ndash;</strong>
@@ -184,20 +185,20 @@
       <div class="faq-grid">
         <article class="faq-card">
           <strong>Wie wird der Pflegegrundwert ermittelt?</strong>
-          <p>Vollstation&auml;re Patientinnen und Patienten flie&szlig;en mit 33 Minuten, Isolationen mit 123 Minuten ein. Teil- und besonderen Gruppen werden zus&auml;tzlich &uuml;ber die Tabelle gewichtet.</p>
+          <p>Vollstationaere Patientinnen und Patienten fliessen mit 33 Minuten, Isolationen mit 123 Minuten ein. Teil- und besonderen Gruppen werden zusaetzlich ueber die Tabelle gewichtet.</p>
         </article>
         <article class="faq-card">
-          <strong>Warum PPUG f&uuml;r die Nachtschicht?</strong>
-          <p>Die PPBV kennt keinen ausdr&uuml;cklichen Nacht-Schl&uuml;ssel. Daher orientiert sich die Empfehlung am PPUG-Bereich: Bettenbasis aus der Tagschicht, Betreuungsschl&uuml;ssel gem&auml;&szlig; Verordnung.</p>
+          <strong>Warum PPUG fuer die Nachtschicht?</strong>
+          <p>Die PPBV kennt keinen ausdruecklichen Nacht-Schluessel. Daher orientiert sich die Empfehlung am PPUG-Bereich: Bettenbasis aus der Tagschicht, Betreuungsschluessel gemaess Verordnung.</p>
         </article>
         <article class="faq-card">
-          <strong>Wie komme ich zu VZ&Auml;?</strong>
-          <p>Alle Minuten werden in Stunden umgerechnet und durch die Bezugsgr&ouml;&szlig;e (38,5 Wochenstunden / 7 Kalendertage) geteilt. So ergibt sich ein durchschnittlicher Tagesbedarf an Vollzeit&auml;quivalenten.</p>
+          <strong>Wie komme ich zu VZAe?</strong>
+          <p>Alle Minuten werden in Stunden umgerechnet und durch die Bezugsgroesse (38,5 Wochenstunden / 7 Kalendertage) geteilt. So ergibt sich ein durchschnittlicher Tagesbedarf an Vollzeitaequivalenten.</p>
         </article>
       </div>
     </div>
     <footer>
-      <button type="button" class="btn ghost" id="btnFAQClose" data-close="faq">Schlie&szlig;en</button>
+      <button type="button" class="btn ghost" id="btnFAQClose" data-close="faq">Schliessen</button>
     </footer>
   </div>
 </div>
@@ -208,13 +209,13 @@
     overflow: hidden;
   }
   #ppbv-tool .ppug-grid{
-    gap: 16px;
+    gap: var(--space-4);
     padding: clamp(0.7rem, 2vw, 0.9rem);
   }
   #ppbv-tool .ppbv-hero {
     display: flex;
     justify-content: space-between;
-    gap: 18px;
+    gap: var(--space-5);
     align-items: flex-start;
   }
   #ppbv-tool h2 {
@@ -231,18 +232,18 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 16px;
+    gap: var(--space-4);
   }
   #ppbv-tool .checkbox {
     flex-direction: row;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
   }
   #ppbv-tool .table-select,
   #ppbv-tool .table-input {
     width: 100%;
-    padding: 8px 10px;
-    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
     border: 1px solid var(--line,#e2e8f0);
     background: #fff;
   }
@@ -278,23 +279,21 @@
     border-color: #fde68a;
   }
   #ppbv-tool .ampel-card {
+    --status-color:#94a3b8;
     background: #f8fafc;
     border-color: #e2e8f0;
   }
   #ppbv-tool .ampel-status {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-3);
   }
   #ppbv-tool .ampel-dot {
-    width: 0.875rem;
-    height: 0.875rem;
-    border-radius: 999px;
-    background: #94a3b8;
+    background:var(--status-color);
   }
-  #ppbv-tool .ampel-card.success .ampel-dot { background: #10b981; }
-  #ppbv-tool .ampel-card.warn .ampel-dot { background: #f59e0b; }
-  #ppbv-tool .ampel-card.danger .ampel-dot { background: #ef4444; }
+  #ppbv-tool .ampel-card.status-success { --status-color: var(--success); }
+  #ppbv-tool .ampel-card.status-warn { --status-color: var(--warning); }
+  #ppbv-tool .ampel-card.status-danger { --status-color: var(--danger); }
   #ppbv-tool .ampel-value {
     
   }
@@ -309,7 +308,7 @@
     display: none;
     align-items: flex-start;
     justify-content: center;
-    padding: 40px 16px;
+    padding: var(--space-8) var(--space-4);
     z-index: 50;
   }
   .ppbv-modal[aria-hidden="false"] {
@@ -325,14 +324,14 @@
     z-index: 1;
     max-width: 60rem;
     width: 100%;
-    border-radius: 18px;
+    border-radius: var(--radius-lg);
     background: #fff;
     box-shadow: 0 25px 40px rgba(15, 23, 42, .25);
     overflow: hidden;
   }
   .ppbv-modal header,
   .ppbv-modal footer {
-    padding: 18px 24px;
+    padding: var(--space-5) var(--space-6);
     border-bottom: 1px solid #e2e8f0;
   }
   .ppbv-modal footer {
@@ -378,17 +377,18 @@
     const PPUG_RULES = [
       { key: "intensiv", name: "Intensivmedizin", ratioDay: 2, ratioNight: 3, capDay: 5, capNight: 5 },
       { key: "geriatrie", name: "Geriatrie", ratioDay: 10, ratioNight: 20, capDay: 15, capNight: 20 },
-      { key: "chir_ortho", name: "Allgemeine Chirurgie / Unfallchirurgie / Orthop&auml;die", ratioDay: 10, ratioNight: 20, capDay: 10, capNight: 10 },
+      { key: "chir_ortho", name: "Allgemeine Chirurgie / Unfallchirurgie / Orthopaedie", ratioDay: 10, ratioNight: 20, capDay: 10, capNight: 10 },
       { key: "innere_kardio", name: "Innere Medizin / Kardiologie", ratioDay: 10, ratioNight: 22, capDay: 10, capNight: 10 },
       { key: "herzchir", name: "Herzchirurgie", ratioDay: 7, ratioNight: 15, capDay: 5, capNight: 0 },
       { key: "neuro", name: "Neurologie", ratioDay: 10, ratioNight: 20, capDay: 8, capNight: 8 },
       { key: "stroke", name: "Neurologische Schlaganfalleinheit", ratioDay: 3, ratioNight: 5, capDay: 0, capNight: 0 },
-      { key: "fruehrehab", name: "Neurologische Fr&uuml;hrehabilitation", ratioDay: 5, ratioNight: 12, capDay: 10, capNight: 10 },
-      { key: "paed_allg", name: "Allgemeine P&auml;diatrie", ratioDay: 6, ratioNight: 10, capDay: 5, capNight: 5 },
-      { key: "paed_spez", name: "Spezielle P&auml;diatrie", ratioDay: 6, ratioNight: 14, capDay: 5, capNight: 5 },
-      { key: "neo", name: "Neonatologische P&auml;diatrie", ratioDay: 3.5, ratioNight: 5, capDay: 5, capNight: 5 },
-      { key: "gyn", name: "Gyn&auml;kologie &amp; Geburtshilfe", ratioDay: 7.5, ratioNight: 15, capDay: 5, capNight: 0 },
-      { key: "hno_rheuma_uro", name: "HNO, Rheumatologie &amp; Urologie", ratioDay: 10, ratioNight: 22, capDay: 10, capNight: 5 },
+      { key: "fruehrehab", name: "Neurologische Fruehrehabilitation", ratioDay: 5, ratioNight: 12, capDay: 10, capNight: 10 },
+      { key: "paed_allg", name: "Allgemeine Paediatrie", ratioDay: 6, ratioNight: 10, capDay: 5, capNight: 5 },
+      { key: "paed_spez", name: "Spezielle Paediatrie", ratioDay: 6, ratioNight: 14, capDay: 5, capNight: 5 },
+      { key: "neo", name: "Neonatologische Paediatrie", ratioDay: 3.5, ratioNight: 5, capDay: 5, capNight: 5 },
+      { key: "gyn", name: "Gynaekologie &amp; Geburtshilfe", ratioDay: 7.5, ratioNight: 15, capDay: 5, capNight: 0 },
+      { key: "hno_uro", name: "HNO &amp; Urologie", ratioDay: 10, ratioNight: 22, capDay: 10, capNight: 5 },
+      { key: "rheuma", name: "Rheumatologie", ratioDay: 13, ratioNight: 30, capDay: 10, capNight: 5 },
       { key: "neurochir", name: "Neurochirurgie", ratioDay: 9, ratioNight: 18, capDay: 10, capNight: 5 }
     ];
 
@@ -448,11 +448,17 @@
       groupRowsEl.appendChild(makeRow("A3/S1", 4, 0));
     }
 
+    function parseNumber(value) {
+      if (value === undefined || value === null) return 0;
+      const normalized = String(value).replace(",", ".");
+      const num = parseFloat(normalized);
+      return Number.isFinite(num) ? num : 0;
+    }
+
     function getNumber(id) {
       const el = $(id);
       if (!el) return 0;
-      const value = parseFloat(el.value);
-      return Number.isFinite(value) ? value : 0;
+      return parseNumber(el.value);
     }
 
     function sumGroupMinutes() {
@@ -472,8 +478,11 @@
 
     function calcTag() {
       const voll = Math.max(0, getNumber("vollGesamt"));
+      const teil = Math.max(0, getNumber("teilAnzahlDummy"));
       const iso = Math.min(Math.max(0, getNumber("isoAnzahl")), voll);
-      const grundwert = PFLEGEGRUNDWERT * (voll - iso) + PFLEGEGRUNDWERT_ISO * iso;
+      const grundwert = (PFLEGEGRUNDWERT * (voll - iso)) +
+        (PFLEGEGRUNDWERT_ISO * iso) +
+        (0.5 * PFLEGEGRUNDWERT * teil);
       const gruppen = sumGroupMinutes();
       const fallwerte = FALLWERT * (getNumber("aufnahmenEinmalig") + getNumber("tsRegelmaessig"));
       const minuten = grundwert + gruppen + fallwerte;
@@ -497,7 +506,7 @@
       const maxHilf = totalHeads * (capPct / 100);
       let hilf = Math.min(maxHilf, totalHeads);
       let fach = Math.max(0, totalHeads - hilf);
-      if (totalHeads > 0 && fach < 1) {
+      if (totalHeads >= 1 && fach < 1) {
         fach = 1;
         hilf = Math.max(0, totalHeads - fach);
       }
@@ -539,7 +548,7 @@
       const share = totalFTE > 0 ? tagFTE / totalFTE : 0;
       let state = "";
       let title = "Kein Bedarf";
-      let note = "Bitte Eingaben pr&uuml;fen.";
+      let note = "Bitte Eingaben pruefen.";
       if (totalFTE > 0) {
         if (share >= 0.65) {
           state = "success";
@@ -556,7 +565,12 @@
         }
       }
       if (box) {
-        box.className = `kpi-tile ampel-card ${state}`.trim();
+        const statusClass = state === "success"
+          ? "status-success"
+          : state === "warn"
+            ? "status-warn"
+            : "status-danger";
+        box.className = `kpi-tile ampel-card ${statusClass}`.trim();
       }
       $("ampelLabel").textContent = totalFTE > 0 ? `Taganteil ${ (share * 100).toFixed(1) } %` : "Taganteil";
       $("ampelValue").textContent = title;
@@ -630,4 +644,3 @@
     calcAll();
   })();
 </script>
-
