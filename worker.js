@@ -117,44 +117,40 @@ async function callOpenAI(env, prompt) {
   }
 }
 
-// ---------- Supabase Helpers ----------
-async function supaFetch(env, path, opts = {}) {
-  const url = `${env.SUPABASE_URL}/rest/v1${path}`;
-  const res = await fetch(url, {
-    ...opts,
-    headers: {
-      Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
-      apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-      ...(opts.headers || {}),
-    },
-  });
-  if (!res.ok) {
-    const txt = await res.text();
-    throw new Error(`Supabase error ${res.status}: ${txt}`);
-  }
-  const ct = res.headers.get("content-type") || "";
-  return ct.includes("application/json") ? res.json() : res.text();
+// ---------- D1 Audit Helpers ----------
+async function ensureAuditTableD1(db) {
+  await db.prepare(\`
+    CREATE TABLE IF NOT EXISTS assistant_audit (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      created_at TEXT DEFAULT (datetime('now')),
+      site TEXT,
+      command TEXT,
+      action TEXT,
+      target_table TEXT,
+      plan_year INTEGER,
+      status TEXT,
+      result TEXT
+    )
+  \`).run();
 }
-async function queryTable(env, table, params) {
-  const qs = new URLSearchParams(params);
-  return supaFetch(env, `/${table}?${qs.toString()}`);
-}
-async function updateColumns(env, table, id, updates) {
-  await supaFetch(env, `/${table}?id=eq.${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
-    body: JSON.stringify(updates),
-  });
-}
-async function logAudit(env, payload) {
+
+async function logAuditD1(db, payload) {
   try {
-    await supaFetch(env, "/assistant_audit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
-      body: JSON.stringify(payload),
-    });
+    await ensureAuditTableD1(db);
+    await db.prepare(\`
+      INSERT INTO assistant_audit (site, command, action, target_table, plan_year, status, result)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    \`).bind(
+      payload.site || "unknown",
+      payload.command || "",
+      payload.action || "",
+      payload.target_table || "",
+      payload.plan_year || null,
+      payload.status || "ok",
+      JSON.stringify(payload.result || {})
+    ).run();
   } catch (e) {
-    /* ignore */
+    console.error("Audit Log Error:", e);
   }
 }
 
@@ -196,11 +192,11 @@ async function saveRosterMonthly(payload, db) {
     updateCols.push("include");
   }
   const employeeSql = `
-    INSERT INTO employees (${insertCols.join(", ")})
-    VALUES (${insertValues.join(", ")})
+    INSERT INTO employees(${ insertCols.join(", ") })
+    VALUES(${ insertValues.join(", ") })
     ON CONFLICT(id) DO UPDATE SET
-      ${updateCols.map((c) => `${c} = excluded.${c}`).join(", ")}
-  `;
+      ${ updateCols.map((c) => `${c} = excluded.${c}`).join(", ") }
+    `;
 
   const employeeUpserts = [];
   const addEmployee = (row, isExtra) => {
@@ -208,7 +204,7 @@ async function saveRosterMonthly(payload, db) {
     if (!employeeId) return;
     const personalRaw = String(row.personalNumber || "").trim();
     const personalNo = isExtra
-      ? (personalRaw.startsWith("EX-") ? personalRaw : `EX-${personalRaw}`)
+      ? (personalRaw.startsWith("EX-") ? personalRaw : `EX - ${ personalRaw }`)
       : personalRaw.replace(/^EX-/, "");
     const displayName = isExtra ? String(row.category || row.name || "Zusatz") : String(row.name || "");
     const params = [employeeId, siteId, personalNo, displayName];
@@ -238,16 +234,16 @@ async function saveRosterMonthly(payload, db) {
         rosterStmts.push(
           db.prepare(`
             INSERT INTO roster_monthly
-              (id, site_id, department_id, employee_id, year, month, fte, updated_at, updated_by_user_id)
+    (id, site_id, department_id, employee_id, year, month, fte, updated_at, updated_by_user_id)
             VALUES
-              (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?)
+      (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?)
             ON CONFLICT(employee_id, department_id, year, month)
             DO UPDATE SET
               site_id = excluded.site_id,
-              fte = excluded.fte,
-              updated_at = datetime('now'),
-              updated_by_user_id = excluded.updated_by_user_id
-          `).bind(
+    fte = excluded.fte,
+    updated_at = datetime('now'),
+    updated_by_user_id = excluded.updated_by_user_id
+      `).bind(
             id,
             siteId,
             departmentId,
@@ -280,12 +276,12 @@ async function getFteWarnings(db, siteId, year, employeeIds) {
     SELECT employee_id, year, month, ROUND(SUM(fte), 4) AS total_fte
     FROM roster_monthly
     WHERE site_id = ?
-      AND year = ?
-      AND employee_id IN (${placeholders})
+    AND year = ?
+      AND employee_id IN(${ placeholders })
     GROUP BY employee_id, year, month
     HAVING SUM(fte) > 1.0
     ORDER BY employee_id, month
-  `;
+    `;
   const res = await db.prepare(q).bind(siteId, year, ...employeeIds).all();
   const rows = res.results || [];
   return rows.map((r) => ({
@@ -293,7 +289,7 @@ async function getFteWarnings(db, siteId, year, employeeIds) {
     year: r.year,
     month: r.month,
     totalFte: r.total_fte,
-    message: `Warnung: VK-Summe > 1,0 (ist ${r.total_fte})`,
+    message: `Warnung: VK - Summe > 1, 0(ist ${ r.total_fte })`,
   }));
 }
 
@@ -329,7 +325,7 @@ async function signToken(env, payload) {
     ["sign"]
   );
   const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
-  return `${body}.${b64url(sig)}`;
+  return `${ body }.${ b64url(sig) }`;
 }
 
 async function verifyToken(env, token) {
@@ -363,6 +359,22 @@ async function verifyToken(env, token) {
 }
 
 // ---------- Assistenz: D1 Stellenplan ----------
+const MONTH_MAP = {
+  "januar": "jan", "jan": "jan",
+  "februar": "feb", "feb": "feb",
+  "maerz": "mrz", "maerz": "mrz", "mrz": "mrz",
+  "april": "apr", "apr": "apr",
+  "mai": "mai",
+  "juni": "jun", "jun": "jun",
+  "juli": "jul", "jul": "jul",
+  "august": "aug", "aug": "aug",
+  "september": "sep", "sep": "sep",
+  "oktober": "okt", "okt": "okt",
+  "november": "nov", "nov": "nov",
+  "dezember": "dez", "dez": "dez",
+};
+const MONTHS = ["jan","feb","mrz","apr","mai","jun","jul","aug","sep","okt","nov","dez"];
+
 const monthIndexFromName = (label) => {
   if (!label) return null;
   const key = String(label).toLowerCase().trim();
@@ -389,12 +401,12 @@ async function getOrCreatePlanD1(db, orgId, year) {
     `SELECT id
      FROM stellenplan
      WHERE organisationseinheit_id = ? AND jahr = ?
-     LIMIT 1`
+    LIMIT 1`
   ).bind(orgId, year).first();
   if (existing?.id) return existing.id;
   const ins = await db.prepare(
-    `INSERT INTO stellenplan (organisationseinheit_id, jahr, status)
-     VALUES (?, ?, 'ENTWURF')`
+    `INSERT INTO stellenplan(organisationseinheit_id, jahr, status)
+     VALUES(?, ?, 'ENTWURF')`
   ).bind(orgId, year).run();
   return ins.meta.last_row_id;
 }
@@ -406,27 +418,27 @@ async function findEmployeeD1(db, name, personalNumber) {
       `SELECT id, personalnummer, vorname, nachname
        FROM mitarbeiter
        WHERE personalnummer = ?
-       LIMIT 1`
+    LIMIT 1`
     ).bind(pnr).first();
     if (row) return row;
   }
   const cleaned = String(name || "").trim();
   if (!cleaned) return null;
-  const like = `%${cleaned}%`;
+  const like = `% ${ cleaned } % `;
   return db.prepare(
     `SELECT id, personalnummer, vorname, nachname
      FROM mitarbeiter
-     WHERE (vorname || ' ' || nachname) LIKE ?
-        OR nachname LIKE ?
-        OR vorname LIKE ?
-     LIMIT 1`
+     WHERE(vorname || ' ' || nachname) LIKE ?
+    OR nachname LIKE ?
+    OR vorname LIKE ?
+    LIMIT 1`
   ).bind(like, like, like).first();
 }
 
 async function upsertPlanMonthD1(db, planId, employeeId, month, dienstart, fte) {
   await db.prepare(
-    `INSERT INTO stellenplan_monat (stellenplan_id, mitarbeiter_id, monat, dienstart, vk)
-     VALUES (?, ?, ?, ?, ?)
+    `INSERT INTO stellenplan_monat(stellenplan_id, mitarbeiter_id, monat, dienstart, vk)
+     VALUES(?, ?, ?, ?, ?)
      ON CONFLICT(stellenplan_id, mitarbeiter_id, monat, dienstart)
      DO UPDATE SET vk = excluded.vk`
   ).bind(planId, employeeId, month, dienstart, fte).run();
@@ -437,7 +449,7 @@ async function getEmployeeFteYearD1(db, planId, employeeId, dienstart) {
     `SELECT monat, vk
      FROM stellenplan_monat
      WHERE stellenplan_id = ? AND mitarbeiter_id = ? AND dienstart = ?
-     ORDER BY monat`
+    ORDER BY monat`
   ).bind(planId, employeeId, dienstart).all();
   const values = Array(12).fill(0);
   (rows.results || []).forEach((row) => {
@@ -458,7 +470,7 @@ async function executeAssistantActionD1(env, parsed, ctx) {
   if (!dept) throw new Error("Abteilung fehlt");
 
   const org = await getOrgByCodeD1(env.DB, dept);
-  if (!org) throw new Error(`Abteilung ${dept} nicht gefunden`);
+  if (!org) throw new Error(`Abteilung ${ dept } nicht gefunden`);
   const planId = await getOrCreatePlanD1(env.DB, org.id, year);
 
   const employee = await findEmployeeD1(env.DB, f.employee_name, f.personal_number);
@@ -471,7 +483,7 @@ async function executeAssistantActionD1(env, parsed, ctx) {
       const delta = num(f.delta_fte);
       const current = await env.DB.prepare(
         `SELECT vk FROM stellenplan_monat
-         WHERE stellenplan_id = ? AND mitarbeiter_id = ? AND monat = ? AND dienstart = ?`
+         WHERE stellenplan_id = ? AND mitarbeiter_id = ? AND monat = ? AND dienstart = ? `
       ).bind(planId, employee.id, month, dienstart).first();
       const curVal = Number(current?.vk || 0);
       const nextVal = curVal + delta;
@@ -504,12 +516,12 @@ async function executeAssistantActionD1(env, parsed, ctx) {
          FROM stellenplan_monat sm
          JOIN mitarbeiter m ON m.id = sm.mitarbeiter_id
          WHERE sm.stellenplan_id = ? AND sm.dienstart = ?
-         ORDER BY m.nachname, m.vorname`
+    ORDER BY m.nachname, m.vorname`
       ).bind(planId, dienstart).all();
       const employees = (rows.results || []).map((row) => ({
         id: row.id,
         personalNumber: row.personalnummer,
-        name: `${row.vorname || ""} ${row.nachname || ""}`.trim(),
+        name: `${ row.vorname || "" } ${ row.nachname || "" }`.trim(),
       }));
       return { ok: true, dept, year, dienstart, employees };
     }
@@ -520,7 +532,7 @@ async function executeAssistantActionD1(env, parsed, ctx) {
          JOIN stellenplan s ON s.id = sm.stellenplan_id
          JOIN organisationseinheit o ON o.id = s.organisationseinheit_id
          WHERE sm.mitarbeiter_id = ? AND s.jahr = ? AND sm.dienstart = ?
-         ORDER BY o.name`
+    ORDER BY o.name`
       ).bind(employee.id, year, dienstart).all();
       return { ok: true, employeeId: employee.id, year, dienstart, units: rows.results || [] };
     }
@@ -539,12 +551,12 @@ function summarizeProposal(parsed, ctx) {
   const emp = f.employee_name || f.personal_number || "Unbekannt";
   const month = f.month || "-";
   if (parsed.intent === "adjust_person_fte_rel") {
-    return `Aenderung: ${emp} ${month} ${year} in ${dept} (DA ${dienstart}) um ${f.delta_fte} VK anpassen.`;
+    return `Aenderung: ${ emp } ${ month } ${ year } in ${ dept }(DA ${ dienstart }) um ${ f.delta_fte } VK anpassen.`;
   }
   if (parsed.intent === "adjust_person_fte_abs") {
-    return `Aenderung: ${emp} ${month} ${year} in ${dept} (DA ${dienstart}) auf ${f.target_fte} VK setzen.`;
+    return `Aenderung: ${ emp } ${ month } ${ year } in ${ dept }(DA ${ dienstart }) auf ${ f.target_fte } VK setzen.`;
   }
-  return `Aenderung: ${parsed.intent} fuer ${emp} (${dept}, ${year}, DA ${dienstart}).`;
+  return `Aenderung: ${ parsed.intent } fuer ${ emp }(${ dept }, ${ year }, DA ${ dienstart }).`;
 }
 
 async function getRosterHistory(payload, db) {
@@ -553,10 +565,10 @@ async function getRosterHistory(payload, db) {
 
   let q = `
     SELECT changed_at, action, changed_by_user_id,
-           department_id, year, month, old_fte, new_fte
+    department_id, year, month, old_fte, new_fte
     FROM roster_monthly_audit
     WHERE employee_id = ?
-  `;
+    `;
   const params = [employeeId];
 
   if (year) {
@@ -581,13 +593,13 @@ async function getRosterList(payload, db) {
 
   let q = `
     SELECT r.employee_id, r.department_id, r.year, r.month, r.fte,
-           e.personnel_no, e.display_name
-           ${selectExtra.length ? ", " + selectExtra.join(", ") : ""}
+    e.personnel_no, e.display_name
+           ${ selectExtra.length ? ", " + selectExtra.join(", ") : "" }
     FROM roster_monthly r
     JOIN employees e ON e.id = r.employee_id
     WHERE r.site_id = ?
-      AND r.year = ?
-  `;
+    AND r.year = ?
+      `;
   const params = [siteId, year];
   if (departmentId) {
     q += " AND r.department_id = ? ";
@@ -599,7 +611,7 @@ async function getRosterList(payload, db) {
   const items = res.results || [];
   const map = new Map();
   items.forEach((row) => {
-    const key = `${row.employee_id}|${row.department_id}`;
+    const key = `${ row.employee_id } | ${ row.department_id }`;
     if (!map.has(key)) {
       map.set(key, {
         employeeId: row.employee_id,
@@ -637,7 +649,7 @@ async function rolloverRosterMonthly(payload, db) {
     SELECT month, fte
     FROM roster_monthly
     WHERE site_id = ? AND department_id = ? AND employee_id = ? AND year = ?
-  `).bind(siteId, departmentId, employeeId, fromYear).all();
+    `).bind(siteId, departmentId, employeeId, fromYear).all();
   const srcRows = src.results || [];
   if (!srcRows.length) {
     return { ok: true, copiedMonths: 0, mode };
@@ -649,7 +661,7 @@ async function rolloverRosterMonthly(payload, db) {
     SELECT month
     FROM roster_monthly
     WHERE site_id = ? AND department_id = ? AND employee_id = ? AND year = ?
-  `).bind(siteId, departmentId, employeeId, toYear).all();
+    `).bind(siteId, departmentId, employeeId, toYear).all();
   const existing = new Set((tgt.results || []).map((row) => Number(row.month)));
 
   const stmts = [];
@@ -661,14 +673,14 @@ async function rolloverRosterMonthly(payload, db) {
     stmts.push(
       db.prepare(`
         INSERT INTO roster_monthly
-          (id, site_id, department_id, employee_id, year, month, fte, updated_at, updated_by_user_id)
+    (id, site_id, department_id, employee_id, year, month, fte, updated_at, updated_by_user_id)
         VALUES
-          (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?)
+      (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?)
         ON CONFLICT(employee_id, department_id, year, month)
         DO UPDATE SET
           fte = excluded.fte,
-          updated_at = datetime('now'),
-          updated_by_user_id = excluded.updated_by_user_id
+    updated_at = datetime('now'),
+    updated_by_user_id = excluded.updated_by_user_id
       `).bind(
         id,
         siteId,
@@ -688,289 +700,16 @@ async function rolloverRosterMonthly(payload, db) {
 }
 
 // ---------- Login ----------
-async function handleLogin(body, env) {
-  const { username, password } = body || {};
-  if (!username || !password) return json({ success: false, error: "Missing credentials" }, 400);
-  const url = new URL(`${env.SUPABASE_URL}/rest/v1/app_users`);
-  url.searchParams.set("username", `eq.${encodeURIComponent(username)}`);
-  url.searchParams.set("select", "username,password,site_code");
-  url.searchParams.set("limit", "1");
-  const res = await fetch(url.toString(), {
-    headers: { Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`, apikey: env.SUPABASE_SERVICE_ROLE_KEY },
-  });
-  if (!res.ok) return json({ success: false, error: "REST error" }, 500);
-  const rows = await res.json();
-  if (!rows.length) return json({ success: false, error: "User not found" }, 401);
-  const user = rows[0];
-  if (user.password !== password) return json({ success: false, error: "Wrong password" }, 401);
-  return json({ success: true, siteCode: (user.site_code || user.username || "").toUpperCase() });
-}
+// Login entfernt (Supabase Dependency)
 
 // ---------- Audit lesen ----------
-async function handleAuditFetch(env, url) {
-  const site = url.searchParams.get("site") || "";
-  const limit = Math.max(1, Math.min(parseInt(url.searchParams.get("limit") || "15", 10), 100));
-  const params = new URLSearchParams();
-  if (site) params.set("site", `eq.${site}`);
-  params.set("order", "created_at.desc");
-  params.set("limit", String(limit));
-  const data = await supaFetch(env, "/assistant_audit?" + params.toString());
-  return json({ success: true, audit: data });
-}
+// Audit Fetch entfernt (Supabase Dependency)
 
 // ---------- DB-Aktionen ----------
-const MONTH_MAP = {
-  "januar": "jan", "jan": "jan",
-  "februar": "feb", "feb": "feb",
-  "maerz": "mrz", "maerz": "mrz", "mrz": "mrz",
-  "april": "apr", "apr": "apr",
-  "mai": "mai",
-  "juni": "jun", "jun": "jun",
-  "juli": "jul", "jul": "jul",
-  "august": "aug", "aug": "aug",
-  "september": "sep", "sep": "sep",
-  "oktober": "okt", "okt": "okt",
-  "november": "nov", "nov": "nov",
-  "dezember": "dez", "dez": "dez",
-};
-const MONTHS = ["jan","feb","mrz","apr","mai","jun","jul","aug","sep","okt","nov","dez"];
-const YEAR_MIN = 2026;
-const YEAR_MAX = 2099;
-const monthCol = (m, y) => {
-  const key = (m || "").toLowerCase().replace("ae", "ae").replace("oe", "oe").replace("ue", "ue");
-  const base = MONTH_MAP[key] || key.slice(0,3);
-  return `${base}_${y}`;
-};
-const num = v => {
-  const n = parseFloat((v ?? "").toString().replace(",", "."));
-  return Number.isFinite(n) ? n : 0;
-};
-
-async function fetchEmployee(env, table, name, year){
-  const params={ name:`ilike.*${name}*`, limit:"1" };
-  if(year) params.year=`eq.${year}`;
-  return (await queryTable(env,table,params))[0];
-}
-function ensureYearInRange(y){
-  if (y < YEAR_MIN || y > YEAR_MAX) {
-    throw new Error(`Jahr ${y} nicht verfuegbar (erwartet ${YEAR_MIN}-${YEAR_MAX}).`);
-  }
-}
-function ensureHasColumn(record, colName, table){
-  if (record && Object.prototype.hasOwnProperty.call(record, colName)) return;
-  throw new Error(`Spalte ${colName} fehlt in Tabelle ${table}`);
-}
-async function actAdjustRel(env, table, fields){
-  const y = parseInt(fields.year||"0",10); if(!y) throw new Error("Jahr fehlt.");
-  ensureYearInRange(y);
-  const col = monthCol(fields.month, y);
-  const delta = num(fields.delta_fte);
-  const emp = await fetchEmployee(env, table, fields.employee_name||"", y);
-  if(!emp) throw new Error(`Kein Datensatz fuer ${fields.employee_name} in ${y}`);
-  ensureHasColumn(emp, col, table);
-  const cur = num(emp[col]), neu = cur + delta;
-  await updateColumns(env, table, emp.id, { [col]: neu, updated_at: new Date().toISOString() });
-  return { employee_id: emp.id, table, column: col, old_value: cur, new_value: neu };
-}
-async function actAdjustAbs(env, table, fields){
-  const y = parseInt(fields.year||"0",10); if(!y) throw new Error("Jahr fehlt.");
-  ensureYearInRange(y);
-  const col = monthCol(fields.month, y);
-  const target = num(fields.target_fte);
-  const emp = await fetchEmployee(env, table, fields.employee_name||"", y);
-  if(!emp) throw new Error(`Kein Datensatz fuer ${fields.employee_name} in ${y}`);
-  ensureHasColumn(emp, col, table);
-  const cur = num(emp[col]);
-  await updateColumns(env, table, emp.id, { [col]: target, updated_at: new Date().toISOString() });
-  return { employee_id: emp.id, table, column: col, old_value: cur, new_value: target };
-}
-async function actTransfer(env, table, fields){
-  const y = parseInt(fields.year||"0",10); if(!y) throw new Error("Jahr fehlt.");
-  ensureYearInRange(y);
-  const emp = await fetchEmployee(env, table, fields.employee_name||"", y);
-  if(!emp) throw new Error(`Kein Datensatz fuer ${fields.employee_name} in ${y}`);
-  await updateColumns(env, table, emp.id, { dept: fields.unit||"", updated_at: new Date().toISOString() });
-  return { employee_id: emp.id, table, old_dept: emp.dept, new_dept: fields.unit||"", year: y };
-}
-async function actQueryExists(env, table, fields){
-  const params={ name:`ilike.*${fields.employee_name||""}*`, select:"id,name,dept,year" };
-  if(fields.year) params.year=`eq.${fields.year}`;
-  const rows=await queryTable(env,table,params);
-  return { exists: rows.length>0, matches: rows };
-}
-async function actQueryStation(env, table, fields){
-  const params={ name:`ilike.*${fields.employee_name||""}*`, select:"id,name,dept,year" };
-  if(fields.year) params.year=`eq.${fields.year}`;
-  const rows=await queryTable(env,table,params);
-  return { stations: rows };
-}
-async function actListUnit(env, table, fields){
-  const params={ dept:`ilike.*${fields.unit||""}*`, select:"id,name,dept,year" };
-  if(fields.year) params.year=`eq.${fields.year}`;
-  const rows=await queryTable(env,table,params);
-  return { dept: fields.unit||"", year: fields.year||null, employees: rows };
-}
-async function actEmployeeFteYear(env, table, fields){
-  const y=parseInt(fields.year||"0",10); if(!y) throw new Error("Jahr fehlt.");
-  ensureYearInRange(y);
-  const baseQuery = { name:`ilike.*${fields.employee_name||""}*`, year:`eq.${y}`, select:"*", limit:"1" };
-  const rows=await queryTable(env,table,baseQuery);
-  if(!rows.length){
-    return {
-      found:false,
-      name: fields.employee_name || "",
-      year: y,
-      month: fields.month || null,
-      month_column: fields.month ? monthCol(fields.month, y) : null,
-      month_value: null,
-      avg_vk: null,
-      avg_year: null,
-      months: {},
-    };
-  }
-  const record = rows[0];
-  const effectiveYear = y; // erzwinge das angefragte Jahr
-  const cols=MONTHS.map(m=>`${m}_${effectiveYear}`);
-  // pruefen, ob alle Spalten existieren
-  cols.forEach(c => ensureHasColumn(record, c, table));
-  const selectVals = cols.map(c=>num(record[c]));
-  const avg=selectVals.reduce((a,b)=>a+b,0)/cols.length;
-  let month_column = null, month_value = null;
-  if (fields.month) {
-    month_column = monthCol(fields.month, effectiveYear);
-    ensureHasColumn(record, month_column, table);
-    month_value = num(record[month_column]);
-  }
-  return {
-    found:true,
-    name: fields.employee_name || "",
-    year: effectiveYear,
-    month: fields.month || null,
-    month_column,
-    month_value,
-    avg_vk: month_value !== null ? month_value : avg,
-    avg_year: avg,
-    months: Object.fromEntries(cols.map((c,i)=>[c, selectVals[i]])),
-  };
-}
-
-// ROLLOVER: Werte von fromYear nach toYear kopieren, optional gefiltert auf ids/dept, mode: fill (nur leere Ziele) oder overwrite (immer)
-async function actRollover(env, table, fromYear, toYear, dept, ids = [], mode = "fill") {
-  if(fromYear < YEAR_MIN || toYear > YEAR_MAX || fromYear >= toYear){
-    throw new Error(`Jahresbereich ungueltig (${fromYear}-${toYear}, erlaubt ${YEAR_MIN}-${YEAR_MAX}, from<to)`);
-  }
-  if(!Array.isArray(ids) || ids.length === 0){
-    throw new Error("Bitte ids angeben (Array von IDs), um einen gezielten Rollover auszufuehren.");
-  }
-  const colsFrom = MONTHS.map(m => `${m}_${fromYear}`);
-  const colsTo = MONTHS.map(m => `${m}_${toYear}`);
-  const results = [];
-
-  for (const id of ids) {
-    // Datensatz holen
-    const qs = new URLSearchParams();
-    qs.set("id", `eq.${id}`);
-    if (dept) qs.set("dept", `eq.${dept}`);
-    const row = (await supaFetch(env, `/${table}?${qs.toString()}`))[0];
-    if(!row){
-      results.push({ id, status:"not_found" });
-      continue;
-    }
-    // Mapping bauen
-    const update = {};
-    colsTo.forEach((colTo, idx) => {
-      const valFrom = row[colsFrom[idx]];
-      const currentTo = row[colTo];
-      if (mode === "fill") {
-        if (currentTo === null || currentTo === undefined) update[colTo] = valFrom;
-      } else {
-        update[colTo] = valFrom;
-      }
-    });
-    if (Object.keys(update).length === 0) {
-      results.push({ id, status:"skipped" });
-      continue;
-    }
-    await supaFetch(env, `/${table}?id=eq.${id}`, {
-      method:"PATCH",
-      headers:{ "Content-Type":"application/json", Prefer:"return=minimal" },
-      body: JSON.stringify(update),
-    });
-    results.push({ id, status:"ok", updated: Object.keys(update) });
-  }
-  return { table, fromYear, toYear, dept: dept || null, mode, results };
-}
+// Legacy DB Actions (Supabase) entfernt
 
 // ---------- KI-Parser + Aktion ----------
-async function handleAiCommand(body, env, executeDb = false) {
-  const { command, table, site } = body || {};
-  if (!command) return json({ success: false, error: "Missing command" }, 400);
-
-  const parsed = await callOpenAI(env, command);
-  if (parsed.needs_clarification) {
-    return json({ success: true, parsed, note: "Clarification needed" });
-  }
-  if (!executeDb) {
-    return json({ success: true, parsed });
-  }
-
-  // DB-Ausfuehrung
-  const intent = parsed.intent || "unknown";
-  const f = parsed.fields || {};
-  let result;
-  try {
-    switch (intent) {
-      case "adjust_person_fte_rel":
-        result = await actAdjustRel(env, table, f);
-        break;
-      case "adjust_person_fte_abs":
-        result = await actAdjustAbs(env, table, f);
-        break;
-      case "move_employee_unit":
-        result = await actTransfer(env, table, f);
-        break;
-      case "check_employee_exists":
-        result = await actQueryExists(env, table, f);
-        break;
-      case "get_employee_unit":
-        result = await actQueryStation(env, table, f);
-        break;
-      case "list_unit_employees":
-        result = await actListUnit(env, table, f);
-        break;
-      case "get_employee_fte_year":
-        result = await actEmployeeFteYear(env, table, f);
-        break;
-      case "help":
-        result = { help: true };
-        break;
-      default:
-        throw new Error(`Intent '${intent}' nicht implementiert.`);
-    }
-  } catch (err) {
-    await logAudit(env, {
-      site: site || "unknown",
-      command,
-      action: intent,
-      target_table: table || "",
-      plan_year: f.year || null,
-      status: "error",
-      result: { error: err.message },
-    });
-    return json({ success: false, error: err.message, parsed });
-  }
-
-  await logAudit(env, {
-    site: site || "unknown",
-    command,
-    action: intent,
-    target_table: table || "",
-    plan_year: f.year || null,
-    status: "ok",
-    result,
-  });
-  return json({ success: true, parsed, applied: result });
-}
+// Legacy AI Command (Removed)
 
 // ---------- Clinicon Assistent (D1) ----------
 const READ_INTENTS = new Set([
@@ -1006,11 +745,11 @@ async function handleAssistantQuery(body, env) {
       const result = await executeAssistantActionD1(env, parsed, ctx);
       return json({
         type: "message",
-        message: `Ergebnis: ${JSON.stringify(result)}`,
+        message: `Ergebnis: ${ JSON.stringify(result) }`,
         parsed,
       });
     } catch (err) {
-      return json({ type: "message", message: `Fehler: ${err.message}`, parsed }, 500);
+      return json({ type: "message", message: `Fehler: ${ err.message }`, parsed }, 500);
     }
   }
 
@@ -1046,33 +785,22 @@ async function handleAssistantCommit(body, env) {
     const result = await executeAssistantActionD1(env, parsed, ctx);
     return json({ message: "Gespeichert.", result });
   } catch (err) {
-    return json({ message: `Fehler: ${err.message}` }, 500);
+    return json({ message: `Fehler: ${ err.message }` }, 500);
   }
 }
 
 // ---------- Rollover Handler ----------
-async function handleRollover(body, env){
-  const { table, fromYear, toYear, dept, ids, mode } = body || {};
-  if(!table || !fromYear || !toYear){
-    return json({ success:false, error:"table, fromYear, toYear erforderlich" }, 400);
-  }
-  try{
-    const res = await actRollover(env, table, Number(fromYear), Number(toYear), dept, ids, mode || "fill");
-    return json({ success:true, result:res });
-  }catch(err){
-    return json({ success:false, error: err.message }, 500);
-  }
-}
+// Legacy Rollover Handler (Removed)
 
 function must(v, name) {
   if (v === undefined || v === null || String(v).trim() === "") {
-    throw new Error(`Missing field: ${name}`);
+    throw new Error(`Missing field: ${ name }`);
   }
   return v;
 }
 function mustInt(v, name) {
   const n = Number(v);
-  if (!Number.isInteger(n)) throw new Error(`Invalid integer: ${name}`);
+  if (!Number.isInteger(n)) throw new Error(`Invalid integer: ${ name }`);
   return n;
 }
 
@@ -1082,15 +810,22 @@ export default {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
     const url = new URL(request.url);
 
-    // Login
-    if (request.method === "POST" && (url.pathname === "/" || url.pathname === "/login")) {
-      let body; try { body = await request.json(); } catch { return json({ success:false, error:"Invalid JSON" },400); }
-      return handleLogin(body, env);
-    }
-
-    // Audit lesen
-    if (url.pathname === "/api/audit" && request.method === "GET") {
-      try { return await handleAuditFetch(env, url); } catch (err) { return json({ success:false, error: err.message },500); }
+    // Root - Status Page
+    if (url.pathname === "/" && request.method === "GET") {
+      return new Response(\`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Clinicon API (D1)</title>
+          <style>body{font-family:sans-serif;padding:2rem;line-height:1.5;max-width:600px;margin:0 auto;color:#333;}</style>
+        </head>
+        <body>
+          <h1>Clinicon API is Running 🟢</h1>
+          <p>This backend is powered by Cloudflare Workers and D1.</p>
+          <p>Version: ${new Date().toISOString()}</p>
+        </body>
+        </html>
+      \`, { headers: { "Content-Type": "text/html" } });
     }
 
     // D1: Stellenplan speichern
@@ -1123,24 +858,6 @@ export default {
       let body; try { body = await request.json(); } catch { return json({ ok:false, error:"Invalid JSON" },400); }
       try { return json(await rolloverRosterMonthly(body, env.DB), 200); }
       catch (err) { return json({ ok:false, error: err.message }, 500); }
-    }
-
-    // KI-Parser nur (kein DB)
-    if (url.pathname === "/api/ai-command" && request.method === "POST") {
-      let body; try { body = await request.json(); } catch { return json({ success:false, error:"Invalid JSON" },400); }
-      try { return await handleAiCommand(body, env, false); } catch (err) { return json({ success:false, error: err.message },500); }
-    }
-
-    // KI-Parser + DB-Ausfuehrung
-    if (url.pathname === "/api/command" && request.method === "POST") {
-      let body; try { body = await request.json(); } catch { return json({ success:false, error:"Invalid JSON" },400); }
-      try { return await handleAiCommand(body, env, true); } catch (err) { return json({ success:false, error: err.message },500); }
-    }
-
-    // Rollover (Werte von fromYear nach toYear kopieren, nur leere Ziele werden gefuellt)
-    if (url.pathname === "/api/rollover" && request.method === "POST") {
-      let body; try { body = await request.json(); } catch { return json({ success:false, error:"Invalid JSON" },400); }
-      return await handleRollover(body, env);
     }
 
     // Clinicon Assistent (D1)
