@@ -93,6 +93,7 @@
     qualOptions: [],
     dept: "",
     dienstart: "01",
+    deptDienstart: {},  // Maps dept code to default Dienstart
     year: new Date().getFullYear(),
     data: {},
   };
@@ -114,6 +115,7 @@
         state.data = parsed.data || {};
         state.dept = parsed.dept || state.dept;
         state.dienstart = parsed.dienstart || state.dienstart;
+        state.deptDienstart = parsed.deptDienstart || {};
         state.year = parsed.year || state.year;
       }
     } catch (_) { }
@@ -124,6 +126,7 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         dept: state.dept,
         dienstart: state.dienstart,
+        deptDienstart: state.deptDienstart,
         year: state.year,
         data: state.data,
       }));
@@ -198,10 +201,16 @@
       const tr = document.createElement("tr");
       tr.dataset.kind = "emp";
       tr.dataset.idx = String(idx);
-      if (r.hiddenRow) tr.style.display = "none";
+      if (r.hiddenRow) {
+        tr.style.opacity = "0.5";
+        tr.style.pointerEvents = "auto";
+        tr.classList.add("row-hidden");
+      }
       const tds = [];
+      const hiddenLabel = r.hiddenRow ? '<span class="hidden-label">ausgeblendet</span>' : '';
       tds.push(`
         <td class="pnr-col">
+          ${hiddenLabel}
           <input class="pnr-input sp-pnr" data-kind="emp" data-idx="${idx}" value="${escapeHtml(r.personalNumber)}" placeholder="Personalnr.">
         </td>
       `);
@@ -229,9 +238,10 @@
       tds.push(`
         <td class="actions-cell">
           <div class="action-buttons">
-            <button class="icon-btn" data-action="hide" data-kind="emp" data-idx="${idx}" title="Zeile ausblenden">&#128065;</button>
-            <button class="icon-btn" data-action="delete" data-kind="emp" data-idx="${idx}" title="Zeile loeschen">&#128465;</button>
-            <button class="icon-btn" data-action="copy" data-kind="emp" data-idx="${idx}" type="button" title="Werte fortfuehren">&#10230;</button>
+            <button class="icon-btn icon-btn-lg" data-action="copy" data-kind="emp" data-idx="${idx}" type="button" title="Werte bis Jahresende fortführen">&#10230;</button>
+            <button class="icon-btn icon-btn-lg" data-action="extend" data-kind="emp" data-idx="${idx}" type="button" title="Werte für 3 Jahre fortführen">&#8649;</button>
+            <button class="icon-btn icon-btn-lg" data-action="hide" data-kind="emp" data-idx="${idx}" title="${r.hiddenRow ? 'Zeile einblenden' : 'Zeile ausblenden'}">${r.hiddenRow ? '&#128064;' : '&#128065;'}</button>
+            <button class="icon-btn icon-btn-lg" data-action="delete" data-kind="emp" data-idx="${idx}" title="Zeile löschen">&#128465;</button>
           </div>
         </td>
       `);
@@ -261,10 +271,16 @@
       const tr = document.createElement("tr");
       tr.dataset.kind = "extra";
       tr.dataset.idx = String(idx);
-      if (x.hiddenRow) tr.style.display = "none";
+      if (x.hiddenRow) {
+        tr.style.opacity = "0.5";
+        tr.style.pointerEvents = "auto";
+        tr.classList.add("row-hidden");
+      }
       const tds = [];
+      const hiddenLabel = x.hiddenRow ? '<span class="hidden-label">ausgeblendet</span>' : '';
       tds.push(`
         <td class="pnr-col">
+          ${hiddenLabel}
           <input class="pnr-input sp-pnr" data-kind="extra" data-idx="${idx}" value="${escapeHtml(x.personalNumber)}" placeholder="Personalnr.">
         </td>
       `);
@@ -292,9 +308,10 @@
       tds.push(`
         <td class="actions-cell">
           <div class="action-buttons">
-            <button class="icon-btn" data-action="hide" data-kind="extra" data-idx="${idx}" title="Zeile ausblenden">&#128065;</button>
-            <button class="icon-btn" data-action="delete" data-kind="extra" data-idx="${idx}" title="Zeile loeschen">&#128465;</button>
-            <button class="icon-btn" data-action="copy" data-kind="extra" data-idx="${idx}" type="button" title="Werte fortfuehren">&#10230;</button>
+            <button class="icon-btn icon-btn-lg" data-action="copy" data-kind="extra" data-idx="${idx}" type="button" title="Werte bis Jahresende fortführen">&#10230;</button>
+            <button class="icon-btn icon-btn-lg" data-action="extend" data-kind="extra" data-idx="${idx}" type="button" title="Werte für 3 Jahre fortführen">&#8649;</button>
+            <button class="icon-btn icon-btn-lg" data-action="hide" data-kind="extra" data-idx="${idx}" title="${x.hiddenRow ? 'Zeile einblenden' : 'Zeile ausblenden'}">${x.hiddenRow ? '&#128064;' : '&#128065;'}</button>
+            <button class="icon-btn icon-btn-lg" data-action="delete" data-kind="extra" data-idx="${idx}" title="Zeile löschen">&#128465;</button>
           </div>
         </td>
       `);
@@ -436,6 +453,12 @@
     if (els.deptSelect) {
       els.deptSelect.addEventListener("change", async () => {
         state.dept = els.deptSelect.value;
+        // Load saved Dienstart for this department
+        const savedDienstart = state.deptDienstart[state.dept];
+        if (savedDienstart && els.dienstartSelect) {
+          state.dienstart = savedDienstart;
+          els.dienstartSelect.value = savedDienstart;
+        }
         saveStorage();
         await loadFromDb();
       });
@@ -443,6 +466,10 @@
     if (els.dienstartSelect) {
       els.dienstartSelect.addEventListener("change", async () => {
         state.dienstart = els.dienstartSelect.value;
+        // Save Dienstart for current department
+        if (state.dept) {
+          state.deptDienstart[state.dept] = state.dienstart;
+        }
         saveStorage();
         await loadFromDb();
       });
@@ -543,6 +570,39 @@
           saveStorage();
           renderAll();
           setStatus('Zeile fortgefuehrt');
+          return;
+        }
+        if (action === 'extend') {
+          // Extend values for 3 years (current + next 2 years)
+          const currentYear = state.year;
+          const lastMonthVal = row.values[11] || row.values.find(v => v > 0) || 0;
+          // Fill remaining months of current year
+          for (let m = 0; m < 12; m++) {
+            if (row.values[m] === 0 || row.values[m] === undefined) {
+              row.values[m] = lastMonthVal;
+            }
+          }
+          // Store extended data for next 2 years in state.data
+          for (let y = 1; y <= 2; y++) {
+            const futureYear = currentYear + y;
+            const futureKey = `${state.dept}|${state.dienstart}|${futureYear}`;
+            if (!state.data[futureKey]) {
+              state.data[futureKey] = { employees: [], extras: [] };
+            }
+            const futureList = kind === 'extra' ? state.data[futureKey].extras : state.data[futureKey].employees;
+            const existing = futureList.find(r => r.personalNumber === row.personalNumber);
+            if (existing) {
+              existing.values = Array(12).fill(lastMonthVal);
+            } else {
+              futureList.push({
+                ...row,
+                values: Array(12).fill(lastMonthVal),
+              });
+            }
+          }
+          saveStorage();
+          renderAll();
+          setStatus(`Werte für ${currentYear}-${currentYear + 2} fortgeführt`);
           return;
         }
         if (action === 'hide') {

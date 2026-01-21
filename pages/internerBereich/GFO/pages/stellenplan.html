@@ -281,6 +281,35 @@
       align-items: center;
     }
 
+    .icon-btn-lg {
+      font-size: 1.4rem;
+      padding: 4px 8px;
+    }
+
+    .hidden-label {
+      display: block;
+      font-size: 10px;
+      color: #999;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    .row-hidden td {
+      background-color: #f0f0f0 !important;
+    }
+
+    .row-hidden input,
+    .row-hidden select {
+      color: #777;
+    }
+
+    /* Qualifikation Select Adjustments */
+    .sp-qual {
+      width: 100%;
+      min-height: 40px;
+    }
+
     .icon-btn {
       width: 38px;
       height: 38px;
@@ -560,7 +589,7 @@
 
     <section class="card">
       <div class="section-header">
-        <h3 style="margin-top:0;">Zusatzgruppen (SchÃ¼ler:innen, Azubis, MFA, ATA ...)</h3>
+        <h3 style="margin-top:0;">Zusatzgruppen (Schüler:innen, Azubis, MFA, ATA ...)</h3>
       </div>
       <div class="table-wrap">
         <table id="extrasTable">
@@ -700,10 +729,10 @@
             runScripts(0);
           }
 
-          const current = (location.pathname.split("/").pop() || "").toLowerCase();
+          const current = (location.pathname.split("/").pop() || "").toLowerCase().replace(/\.html$/, "");
           document.querySelectorAll(".nav a[href]").forEach((a) => a.classList.remove("active"));
           document.querySelectorAll(".nav a[href]").forEach((a) => {
-            const href = (a.getAttribute("href") || "").split("?")[0].split("#")[0].toLowerCase();
+            const href = (a.getAttribute("href") || "").split("?")[0].split("#")[0].toLowerCase().replace(/\.html$/, "");
             if (href && href === current) {
               a.classList.add("active");
             }
