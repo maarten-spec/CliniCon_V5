@@ -119,7 +119,7 @@ async function callOpenAI(env, prompt) {
 
 // ---------- D1 Audit Helpers ----------
 async function ensureAuditTableD1(db) {
-  await db.prepare(\`
+  await db.prepare(`
     CREATE TABLE IF NOT EXISTS assistant_audit (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       created_at TEXT DEFAULT (datetime('now')),
@@ -131,16 +131,16 @@ async function ensureAuditTableD1(db) {
       status TEXT,
       result TEXT
     )
-  \`).run();
+  `).run();
 }
 
 async function logAuditD1(db, payload) {
   try {
     await ensureAuditTableD1(db);
-    await db.prepare(\`
+    await db.prepare(`
       INSERT INTO assistant_audit (site, command, action, target_table, plan_year, status, result)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    \`).bind(
+    `).bind(
       payload.site || "unknown",
       payload.command || "",
       payload.action || "",
@@ -192,10 +192,10 @@ async function saveRosterMonthly(payload, db) {
     updateCols.push("include");
   }
   const employeeSql = `
-    INSERT INTO employees(${ insertCols.join(", ") })
-    VALUES(${ insertValues.join(", ") })
+    INSERT INTO employees(${insertCols.join(", ")})
+    VALUES(${insertValues.join(", ")})
     ON CONFLICT(id) DO UPDATE SET
-      ${ updateCols.map((c) => `${c} = excluded.${c}`).join(", ") }
+      ${updateCols.map((c) => `${c} = excluded.${c}`).join(", ")}
     `;
 
   const employeeUpserts = [];
@@ -204,7 +204,7 @@ async function saveRosterMonthly(payload, db) {
     if (!employeeId) return;
     const personalRaw = String(row.personalNumber || "").trim();
     const personalNo = isExtra
-      ? (personalRaw.startsWith("EX-") ? personalRaw : `EX - ${ personalRaw }`)
+      ? (personalRaw.startsWith("EX-") ? personalRaw : `EX - ${personalRaw}`)
       : personalRaw.replace(/^EX-/, "");
     const displayName = isExtra ? String(row.category || row.name || "Zusatz") : String(row.name || "");
     const params = [employeeId, siteId, personalNo, displayName];
@@ -277,7 +277,7 @@ async function getFteWarnings(db, siteId, year, employeeIds) {
     FROM roster_monthly
     WHERE site_id = ?
     AND year = ?
-      AND employee_id IN(${ placeholders })
+      AND employee_id IN(${placeholders})
     GROUP BY employee_id, year, month
     HAVING SUM(fte) > 1.0
     ORDER BY employee_id, month
@@ -289,7 +289,7 @@ async function getFteWarnings(db, siteId, year, employeeIds) {
     year: r.year,
     month: r.month,
     totalFte: r.total_fte,
-    message: `Warnung: VK - Summe > 1, 0(ist ${ r.total_fte })`,
+    message: `Warnung: VK - Summe > 1, 0(ist ${r.total_fte})`,
   }));
 }
 
@@ -325,7 +325,7 @@ async function signToken(env, payload) {
     ["sign"]
   );
   const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
-  return `${ body }.${ b64url(sig) }`;
+  return `${body}.${b64url(sig)}`;
 }
 
 async function verifyToken(env, token) {
@@ -362,7 +362,7 @@ async function verifyToken(env, token) {
 const MONTH_MAP = {
   "januar": "jan", "jan": "jan",
   "februar": "feb", "feb": "feb",
-  "maerz": "mrz", "maerz": "mrz", "mrz": "mrz",
+  "maerz": "mrz", "mrz": "mrz",
   "april": "apr", "apr": "apr",
   "mai": "mai",
   "juni": "jun", "jun": "jun",
@@ -373,7 +373,7 @@ const MONTH_MAP = {
   "november": "nov", "nov": "nov",
   "dezember": "dez", "dez": "dez",
 };
-const MONTHS = ["jan","feb","mrz","apr","mai","jun","jul","aug","sep","okt","nov","dez"];
+const MONTHS = ["jan", "feb", "mrz", "apr", "mai", "jun", "jul", "aug", "sep", "okt", "nov", "dez"];
 
 const monthIndexFromName = (label) => {
   if (!label) return null;
@@ -424,7 +424,7 @@ async function findEmployeeD1(db, name, personalNumber) {
   }
   const cleaned = String(name || "").trim();
   if (!cleaned) return null;
-  const like = `% ${ cleaned } % `;
+  const like = `% ${cleaned} % `;
   return db.prepare(
     `SELECT id, personalnummer, vorname, nachname
      FROM mitarbeiter
@@ -470,7 +470,7 @@ async function executeAssistantActionD1(env, parsed, ctx) {
   if (!dept) throw new Error("Abteilung fehlt");
 
   const org = await getOrgByCodeD1(env.DB, dept);
-  if (!org) throw new Error(`Abteilung ${ dept } nicht gefunden`);
+  if (!org) throw new Error(`Abteilung ${dept} nicht gefunden`);
   const planId = await getOrCreatePlanD1(env.DB, org.id, year);
 
   const employee = await findEmployeeD1(env.DB, f.employee_name, f.personal_number);
@@ -521,7 +521,7 @@ async function executeAssistantActionD1(env, parsed, ctx) {
       const employees = (rows.results || []).map((row) => ({
         id: row.id,
         personalNumber: row.personalnummer,
-        name: `${ row.vorname || "" } ${ row.nachname || "" }`.trim(),
+        name: `${row.vorname || ""} ${row.nachname || ""}`.trim(),
       }));
       return { ok: true, dept, year, dienstart, employees };
     }
@@ -551,12 +551,12 @@ function summarizeProposal(parsed, ctx) {
   const emp = f.employee_name || f.personal_number || "Unbekannt";
   const month = f.month || "-";
   if (parsed.intent === "adjust_person_fte_rel") {
-    return `Aenderung: ${ emp } ${ month } ${ year } in ${ dept }(DA ${ dienstart }) um ${ f.delta_fte } VK anpassen.`;
+    return `Aenderung: ${emp} ${month} ${year} in ${dept}(DA ${dienstart}) um ${f.delta_fte} VK anpassen.`;
   }
   if (parsed.intent === "adjust_person_fte_abs") {
-    return `Aenderung: ${ emp } ${ month } ${ year } in ${ dept }(DA ${ dienstart }) auf ${ f.target_fte } VK setzen.`;
+    return `Aenderung: ${emp} ${month} ${year} in ${dept}(DA ${dienstart}) auf ${f.target_fte} VK setzen.`;
   }
-  return `Aenderung: ${ parsed.intent } fuer ${ emp }(${ dept }, ${ year }, DA ${ dienstart }).`;
+  return `Aenderung: ${parsed.intent} fuer ${emp}(${dept}, ${year}, DA ${dienstart}).`;
 }
 
 async function getRosterHistory(payload, db) {
@@ -594,7 +594,7 @@ async function getRosterList(payload, db) {
   let q = `
     SELECT r.employee_id, r.department_id, r.year, r.month, r.fte,
     e.personnel_no, e.display_name
-           ${ selectExtra.length ? ", " + selectExtra.join(", ") : "" }
+           ${selectExtra.length ? ", " + selectExtra.join(", ") : ""}
     FROM roster_monthly r
     JOIN employees e ON e.id = r.employee_id
     WHERE r.site_id = ?
@@ -611,7 +611,7 @@ async function getRosterList(payload, db) {
   const items = res.results || [];
   const map = new Map();
   items.forEach((row) => {
-    const key = `${ row.employee_id } | ${ row.department_id }`;
+    const key = `${row.employee_id} | ${row.department_id}`;
     if (!map.has(key)) {
       map.set(key, {
         employeeId: row.employee_id,
@@ -745,11 +745,11 @@ async function handleAssistantQuery(body, env) {
       const result = await executeAssistantActionD1(env, parsed, ctx);
       return json({
         type: "message",
-        message: `Ergebnis: ${ JSON.stringify(result) }`,
+        message: `Ergebnis: ${JSON.stringify(result)}`,
         parsed,
       });
     } catch (err) {
-      return json({ type: "message", message: `Fehler: ${ err.message }`, parsed }, 500);
+      return json({ type: "message", message: `Fehler: ${err.message}`, parsed }, 500);
     }
   }
 
@@ -785,7 +785,7 @@ async function handleAssistantCommit(body, env) {
     const result = await executeAssistantActionD1(env, parsed, ctx);
     return json({ message: "Gespeichert.", result });
   } catch (err) {
-    return json({ message: `Fehler: ${ err.message }` }, 500);
+    return json({ message: `Fehler: ${err.message}` }, 500);
   }
 }
 
@@ -794,13 +794,13 @@ async function handleAssistantCommit(body, env) {
 
 function must(v, name) {
   if (v === undefined || v === null || String(v).trim() === "") {
-    throw new Error(`Missing field: ${ name }`);
+    throw new Error(`Missing field: ${name}`);
   }
   return v;
 }
 function mustInt(v, name) {
   const n = Number(v);
-  if (!Number.isInteger(n)) throw new Error(`Invalid integer: ${ name }`);
+  if (!Number.isInteger(n)) throw new Error(`Invalid integer: ${name}`);
   return n;
 }
 
@@ -812,7 +812,7 @@ export default {
 
     // Root - Status Page
     if (url.pathname === "/" && request.method === "GET") {
-      return new Response(\`
+      return new Response(`
         <!DOCTYPE html>
         <html>
         <head>
@@ -825,48 +825,48 @@ export default {
           <p>Version: ${new Date().toISOString()}</p>
         </body>
         </html>
-      \`, { headers: { "Content-Type": "text/html" } });
+      `, { headers: { "Content-Type": "text/html" } });
     }
 
     // D1: Stellenplan speichern
     if (url.pathname === "/api/roster/save" && request.method === "POST") {
       if (!env.DB) return json({ ok: false, error: "DB binding fehlt" }, 500);
-      let body; try { body = await request.json(); } catch { return json({ ok:false, error:"Invalid JSON" },400); }
+      let body; try { body = await request.json(); } catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
       try { return json(await saveRosterMonthly(body, env.DB), 200); }
-      catch (err) { return json({ ok:false, error: err.message }, 500); }
+      catch (err) { return json({ ok: false, error: err.message }, 500); }
     }
 
     // D1: Stellenplan laden
     if (url.pathname === "/api/roster/list" && request.method === "POST") {
       if (!env.DB) return json({ ok: false, error: "DB binding fehlt" }, 500);
-      let body; try { body = await request.json(); } catch { return json({ ok:false, error:"Invalid JSON" },400); }
+      let body; try { body = await request.json(); } catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
       try { return json(await getRosterList(body, env.DB), 200); }
-      catch (err) { return json({ ok:false, error: err.message }, 500); }
+      catch (err) { return json({ ok: false, error: err.message }, 500); }
     }
 
     // D1: Historie pro Mitarbeiter
     if (url.pathname === "/api/roster/history" && request.method === "POST") {
       if (!env.DB) return json({ ok: false, error: "DB binding fehlt" }, 500);
-      let body; try { body = await request.json(); } catch { return json({ ok:false, error:"Invalid JSON" },400); }
+      let body; try { body = await request.json(); } catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
       try { return json(await getRosterHistory(body, env.DB), 200); }
-      catch (err) { return json({ ok:false, error: err.message }, 500); }
+      catch (err) { return json({ ok: false, error: err.message }, 500); }
     }
 
     // D1: Folgejahr kopieren
     if (url.pathname === "/api/roster/rollover" && request.method === "POST") {
       if (!env.DB) return json({ ok: false, error: "DB binding fehlt" }, 500);
-      let body; try { body = await request.json(); } catch { return json({ ok:false, error:"Invalid JSON" },400); }
+      let body; try { body = await request.json(); } catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
       try { return json(await rolloverRosterMonthly(body, env.DB), 200); }
-      catch (err) { return json({ ok:false, error: err.message }, 500); }
+      catch (err) { return json({ ok: false, error: err.message }, 500); }
     }
 
     // Clinicon Assistent (D1)
     if (url.pathname === "/assistant/query" && request.method === "POST") {
-      let body; try { body = await request.json(); } catch { return json({ type:"message", message:"Invalid JSON" },400); }
+      let body; try { body = await request.json(); } catch { return json({ type: "message", message: "Invalid JSON" }, 400); }
       return await handleAssistantQuery(body, env);
     }
     if (url.pathname === "/assistant/commit" && request.method === "POST") {
-      let body; try { body = await request.json(); } catch { return json({ message:"Invalid JSON" },400); }
+      let body; try { body = await request.json(); } catch { return json({ message: "Invalid JSON" }, 400); }
       return await handleAssistantCommit(body, env);
     }
 
