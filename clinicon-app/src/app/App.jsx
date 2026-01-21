@@ -1,8 +1,9 @@
 ﻿import React from "react";
 import AppShell from "../components/AppShell";
 import { resolveRoute } from "./routes";
+import { AssistantChat } from "../components/Assistant";
 
-export default function App(){
+export default function App() {
   const [hash, setHash] = React.useState(window.location.hash || "#/");
 
   React.useEffect(() => {
@@ -11,5 +12,10 @@ export default function App(){
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
-  return <AppShell>{resolveRoute(hash)}</AppShell>;
+  return (
+    <AppShell>
+      {resolveRoute(hash)}
+      <AssistantChat />
+    </AppShell>
+  );
 }

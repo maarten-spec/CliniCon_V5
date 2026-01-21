@@ -1,112 +1,478 @@
 ﻿<!doctype html>
 <html lang="de">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Clinicon - Stellenplan</title>
   <style id="page-style">
-:root{
-      --header:var(--surface-2);
-      --row:#f7f9ff;
-      --hover:rgba(28,107,255,0.08);
+    :root {
+      --header: var(--surface-2);
+      --row: #f7f9ff;
+      --hover: rgba(28, 107, 255, 0.08);
     }
-main{padding:20px; display:flex; flex-direction:column; gap:16px; width:100%; max-width:100%; margin:0 auto;}
-    .card{box-shadow:var(--shadow-soft); border:1px solid var(--line); background:var(--surface);}
-    .top{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      padding:18px;
-      background:linear-gradient(120deg, rgba(28,107,255,0.14), rgba(23,195,178,0.18));
-      border:1px solid rgba(28,107,255,0.18);
-    }
-    .header-row{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap; padding-bottom:8px; border-bottom:1px solid var(--line);}
-    .hero-title{display:flex; flex-direction:column; gap:6px;}
-    .pill{
-      display:inline-flex;
-      gap:8px;
-      padding:7px 12px;
-      border-radius:12px;
-      background:linear-gradient(135deg, var(--accent), #458cff);
-      color:#fff;
-      font-weight:700;
-      box-shadow:0 12px 24px rgba(28,107,255,0.25);
-    }
-    h1{margin:0;}
-    .controls{display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; margin-top:6px; padding-top:6px;}
-    .controls label{display:flex; flex-direction:column; gap:4px; font-weight:700; color:#0f172a;}
-    .controls select,.controls input{padding:9px 11px; border:1px solid var(--line); border-radius:12px; font:inherit; background:#fff; box-shadow:0 7px 18px rgba(15,23,42,0.05);}
-    .controls button{
-      border:1px solid transparent;
-      background:linear-gradient(135deg, var(--accent-3), #6ee7d4);
-      padding:9px 12px;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:700;
-      color:#0f172a;
-      transition:.15s ease all;
-      box-shadow:0 9px 20px rgba(18,53,92,.16);
-      margin-top:6px;
-    }
-    .controls button.primary{background:linear-gradient(135deg, var(--accent), #458cff); color:#fff;}
-    .controls .btn-save{background:linear-gradient(135deg, var(--accent-2), var(--accent-5)); color:#fff; box-shadow:0 9px 20px rgba(255,107,53,.25);}
-    .controls button:hover{box-shadow:0 12px 28px rgba(18,53,92,.2); transform:translateY(-1px);} .controls button:active{transform:translateY(0);}
-    .summary{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px;}
-    .tile{
-      padding:14px 16px;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:var(--surface);
-      box-shadow:var(--shadow-soft);
-      display:grid;
-      gap:6px;
-      position:relative;
-      overflow:hidden;
-    }
-    .tile::after{
-      content:"";
-      position:absolute;
-      inset:auto -35% -55% auto;
-      width:140px;
-      height:140px;
-      border-radius:50%;
-      opacity:.12;
-      background:var(--accent);
-    }
-    .tile span{color:var(--muted);} .tile strong{font-size:1.3rem;}
-    .table-wrap{overflow:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface); box-shadow:var(--shadow-soft); scrollbar-width:none;} .table-wrap::-webkit-scrollbar{display:none;} table{width:100%; border-collapse:collapse; font-size:0.94rem;} th,td{padding:10px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:middle;} th{background:var(--header); color:var(--ink); position:sticky; top:0; z-index:2; font-size:0.9rem; border-right:1px solid rgba(13,20,51,0.08); font-weight:800;} th:last-child{border-right:none;} th:first-child, td:first-child{position:sticky; left:0; background:var(--surface); z-index:3; border-right:1px solid rgba(13,20,51,0.08);} tr:nth-child(even) td{background:#f9fbff;} tr:hover td{background:var(--hover);} .sort-indicator{font-size:0.8rem; color:var(--muted); margin-left:6px;}
-    .name-input,.vk-input{width:100%; padding:8px 8px; border:1px solid var(--line); border-radius:8px; font:inherit; text-align:center; background:#fff; transition:.15s ease all;} .name-input{text-align:left;} .name-input:focus,.vk-input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(28,107,255,.2);} .vk-input::-webkit-outer-spin-button,.vk-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;} .vk-input{-moz-appearance:textfield;} td.actions-cell, th.actions-col{vertical-align:middle; text-align:center; padding:6px 8px; min-width:140px;} .actions-cell .action-buttons{display:flex; gap:8px; justify-content:center; align-items:center;} .icon-btn{width:38px; height:38px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; box-shadow:0 4px 10px rgba(15,23,42,0.08); display:flex; align-items:center; justify-content:center;} .icon-btn:hover{background:#f1f5f9;} th.actions-col, td.actions-cell{text-align:center;} .totals-row td{font-weight:700; background:var(--surface-2);} .spacer-row td{background:#f1f5f9;} .hint{color:var(--muted); margin:4px 0 0;} .pnr-cell input{background:#eef2ff; border-color:#c7d2fe;}
-    .row-muted td{background:linear-gradient(90deg,#e2e8f0,#f8fafc); color:#334155; box-shadow:inset 4px 0 0 #cbd5e1;}
-    .row-muted td:first-child{background:linear-gradient(90deg,#cbd5e1,#e2e8f0); box-shadow:inset 6px 0 0 #94a3b8; position:sticky; left:0;}
-    .row-muted td:first-child::before{content:'Ausgeblendet'; position:absolute; top:6px; right:8px; background:#94a3b8; color:#0f172a; padding:2px 8px; border-radius:10px; font-size:0.75rem; font-weight:700;}
-    .row-muted input,.row-muted .qual-badge{background:#e2e8f0; border-color:#cbd5e1; color:#334155;}
-    .row-muted .qual-badge span:last-child{color:#1f2937;}
-    .row-muted td:first-child input{padding-top:18px;}
-    .action-menu{position:absolute; background:#fff; border:1px solid var(--line); box-shadow:0 12px 30px rgba(15,23,42,0.18); border-radius:10px; padding:6px 0; display:none; z-index:120;} .action-menu button{display:block; width:100%; padding:8px 14px; background:none; border:none; text-align:left; cursor:pointer; font:inherit;} .action-menu button:hover{background:#f1f5f9;}
-    th.month-col, td.month-col{min-width:68px; width:68px;}
-    .save-status{display:inline-block; padding:6px 10px; border-radius:10px; background:rgba(23,195,178,0.16); color:#0f172a; border:1px solid rgba(23,195,178,0.4); font-weight:600;} .save-status.error{background:#fef2f2; border-color:#fecdd3; color:#991b1b;}
-    .qual-badge{width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:10px; background:#f8fafc; cursor:pointer; text-align:left; font-size:0.88rem; display:flex; justify-content:space-between; align-items:center;}
-    .qual-popover{position:absolute; background:#fff; border:1px solid var(--line); box-shadow:0 12px 30px rgba(15,23,42,0.16); border-radius:12px; padding:10px; display:none; z-index:99; width:240px; max-height:260px; overflow:auto;}
-    .qual-popover label{display:flex; align-items:center; gap:8px; font-size:0.88rem; padding:4px 2px;}
-    @media (max-width: 900px){
 
-th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min-width:100px;}}
-@media (max-width: 900px){
+    main {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+    }
 
-}
-    @media (max-width: 600px){
-}
-@media (max-width: 900px){
-}
+    .card {
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .top {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 18px;
+      background: linear-gradient(120deg, rgba(28, 107, 255, 0.14), rgba(23, 195, 178, 0.18));
+      border: 1px solid rgba(28, 107, 255, 0.18);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-title {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .pill {
+      display: inline-flex;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), #458cff);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 12px 24px rgba(28, 107, 255, 0.25);
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-end;
+      margin-top: 6px;
+      padding-top: 6px;
+    }
+
+    .controls label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .controls select,
+    .controls input {
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font: inherit;
+      background: #fff;
+      box-shadow: 0 7px 18px rgba(15, 23, 42, 0.05);
+    }
+
+    .controls button {
+      border: 1px solid transparent;
+      background: linear-gradient(135deg, var(--accent-3), #6ee7d4);
+      padding: 9px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      color: #0f172a;
+      transition: .15s ease all;
+      box-shadow: 0 9px 20px rgba(18, 53, 92, .16);
+      margin-top: 6px;
+    }
+
+    .controls button.primary {
+      background: linear-gradient(135deg, var(--accent), #458cff);
+      color: #fff;
+    }
+
+    .controls .btn-save {
+      background: linear-gradient(135deg, var(--accent-2), var(--accent-5));
+      color: #fff;
+      box-shadow: 0 9px 20px rgba(255, 107, 53, .25);
+    }
+
+    .controls button:hover {
+      box-shadow: 0 12px 28px rgba(18, 53, 92, .2);
+      transform: translateY(-1px);
+    }
+
+    .controls button:active {
+      transform: translateY(0);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .tile {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tile::after {
+      content: "";
+      position: absolute;
+      inset: auto -35% -55% auto;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      opacity: .12;
+      background: var(--accent);
+    }
+
+    .tile span {
+      color: var(--muted);
+    }
+
+    .tile strong {
+      font-size: 1.3rem;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      box-shadow: var(--shadow-soft);
+      scrollbar-width: none;
+    }
+
+    .table-wrap::-webkit-scrollbar {
+      display: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    th,
+    td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: var(--header);
+      color: var(--ink);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      font-size: 0.9rem;
+      border-right: 1px solid rgba(13, 20, 51, 0.08);
+      font-weight: 800;
+    }
+
+    th:last-child {
+      border-right: none;
+    }
+
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      background: var(--surface);
+      z-index: 3;
+      border-right: 1px solid rgba(13, 20, 51, 0.08);
+    }
+
+    tr:nth-child(even) td {
+      background: #f9fbff;
+    }
+
+    tr:hover td {
+      background: var(--hover);
+    }
+
+    .sort-indicator {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-left: 6px;
+    }
+
+    .name-input,
+    .vk-input {
+      width: 100%;
+      padding: 8px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font: inherit;
+      text-align: center;
+      background: #fff;
+      transition: .15s ease all;
+    }
+
+    .name-input {
+      text-align: left;
+    }
+
+    .name-input:focus,
+    .vk-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(28, 107, 255, .2);
+    }
+
+    .vk-input::-webkit-outer-spin-button,
+    .vk-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .vk-input {
+      -moz-appearance: textfield;
+    }
+
+    td.actions-cell,
+    th.actions-col {
+      vertical-align: middle;
+      text-align: center;
+      padding: 6px 8px;
+      min-width: 140px;
+    }
+
+    .actions-cell .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover {
+      background: #f1f5f9;
+    }
+
+    th.actions-col,
+    td.actions-cell {
+      text-align: center;
+    }
+
+    .totals-row td {
+      font-weight: 700;
+      background: var(--surface-2);
+    }
+
+    .spacer-row td {
+      background: #f1f5f9;
+    }
+
+    .hint {
+      color: var(--muted);
+      margin: 4px 0 0;
+    }
+
+    .pnr-cell input {
+      background: #eef2ff;
+      border-color: #c7d2fe;
+    }
+
+    .row-muted td {
+      background: linear-gradient(90deg, #e2e8f0, #f8fafc);
+      color: #334155;
+      box-shadow: inset 4px 0 0 #cbd5e1;
+    }
+
+    .row-muted td:first-child {
+      background: linear-gradient(90deg, #cbd5e1, #e2e8f0);
+      box-shadow: inset 6px 0 0 #94a3b8;
+      position: sticky;
+      left: 0;
+    }
+
+    .row-muted td:first-child::before {
+      content: 'Ausgeblendet';
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      background: #94a3b8;
+      color: #0f172a;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .row-muted input,
+    .row-muted .qual-badge {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
+
+    .row-muted .qual-badge span:last-child {
+      color: #1f2937;
+    }
+
+    .row-muted td:first-child input {
+      padding-top: 18px;
+    }
+
+    .action-menu {
+      position: absolute;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+      border-radius: 10px;
+      padding: 6px 0;
+      display: none;
+      z-index: 120;
+    }
+
+    .action-menu button {
+      display: block;
+      width: 100%;
+      padding: 8px 14px;
+      background: none;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .action-menu button:hover {
+      background: #f1f5f9;
+    }
+
+    th.month-col,
+    td.month-col {
+      min-width: 68px;
+      width: 68px;
+    }
+
+    .save-status {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(23, 195, 178, 0.16);
+      color: #0f172a;
+      border: 1px solid rgba(23, 195, 178, 0.4);
+      font-weight: 600;
+    }
+
+    .save-status.error {
+      background: #fef2f2;
+      border-color: #fecdd3;
+      color: #991b1b;
+    }
+
+    .qual-badge {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f8fafc;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.88rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .qual-popover {
+      position: absolute;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+      border-radius: 12px;
+      padding: 10px;
+      display: none;
+      z-index: 99;
+      width: 240px;
+      max-height: 260px;
+      overflow: auto;
+    }
+
+    .qual-popover label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      padding: 4px 2px;
+    }
+
+    @media (max-width: 900px) {
+
+      th:nth-child(2),
+      td:nth-child(2) {
+        left: 100px;
+      }
+
+      th:first-child,
+      td:first-child {
+        min-width: 100px;
+      }
+    }
+
+    @media (max-width: 900px) {}
+
+    @media (max-width: 600px) {}
+
+    @media (max-width: 900px) {}
   </style>
 </head>
+
 <body>
   <template id="page-content">
-<section class="card top">
+    <section class="card top">
       <div class="header-row">
         <div class="hero-title">
-<h1>Planung &amp; Kontrolle</h1>
-          <p style="margin:0; color:var(--muted);">Mitarbeiter:innen und Zusatzgruppen pflegen, VK-Werte pro Monat sichern.</p>
+          <h1>Planung &amp; Kontrolle</h1>
+          <p style="margin:0; color:var(--muted);">Mitarbeiter:innen und Zusatzgruppen pflegen, VK-Werte pro Monat
+            sichern.</p>
         </div>
         <span id="saveStatus" class="save-status" aria-live="polite" style="display:none;"></span>
       </div>
@@ -136,10 +502,22 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
         <table id="planTable">
           <thead>
             <tr>
-              <th style="min-width:120px;" data-sort="pnr">Personalnummer <span class="sort-indicator" data-sort-ind="pnr"></span></th>
-              <th style="min-width:200px;" data-sort="name">Mitarbeiter:in <span class="sort-indicator" data-sort-ind="name"></span></th>
-              <th class="month-col">Jan</th><th class="month-col">Feb</th><th class="month-col">Mrz</th><th class="month-col">Apr</th><th class="month-col">Mai</th><th class="month-col">Jun</th>
-              <th class="month-col">Jul</th><th class="month-col">Aug</th><th class="month-col">Sep</th><th class="month-col">Okt</th><th class="month-col">Nov</th><th class="month-col">Dez</th>
+              <th style="min-width:120px;" data-sort="pnr">Personalnummer <span class="sort-indicator"
+                  data-sort-ind="pnr"></span></th>
+              <th style="min-width:200px;" data-sort="name">Mitarbeiter:in <span class="sort-indicator"
+                  data-sort-ind="name"></span></th>
+              <th class="month-col">Jan</th>
+              <th class="month-col">Feb</th>
+              <th class="month-col">Mrz</th>
+              <th class="month-col">Apr</th>
+              <th class="month-col">Mai</th>
+              <th class="month-col">Jun</th>
+              <th class="month-col">Jul</th>
+              <th class="month-col">Aug</th>
+              <th class="month-col">Sep</th>
+              <th class="month-col">Okt</th>
+              <th class="month-col">Nov</th>
+              <th class="month-col">Dez</th>
               <th>&Oslash; Monat</th>
               <th style="min-width:140px;">Qualifikation</th>
               <th class="actions-col">Aktionen</th>
@@ -150,7 +528,18 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
             <tr class="totals-row">
               <td></td>
               <td>Summe Monat</td>
-              <td data-sum-month="0">0,0</td><td data-sum-month="1">0,0</td><td data-sum-month="2">0,0</td><td data-sum-month="3">0,0</td><td data-sum-month="4">0,0</td><td data-sum-month="5">0,0</td><td data-sum-month="6">0,0</td><td data-sum-month="7">0,0</td><td data-sum-month="8">0,0</td><td data-sum-month="9">0,0</td><td data-sum-month="10">0,0</td><td data-sum-month="11">0,0</td>
+              <td data-sum-month="0">0,0</td>
+              <td data-sum-month="1">0,0</td>
+              <td data-sum-month="2">0,0</td>
+              <td data-sum-month="3">0,0</td>
+              <td data-sum-month="4">0,0</td>
+              <td data-sum-month="5">0,0</td>
+              <td data-sum-month="6">0,0</td>
+              <td data-sum-month="7">0,0</td>
+              <td data-sum-month="8">0,0</td>
+              <td data-sum-month="9">0,0</td>
+              <td data-sum-month="10">0,0</td>
+              <td data-sum-month="11">0,0</td>
               <td data-total-year>0,0</td>
               <td></td>
               <td></td>
@@ -168,10 +557,22 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
         <table id="extrasTable">
           <thead>
             <tr>
-              <th style="min-width:120px;" data-sort="pnr-ex">Personalnummer <span class="sort-indicator" data-sort-ind="pnr-ex"></span></th>
-              <th style="min-width:200px;" data-sort="cat-ex">Kategorie <span class="sort-indicator" data-sort-ind="cat-ex"></span></th>
-              <th class="month-col">Jan</th><th class="month-col">Feb</th><th class="month-col">Mrz</th><th class="month-col">Apr</th><th class="month-col">Mai</th><th class="month-col">Jun</th>
-              <th class="month-col">Jul</th><th class="month-col">Aug</th><th class="month-col">Sep</th><th class="month-col">Okt</th><th class="month-col">Nov</th><th class="month-col">Dez</th>
+              <th style="min-width:120px;" data-sort="pnr-ex">Personalnummer <span class="sort-indicator"
+                  data-sort-ind="pnr-ex"></span></th>
+              <th style="min-width:200px;" data-sort="cat-ex">Kategorie <span class="sort-indicator"
+                  data-sort-ind="cat-ex"></span></th>
+              <th class="month-col">Jan</th>
+              <th class="month-col">Feb</th>
+              <th class="month-col">Mrz</th>
+              <th class="month-col">Apr</th>
+              <th class="month-col">Mai</th>
+              <th class="month-col">Jun</th>
+              <th class="month-col">Jul</th>
+              <th class="month-col">Aug</th>
+              <th class="month-col">Sep</th>
+              <th class="month-col">Okt</th>
+              <th class="month-col">Nov</th>
+              <th class="month-col">Dez</th>
               <th>&Oslash; Monat</th>
               <th style="min-width:140px;">Qualifikation</th>
               <th class="actions-col">Aktionen</th>
@@ -182,7 +583,18 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
             <tr class="totals-row">
               <td></td>
               <td>Summe Zusatz</td>
-              <td data-extra-month="0">0,0</td><td data-extra-month="1">0,0</td><td data-extra-month="2">0,0</td><td data-extra-month="3">0,0</td><td data-extra-month="4">0,0</td><td data-extra-month="5">0,0</td><td data-extra-month="6">0,0</td><td data-extra-month="7">0,0</td><td data-extra-month="8">0,0</td><td data-extra-month="9">0,0</td><td data-extra-month="10">0,0</td><td data-extra-month="11">0,0</td>
+              <td data-extra-month="0">0,0</td>
+              <td data-extra-month="1">0,0</td>
+              <td data-extra-month="2">0,0</td>
+              <td data-extra-month="3">0,0</td>
+              <td data-extra-month="4">0,0</td>
+              <td data-extra-month="5">0,0</td>
+              <td data-extra-month="6">0,0</td>
+              <td data-extra-month="7">0,0</td>
+              <td data-extra-month="8">0,0</td>
+              <td data-extra-month="9">0,0</td>
+              <td data-extra-month="10">0,0</td>
+              <td data-extra-month="11">0,0</td>
               <td data-total-extra>0,0</td>
               <td></td>
               <td></td>
@@ -190,7 +602,18 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
             <tr class="totals-row spacer-row">
               <td></td>
               <td>Abschluss (Haupt + Zusatz)</td>
-              <td data-combined-month="0">0,0</td><td data-combined-month="1">0,0</td><td data-combined-month="2">0,0</td><td data-combined-month="3">0,0</td><td data-combined-month="4">0,0</td><td data-combined-month="5">0,0</td><td data-combined-month="6">0,0</td><td data-combined-month="7">0,0</td><td data-combined-month="8">0,0</td><td data-combined-month="9">0,0</td><td data-combined-month="10">0,0</td><td data-combined-month="11">0,0</td>
+              <td data-combined-month="0">0,0</td>
+              <td data-combined-month="1">0,0</td>
+              <td data-combined-month="2">0,0</td>
+              <td data-combined-month="3">0,0</td>
+              <td data-combined-month="4">0,0</td>
+              <td data-combined-month="5">0,0</td>
+              <td data-combined-month="6">0,0</td>
+              <td data-combined-month="7">0,0</td>
+              <td data-combined-month="8">0,0</td>
+              <td data-combined-month="9">0,0</td>
+              <td data-combined-month="10">0,0</td>
+              <td data-combined-month="11">0,0</td>
               <td data-total-combined>0,0</td>
               <td></td>
               <td></td>
@@ -208,7 +631,7 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
       </div>
     </section>
 
-<script src="../assets/stellenplan.app.js"></script>
+    <script src="/assets/stellenplan.app.js"></script>
   </template>
 
   <script>
@@ -280,5 +703,5 @@ th:nth-child(2), td:nth-child(2){left:100px;} th:first-child, td:first-child{min
       });
   </script>
 </body>
-</html>
 
+</html>
