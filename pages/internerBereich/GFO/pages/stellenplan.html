@@ -231,15 +231,17 @@
     }
 
     .name-input,
-    .vk-input {
+    .vk-input,
+    .pnr-input {
       width: 100%;
-      padding: 8px 8px;
+      padding: 8px 10px;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 12px;
       font: inherit;
       text-align: center;
       background: #fff;
       transition: .15s ease all;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
     }
 
     .name-input {
@@ -247,7 +249,8 @@
     }
 
     .name-input:focus,
-    .vk-input:focus {
+    .vk-input:focus,
+    .pnr-input:focus {
       outline: none;
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(28, 107, 255, .2);
@@ -388,8 +391,14 @@
 
     th.month-col,
     td.month-col {
-      min-width: 68px;
-      width: 68px;
+      min-width: 48px;
+      width: 48px;
+      max-width: 52px;
+    }
+
+    .vk-input {
+      padding: 6px 4px;
+      font-size: 0.9rem;
     }
 
     .save-status {
@@ -559,8 +568,8 @@
             <tr>
               <th style="min-width:120px;" data-sort="pnr-ex">Personalnummer <span class="sort-indicator"
                   data-sort-ind="pnr-ex"></span></th>
-              <th style="min-width:200px;" data-sort="cat-ex">Kategorie <span class="sort-indicator"
-                  data-sort-ind="cat-ex"></span></th>
+              <th style="min-width:200px;" data-sort="name-ex">Mitarbeiter:in <span class="sort-indicator"
+                  data-sort-ind="name-ex"></span></th>
               <th class="month-col">Jan</th>
               <th class="month-col">Feb</th>
               <th class="month-col">Mrz</th>

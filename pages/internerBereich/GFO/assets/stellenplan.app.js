@@ -116,7 +116,7 @@
         state.dienstart = parsed.dienstart || state.dienstart;
         state.year = parsed.year || state.year;
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   function saveStorage() {
@@ -127,7 +127,7 @@
         year: state.year,
         data: state.data,
       }));
-    } catch (_) {}
+    } catch (_) { }
   }
 
   function key() {
@@ -202,7 +202,7 @@
       const tds = [];
       tds.push(`
         <td class="pnr-col">
-          <input class="sp-pnr" data-kind="emp" data-idx="${idx}" value="${escapeHtml(r.personalNumber)}" placeholder="Personalnr.">
+          <input class="pnr-input sp-pnr" data-kind="emp" data-idx="${idx}" value="${escapeHtml(r.personalNumber)}" placeholder="Personalnr.">
         </td>
       `);
       tds.push(`
@@ -217,7 +217,7 @@
         tds.push(`
           <td class="month-col">
             <input type="number" step="0.01" min="0" max="1"
-              class="sp-vk"
+              class="vk-input sp-vk"
               data-kind="emp" data-idx="${idx}" data-month="${m}"
               value="${String(clamp2(r.values[m] || 0))}">
           </td>
@@ -250,6 +250,14 @@
     tbody.innerHTML = "";
 
     plan.extras.forEach((x, idx) => {
+      // Ensure extras have firstName/lastName like main employees
+      if (!x.firstName && !x.lastName && x.category) {
+        x.firstName = x.category;
+        x.lastName = "";
+      }
+      if (!x.firstName) x.firstName = "";
+      if (!x.lastName) x.lastName = "";
+
       const tr = document.createElement("tr");
       tr.dataset.kind = "extra";
       tr.dataset.idx = String(idx);
@@ -257,30 +265,36 @@
       const tds = [];
       tds.push(`
         <td class="pnr-col">
-          <input class="sp-pnr" data-kind="extra" data-idx="${idx}" value="${escapeHtml(x.personalNumber)}" placeholder="ID/Key">
+          <input class="pnr-input sp-pnr" data-kind="extra" data-idx="${idx}" value="${escapeHtml(x.personalNumber)}" placeholder="Personalnr.">
         </td>
       `);
       tds.push(`
         <td class="name-col">
-          <input class="sp-category" data-kind="extra" data-idx="${idx}" value="${escapeHtml(x.category)}" placeholder="Kategorie">
+          <div class="name-pair">
+            <input class="name-input sp-name-first" data-kind="extra" data-idx="${idx}" value="${escapeHtml(x.firstName)}" placeholder="Vorname">
+            <input class="name-input sp-name-last" data-kind="extra" data-idx="${idx}" value="${escapeHtml(x.lastName)}" placeholder="Nachname">
+          </div>
         </td>
       `);
-      tds.push(`<td class="qual-col">${qualSelectHTML(x.qual, idx, "extra")}</td>`);
       for (let m = 0; m < 12; m++) {
         tds.push(`
           <td class="month-col">
             <input type="number" step="0.01" min="0" max="2"
-              class="sp-vk"
+              class="vk-input sp-vk"
               data-kind="extra" data-idx="${idx}" data-month="${m}"
               value="${String(clamp2(x.values[m] || 0))}">
           </td>
         `);
       }
+      const rowAvg = (x.values || []).reduce((a, b) => a + Number(b || 0), 0) / 12;
+      tds.push(`<td data-row-sum>${fmt(rowAvg)}</td>`);
+      tds.push(`<td class="qual-col">${qualSelectHTML(x.qual, idx, "extra")}</td>`);
       tds.push(`
         <td class="actions-cell">
           <div class="action-buttons">
             <button class="icon-btn" data-action="hide" data-kind="extra" data-idx="${idx}" title="Zeile ausblenden">&#128065;</button>
             <button class="icon-btn" data-action="delete" data-kind="extra" data-idx="${idx}" title="Zeile loeschen">&#128465;</button>
+            <button class="icon-btn" data-action="copy" data-kind="extra" data-idx="${idx}" type="button" title="Werte fortfuehren">&#10230;</button>
           </div>
         </td>
       `);
@@ -506,7 +520,7 @@
       recalcTotals();
       setStatus("Ungespeichert");
     };
-        const onTableClick = (ev) => {
+    const onTableClick = (ev) => {
       const t = ev.target;
       if (!t || !(t instanceof HTMLElement)) return;
       const kind = t.dataset.kind;
